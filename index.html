@@ -296,6 +296,49 @@
     .chat-fab{ right:16px; bottom:16px; }
   }
 
+  /* Fitness Data / metrics / modal */
+  .fitness-summary-row{ display:flex; align-items:center; gap:12px; }
+  .fitness-summary-avatar{ width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#0071E3,#00C7BE); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; color:#fff; }
+  .fitness-summary-lines div{ font-size:13px; font-weight:600; line-height:1.5; }
+  .fitness-summary-lines .fs-goal{ color:var(--blue); }
+
+  .metrics-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(88px,1fr)); gap:10px; }
+  .metric-mini{ background:var(--panel-2); border-radius:14px; padding:14px 10px; text-align:center; animation:cardPop .35s cubic-bezier(.34,1.4,.64,1) backwards; }
+  .metric-mini .mm-val{ font-size:17px; font-weight:800; letter-spacing:-0.01em; }
+  .metric-mini .mm-label{ font-size:10px; color:var(--muted); margin-top:3px; font-weight:600; }
+  @keyframes cardPop{ from{ opacity:0; transform:scale(.9) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+
+  .modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:70; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal-card{ background:var(--panel); border-radius:20px; width:100%; max-width:440px; max-height:88vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.35); transform:scale(.92) translateY(10px); transition:transform .2s cubic-bezier(.34,1.15,.4,1); }
+  .modal-overlay.open .modal-card{ transform:scale(1) translateY(0); }
+  .modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+  .modal-head h2{ font-size:16px; font-weight:800; margin:0; }
+  .modal-body{ padding:14px 20px 4px; }
+  .modal-actions{ display:flex; gap:10px; padding:16px 20px 20px; }
+  .modal-actions .btn{ flex:1; }
+
+  /* Fitness Score */
+  .fscore-wrap{ display:flex; align-items:center; gap:18px; margin-bottom:16px; }
+  .fscore-ring{ flex-shrink:0; }
+  .fscore-num{ font-size:32px; font-weight:800; letter-spacing:-0.02em; }
+  .fscore-num span{ font-size:14px; font-weight:600; color:var(--muted); }
+  .fscore-label{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .fscore-bars{ display:flex; flex-direction:column; gap:11px; }
+  .fscore-bar-row{ font-size:12.5px; }
+  .fscore-bar-head{ display:flex; justify-content:space-between; margin-bottom:5px; font-weight:600; }
+  .fscore-bar-head span:last-child{ color:var(--muted); font-weight:700; }
+  .fscore-bar-track{ height:7px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
+  .fscore-bar-fill{ height:100%; border-radius:999px; width:0%; transition:width .8s cubic-bezier(.22,.9,.3,1); }
+
+  #snapshotCard, #fitnessScoreCard, #aiInsightCard, #fitnessMetricsCard{ animation:cardPop .4s cubic-bezier(.34,1.3,.64,1) backwards; }
+  .fscore-num{ animation:cardPop .5s .1s cubic-bezier(.34,1.3,.64,1) backwards; }
+
+  .snapshot-list{ display:flex; flex-direction:column; gap:10px; }
+  .snapshot-row{ display:flex; align-items:center; gap:10px; font-size:13.5px; font-weight:700; }
+  .snapshot-row .sr-emoji{ width:20px; text-align:center; flex-shrink:0; }
+  .snapshot-row .sr-val{ color:var(--muted); font-weight:500; }
+
   .toast{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(10px); background:var(--text); color:var(--bg); padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:all .25s ease; z-index:50; max-width:88%; text-align:center; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
@@ -333,6 +376,22 @@
         <div class="streak"><span id="streakNum">0</span><span>day streak 🔥</span></div>
         <div class="week-strip" id="weekStrip"></div>
         <div class="tip" id="tipText">Consistency beats intensity — a short session today keeps your streak alive.</div>
+      </div>
+
+      <div class="card" id="snapshotCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Your Fitness Snapshot</h2>
+        <div class="snapshot-list" id="snapshotList"></div>
+      </div>
+
+      <div class="card" id="fitnessScoreCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Fitness Score</h2>
+        <div id="fitnessScoreBody"></div>
+      </div>
+
+      <div class="card" id="aiInsightCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">AI Fitness Insight 💡</h2>
+        <p id="aiInsightText" style="font-size:13px; line-height:1.6; margin:0 0 8px;"></p>
+        <p id="aiInsightSystemText" style="font-size:13px; line-height:1.6; margin:0; padding-top:8px; border-top:1px solid var(--line); display:none;"></p>
       </div>
 
       <div class="grid3">
@@ -631,6 +690,18 @@
         </div>
       </div>
       <div class="card">
+        <div class="section-head" style="margin:0 0 8px;">
+          <h2 class="section-title" style="margin:0;">My Fitness Data</h2>
+          <button class="link-btn" id="editFitnessDataBtn">Edit</button>
+        </div>
+        <div id="fitnessDataSummary"></div>
+      </div>
+      <div class="card" id="fitnessMetricsCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Estimated Daily Targets</h2>
+        <p style="font-size:11.5px; color:var(--muted); margin:0 0 12px;">Estimates based on standard formulas (Mifflin-St Jeor) — not medical advice.</p>
+        <div class="metrics-grid" id="fitnessMetricsGrid"></div>
+      </div>
+      <div class="card">
         <h2 class="section-title" style="margin-top:0;">Coaching</h2>
         <div class="toggle-row">
           <div><div class="label">Voice coaching</div><div class="desc">Speaks form feedback and rep milestones out loud</div></div>
@@ -688,6 +759,49 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="fitnessModalOverlay">
+  <div class="modal-card">
+    <div class="modal-head"><h2>Edit My Fitness Data</h2><button class="icon-btn" id="fitnessModalCloseBtn">✕</button></div>
+    <div class="modal-body">
+      <div class="field-grid">
+        <div class="field-row"><label for="fdAge">Age</label><input type="number" id="fdAge" min="10" max="100" placeholder="e.g. 21"></div>
+        <div class="field-row">
+          <label for="fdGender">Gender</label>
+          <select id="fdGender"><option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select>
+        </div>
+        <div class="field-row"><label for="fdHeight">Height (cm)</label><input type="number" id="fdHeight" min="100" max="250" placeholder="e.g. 175"></div>
+        <div class="field-row"><label for="fdWeight">Weight (kg)</label><input type="number" id="fdWeight" min="30" max="300" step="0.1" placeholder="e.g. 72"></div>
+        <div class="field-row">
+          <label for="fdActivity">Activity Level</label>
+          <select id="fdActivity">
+            <option value="">Select…</option>
+            <option value="sedentary">Sedentary</option>
+            <option value="light">Lightly Active</option>
+            <option value="moderate">Moderately Active</option>
+            <option value="active">Active</option>
+            <option value="very_active">Very Active</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label for="fdGoal">Fitness Goal</label>
+          <select id="fdGoal">
+            <option value="">Select…</option>
+            <option value="muscle">Build Muscle</option>
+            <option value="lose_weight">Lose Weight</option>
+            <option value="maintain">Maintain Weight</option>
+            <option value="endurance">Improve Endurance</option>
+          </select>
+        </div>
+        <div class="field-row"><label for="fdTargetWeight">Target Weight (kg, optional)</label><input type="number" id="fdTargetWeight" min="30" max="300" step="0.1" placeholder="optional"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="fitnessModalCancelBtn">Cancel</button>
+      <button class="btn primary" id="fitnessModalSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -710,6 +824,21 @@ const DEFAULT_SETTINGS = {
   experience: 'beginner', units: 'metric', weeklyGoal: 3,
   reminderTime: '18:00', reminderOn: true,
   goal: 'strength', equipment: 'none', duration: '30', focus: 'fullbody',
+  age: null, gender: '', heightCm: null, weightKg: null,
+  activityLevel: '', profileGoal: '', targetWeightKg: null,
+};
+const ACTIVITY_LEVELS = {
+  sedentary: { label:'Sedentary', mult:1.2 },
+  light: { label:'Lightly Active', mult:1.375 },
+  moderate: { label:'Moderately Active', mult:1.55 },
+  active: { label:'Active', mult:1.725 },
+  very_active: { label:'Very Active', mult:1.9 },
+};
+const PROFILE_GOALS = {
+  muscle: { label:'Build Muscle', emoji:'💪', calorieAdj:300, proteinPerKg:1.8 },
+  lose_weight: { label:'Lose Weight', emoji:'📉', calorieAdj:-500, proteinPerKg:1.8 },
+  maintain: { label:'Maintain Weight', emoji:'⚖️', calorieAdj:0, proteinPerKg:1.4 },
+  endurance: { label:'Improve Endurance', emoji:'🏃', calorieAdj:100, proteinPerKg:1.4 },
 };
 let appData = structuredClone(DEFAULT_DATA);
 let settings = structuredClone(DEFAULT_SETTINGS);
@@ -753,6 +882,7 @@ function applySettingsToUI(){
   document.getElementById('equipmentSelect').value = settings.equipment;
   document.getElementById('durationSelect').value = settings.duration;
   document.getElementById('focusSelect').value = settings.focus;
+  renderFitnessDataSummary();
 }
 
 function bindSwitch(id, key){
@@ -777,6 +907,47 @@ document.getElementById('reminderTime').onchange = (e) => { settings.reminderTim
   const key = id.replace('Select','');
   document.getElementById(id).onchange = (e) => { settings[key] = e.target.value; saveSettings(); };
 });
+
+/* ---- My Fitness Data edit modal ---- */
+const fitnessModalOverlay = document.getElementById('fitnessModalOverlay');
+function openFitnessModal(){
+  document.getElementById('fdAge').value = settings.age || '';
+  document.getElementById('fdGender').value = settings.gender || '';
+  document.getElementById('fdHeight').value = settings.heightCm || '';
+  document.getElementById('fdWeight').value = settings.weightKg || '';
+  document.getElementById('fdActivity').value = settings.activityLevel || '';
+  document.getElementById('fdGoal').value = settings.profileGoal || '';
+  document.getElementById('fdTargetWeight').value = settings.targetWeightKg || '';
+  fitnessModalOverlay.style.display = 'flex';
+  requestAnimationFrame(() => fitnessModalOverlay.classList.add('open'));
+}
+function closeFitnessModal(){
+  fitnessModalOverlay.classList.remove('open');
+  setTimeout(() => { fitnessModalOverlay.style.display = 'none'; }, 200);
+}
+document.getElementById('editFitnessDataBtn').onclick = openFitnessModal;
+document.getElementById('fitnessModalCloseBtn').onclick = closeFitnessModal;
+document.getElementById('fitnessModalCancelBtn').onclick = closeFitnessModal;
+fitnessModalOverlay.addEventListener('click', (e) => { if (e.target === fitnessModalOverlay) closeFitnessModal(); });
+document.getElementById('fitnessModalSaveBtn').onclick = async () => {
+  const age = parseInt(document.getElementById('fdAge').value) || null;
+  const gender = document.getElementById('fdGender').value;
+  const heightCm = parseFloat(document.getElementById('fdHeight').value) || null;
+  const weightKg = parseFloat(document.getElementById('fdWeight').value) || null;
+  const activityLevel = document.getElementById('fdActivity').value;
+  const profileGoal = document.getElementById('fdGoal').value;
+  const targetWeightKg = parseFloat(document.getElementById('fdTargetWeight').value) || null;
+  if (!age || !gender || !heightCm || !weightKg || !activityLevel || !profileGoal){
+    alert('Please fill in age, gender, height, weight, activity level, and fitness goal.');
+    return;
+  }
+  Object.assign(settings, { age, gender, heightCm, weightKg, activityLevel, profileGoal, targetWeightKg });
+  await saveSettings();
+  renderFitnessDataSummary();
+  renderDashboard();
+  closeFitnessModal();
+  showToast('Fitness data saved');
+};
 
 document.getElementById('exportDataBtn').onclick = () => {
   const blob = new Blob([JSON.stringify({ appData, settings }, null, 2)], { type:'application/json' });
@@ -915,6 +1086,117 @@ function renderReminderTip(){
   return TIPS[new Date().getDate() % TIPS.length];
 }
 
+function renderFitnessDataSummary(){
+  const el = document.getElementById('fitnessDataSummary');
+  const s = settings;
+  if (!hasCompleteProfile(s)){
+    el.innerHTML = '<div class="empty-state">Add your fitness data to unlock personalized calorie, macro, and score insights.</div>';
+    document.getElementById('fitnessMetricsCard').style.display='none';
+    return;
+  }
+  const genderLabel = s.gender==='male' ? 'Male' : s.gender==='female' ? 'Female' : 'Other';
+  const goal = PROFILE_GOALS[s.profileGoal];
+  el.innerHTML = `
+    <div class="fitness-summary-row">
+      <div class="fitness-summary-avatar">${goal ? goal.emoji : '🧑'}</div>
+      <div class="fitness-summary-lines">
+        <div>${s.age} yrs · ${genderLabel}</div>
+        <div>${s.heightCm} cm · ${s.weightKg} kg${s.targetWeightKg ? ` · Target ${s.targetWeightKg} kg` : ''}</div>
+        <div>${ACTIVITY_LEVELS[s.activityLevel].label}</div>
+        <div class="fs-goal">🎯 Goal: ${goal ? goal.label : '—'}</div>
+      </div>
+    </div>`;
+  renderFitnessMetrics();
+}
+function renderFitnessMetrics(){
+  const metrics = computeFitnessMetrics(settings);
+  const card = document.getElementById('fitnessMetricsCard');
+  if (!metrics){ card.style.display='none'; return; }
+  card.style.display='';
+  const items = [
+    ['🔥', metrics.calorieTarget.toLocaleString()+' kcal', 'Daily Target'],
+    ['🥩', metrics.protein+' g', 'Protein'],
+    ['💧', metrics.water+' L', 'Water'],
+    ['📊', metrics.bmi, 'BMI'],
+    ['⚡', metrics.bmr.toLocaleString()+' kcal', 'BMR'],
+  ];
+  document.getElementById('fitnessMetricsGrid').innerHTML = items.map(([icon,val,label],i) =>
+    `<div class="metric-mini" style="animation-delay:${(i*.05).toFixed(2)}s"><div class="mm-val">${icon} ${val}</div><div class="mm-label">${label}</div></div>`
+  ).join('');
+}
+
+function renderSnapshot(){
+  const card = document.getElementById('snapshotCard');
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics && !appData.sessions.length){ card.style.display='none'; return; }
+  card.style.display='';
+  const rows = [];
+  const goal = PROFILE_GOALS[settings.profileGoal];
+  if (goal) rows.push(['🎯', `Goal: ${goal.label}`]);
+  if (metrics) rows.push(['🔥', `Daily Target: ${metrics.calorieTarget.toLocaleString()} kcal`]);
+  if (metrics) rows.push(['🥩', `Protein: ${metrics.protein} g`]);
+  const withScore = appData.sessions.filter(s=>s.formScore!=null);
+  if (withScore.length) rows.push(['📈', `Form Score: ${withScore[withScore.length-1].formScore}%`]);
+  const days = new Set(last7Days());
+  const doneThisWeek = new Set(appData.sessions.filter(s=>days.has(s.date)).map(s=>s.date)).size;
+  rows.push(['🏋️', `Workouts: ${doneThisWeek} this week`]);
+  document.getElementById('snapshotList').innerHTML = rows.map(([emoji,text]) => `<div class="snapshot-row"><span class="sr-emoji">${emoji}</span><span>${text}</span></div>`).join('');
+}
+
+function renderFitnessScore(){
+  const card = document.getElementById('fitnessScoreCard');
+  if (!appData.sessions.length && !settings.activityLevel){ card.style.display='none'; return; }
+  card.style.display='';
+  const { overall, scores } = computeFitnessScore();
+  const body = document.getElementById('fitnessScoreBody');
+  if (overall==null){
+    body.innerHTML = '<div class="empty-state">Not enough data yet — log a few workouts and set your activity level to unlock your Fitness Score.</div>';
+    return;
+  }
+  const circumference = 2*Math.PI*32;
+  const pct = overall/100;
+  const color = overall>=80 ? 'var(--green)' : overall>=60 ? 'var(--orange)' : 'var(--red)';
+  const LABELS = { form:'Form Quality', consistency:'Consistency', activity:'Activity', progress:'Progress' };
+  const order = ['form','consistency','activity','progress'];
+  body.innerHTML = `
+    <div class="fscore-wrap">
+      <svg class="fscore-ring" width="76" height="76" viewBox="0 0 76 76">
+        <circle cx="38" cy="38" r="32" fill="none" stroke="var(--panel-2)" stroke-width="8"/>
+        <circle cx="38" cy="38" r="32" fill="none" stroke="${color}" stroke-width="8" stroke-linecap="round"
+          stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${circumference.toFixed(1)}"
+          transform="rotate(-90 38 38)" id="fscoreRingCircle" style="transition:stroke-dashoffset 1s cubic-bezier(.22,.9,.3,1);"/>
+      </svg>
+      <div><div class="fscore-num">${overall}<span> / 100</span></div><div class="fscore-label">Overall Fitness Score</div></div>
+    </div>
+    <div class="fscore-bars">
+      ${order.filter(k=>scores[k]!=null).map(k => `
+        <div class="fscore-bar-row">
+          <div class="fscore-bar-head"><span>${LABELS[k]}</span><span>${scores[k]}</span></div>
+          <div class="fscore-bar-track"><div class="fscore-bar-fill" id="fbar-${k}" style="background:${scores[k]>=80?'var(--green)':scores[k]>=60?'var(--orange)':'var(--red)'}"></div></div>
+        </div>`).join('')}
+    </div>`;
+  requestAnimationFrame(()=>{
+    const circle = document.getElementById('fscoreRingCircle');
+    if (circle) circle.setAttribute('stroke-dashoffset', (circumference*(1-pct)).toFixed(1));
+    order.forEach(k => { const el=document.getElementById('fbar-'+k); if (el && scores[k]!=null) el.style.width = scores[k]+'%'; });
+  });
+}
+
+function renderAIInsightCard(){
+  const card = document.getElementById('aiInsightCard');
+  const profileText = generateProfileInsight();
+  const systemText = generateSystemInsight();
+  if (!profileText && !systemText){ card.style.display='none'; return; }
+  card.style.display='';
+  const textEl = document.getElementById('aiInsightText'), sysEl = document.getElementById('aiInsightSystemText');
+  if (profileText){ textEl.style.display=''; textEl.textContent = profileText; } else { textEl.style.display='none'; }
+  if (systemText){
+    sysEl.style.display=''; sysEl.textContent = systemText;
+    sysEl.style.borderTop = profileText ? '1px solid var(--line)' : 'none';
+    sysEl.style.paddingTop = profileText ? '8px' : '0';
+  } else sysEl.style.display='none';
+}
+
 function renderDashboard(){
   const streak = computeStreak(appData.sessions);
   document.getElementById('streakNum').textContent = streak;
@@ -929,6 +1211,9 @@ function renderDashboard(){
   renderGoalRing();
   document.getElementById('dashChart7').innerHTML = build7DayChartHTML(appData.sessions);
   document.getElementById('dashRecentList').innerHTML = renderSessionsListHTML(appData.sessions, 3);
+  renderSnapshot();
+  renderFitnessScore();
+  renderAIInsightCard();
 
   const nextBadge = nextLockedBadge();
   const nextBadgeSection = document.getElementById('nextBadgeSection');
@@ -963,6 +1248,99 @@ function checkBadges(){
   });
   if (newlyUnlocked.length){ speak(`Achievement unlocked: ${newlyUnlocked[0].name}`); }
   return newlyUnlocked;
+}
+
+/* ================= FITNESS PROFILE: BMR / TDEE / MACROS / SCORE ================= */
+function hasCompleteProfile(s){
+  return !!(s.age && s.heightCm && s.weightKg && s.gender && s.activityLevel && s.profileGoal);
+}
+function computeFitnessMetrics(s){
+  if (!hasCompleteProfile(s)) return null;
+  const { age, heightCm, weightKg, gender, activityLevel, profileGoal } = s;
+  let bmr;
+  if (gender==='male') bmr = 10*weightKg + 6.25*heightCm - 5*age + 5;
+  else if (gender==='female') bmr = 10*weightKg + 6.25*heightCm - 5*age - 161;
+  else bmr = 10*weightKg + 6.25*heightCm - 5*age - 78;
+  const activity = ACTIVITY_LEVELS[activityLevel] || ACTIVITY_LEVELS.moderate;
+  const tdee = bmr * activity.mult;
+  const goal = PROFILE_GOALS[profileGoal] || PROFILE_GOALS.maintain;
+  const calorieTarget = Math.round(tdee + goal.calorieAdj);
+  const protein = Math.round(weightKg * goal.proteinPerKg);
+  const water = Math.round((weightKg*0.033 + (['active','very_active'].includes(activityLevel) ? 0.4 : 0)) * 10) / 10;
+  const heightM = heightCm/100;
+  const bmi = Math.round((weightKg/(heightM*heightM))*10)/10;
+  const bmiCategory = bmi<18.5 ? 'underweight' : bmi<25 ? 'healthy' : bmi<30 ? 'overweight' : 'obese';
+  return { bmr:Math.round(bmr), tdee:Math.round(tdee), calorieTarget, protein, water, bmi, bmiCategory, activity, goal };
+}
+function generateProfileInsight(){
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics) return null;
+  const bmiPhrase = metrics.bmiCategory==='healthy'
+    ? `your BMI (${metrics.bmi}) is within the commonly used healthy range`
+    : `your BMI (${metrics.bmi}) is in the ${metrics.bmiCategory} range (a commonly used general guideline, not a diagnosis)`;
+  const goalPhrases = {
+    muscle:'Since your goal is muscle gain, focus on consistent resistance training, sufficient protein, recovery, and a modest calorie surplus.',
+    lose_weight:'Since your goal is weight loss, aim for a modest calorie deficit while keeping protein high to preserve muscle, and stay consistent with training.',
+    maintain:'Since your goal is maintaining your current weight, keep training consistent and match your intake to your estimated maintenance calories.',
+    endurance:'Since your goal is improving endurance, prioritize consistent cardio training, adequate carbohydrates, and recovery.',
+  };
+  return `You're currently ${ACTIVITY_LEVELS[settings.activityLevel].label.toLowerCase()} and ${bmiPhrase}. ${goalPhrases[settings.profileGoal] || goalPhrases.maintain}`;
+}
+
+/* Form-analysis trend — reads real session history only; returns null (never invents data) if there isn't enough. */
+function computeFormTrend(){
+  const sessions = appData.sessions.filter(s=>s.formScore!=null);
+  if (sessions.length < 2) return null;
+  const now = Date.now(), DAY = 86400000;
+  const ageOf = s => now - new Date(s.date+'T00:00:00').getTime();
+  const recent = sessions.filter(s => ageOf(s) <= 30*DAY);
+  const prior = sessions.filter(s => { const a = ageOf(s); return a > 30*DAY && a <= 60*DAY; });
+  const avg = arr => Math.round(arr.reduce((a,s)=>a+s.formScore,0)/arr.length);
+  if (recent.length && prior.length){
+    const recentAvg = avg(recent), priorAvg = avg(prior);
+    if (priorAvg>0 && recentAvg!==priorAvg) return { deltaPct: Math.round(((recentAvg-priorAvg)/priorAvg)*100), period:'month' };
+  }
+  const recentWeek = sessions.filter(s => ageOf(s) <= 7*DAY);
+  const priorWeek = sessions.filter(s => { const a = ageOf(s); return a > 7*DAY && a <= 14*DAY; });
+  if (recentWeek.length && priorWeek.length){
+    const recentAvg = avg(recentWeek), priorAvg = avg(priorWeek);
+    if (priorAvg>0 && recentAvg!==priorAvg) return { deltaPct: Math.round(((recentAvg-priorAvg)/priorAvg)*100), period:'week' };
+  }
+  return null;
+}
+function generateSystemInsight(){
+  const trend = computeFormTrend();
+  if (!trend) return null;
+  const goalActions = {
+    muscle:'continue prioritizing controlled reps and progressive resistance',
+    lose_weight:'keep your tempo controlled and stay consistent with both training and your calorie target',
+    maintain:'keep your form consistent and maintain your current training rhythm',
+    endurance:'keep your reps controlled while building up training volume gradually',
+  };
+  const action = goalActions[settings.profileGoal] || 'keep prioritizing controlled reps and full range of motion';
+  return trend.deltaPct >= 0
+    ? `Your form score has improved ${trend.deltaPct}% this ${trend.period}. Since your goal is ${(PROFILE_GOALS[settings.profileGoal]||{label:'fitness'}).label.toLowerCase()}, ${action}.`
+    : `Your form score has dropped ${Math.abs(trend.deltaPct)}% this ${trend.period}. Slow down and review the live corrections in AI Coach before increasing difficulty.`;
+}
+
+/* Fitness Score — only uses sub-scores backed by real data; needs at least 2 to produce an overall score. */
+function computeFitnessScore(){
+  const scores = {};
+  const scored = appData.sessions.filter(s=>s.formScore!=null).slice(-10);
+  if (scored.length) scores.form = Math.round(scored.reduce((a,s)=>a+s.formScore,0)/scored.length);
+  if (appData.sessions.length){
+    const days = new Set(last7Days());
+    const doneThisWeek = new Set(appData.sessions.filter(s=>days.has(s.date)).map(s=>s.date)).size;
+    scores.consistency = Math.min(100, Math.round((doneThisWeek/(settings.weeklyGoal||3))*100));
+  }
+  if (settings.activityLevel){
+    scores.activity = { sedentary:40, light:55, moderate:70, active:85, very_active:95 }[settings.activityLevel];
+  }
+  const trend = computeFormTrend();
+  if (trend) scores.progress = Math.max(0, Math.min(100, Math.round(50 + trend.deltaPct*2)));
+  const keys = Object.keys(scores);
+  if (keys.length < 2) return { overall:null, scores };
+  return { overall: Math.round(keys.reduce((a,k)=>a+scores[k],0)/keys.length), scores };
 }
 
 /* ================= PROGRESS VIEW ================= */
@@ -1783,6 +2161,9 @@ async function fetchRemoteAIResponse(userText, context){
 function buildChatContext(){
   return {
     settings: { experience: settings.experience, goal: settings.goal, equipment: settings.equipment, weeklyGoal: settings.weeklyGoal },
+    profile: { activityLevel: settings.activityLevel, profileGoal: settings.profileGoal },
+    metrics: computeFitnessMetrics(settings),
+    fitnessScore: computeFitnessScore(),
     recentSessions: appData.sessions.slice(-10),
     insight: computeAIInsight(),
   };
@@ -1986,6 +2367,47 @@ function improveFormGeneral(){
   if (latest) return `Your last session (${exerciseName(latest.exercise)}) scored ${latest.formScore}/100.${latest.mostCommonMistake ? ` Your main issue was ${latest.mostCommonMistake.toLowerCase()} — ${suggestionFor(latest.mostCommonMistake)}` : ' Keep it up — nice clean form!'} In general: move slower, keep full range of motion, and watch the live corrections in AI Coach.`;
   return "Great question! In general: slow your tempo down, keep full range of motion, and keep your core braced throughout. Head to AI Coach and I'll start giving you exercise-specific feedback based on your live form score.";
 }
+/* Broader "how can I improve" — combines profile goal + form-analysis history, per the request to
+   make the chatbot feel like it's reasoning over the whole system rather than one isolated feature. */
+function howCanIImproveResponse(){
+  const parts = [];
+  const latest = [...appData.sessions].reverse().find(s=>s.formScore!=null);
+  if (latest){
+    parts.push(`Your last session (${exerciseName(latest.exercise)}) scored ${latest.formScore}/100${latest.mostCommonMistake ? `, mainly held back by ${latest.mostCommonMistake.toLowerCase()}` : ''}.`);
+    if (latest.mostCommonMistake) parts.push(suggestionFor(latest.mostCommonMistake));
+  }
+  const trend = computeFormTrend();
+  if (trend) parts.push(trend.deltaPct>=0
+    ? `You're already trending up ${trend.deltaPct}% this ${trend.period} — keep it up.`
+    : `Your form dipped ${Math.abs(trend.deltaPct)}% this ${trend.period}, so ease off intensity and focus on control.`);
+  if (settings.profileGoal){
+    const goalTips = {
+      muscle:'Keep prioritizing progressive resistance and consistent protein intake.',
+      lose_weight:'Stay consistent with your calorie target and keep training volume up to preserve muscle.',
+      maintain:'Keep your routine consistent — small, steady improvements compound over time.',
+      endurance:'Gradually build training volume while keeping your form controlled.',
+    };
+    parts.push(goalTips[settings.profileGoal]);
+  }
+  if (!parts.length) return "Start by logging a few sessions in AI Coach — once I have your form scores (and your fitness profile in Settings), I can give you specific, personalized advice.";
+  parts.push('Move slower, keep full range of motion, and watch the live corrections in AI Coach.');
+  return parts.join(' ');
+}
+function caloriesResponse(){
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics) return "I don't have your fitness data yet — add your age, height, weight, activity level, and goal in Settings → My Fitness Data, and I'll calculate your personalized calorie target.";
+  return `Based on your profile, your estimated daily target is ${metrics.calorieTarget.toLocaleString()} kcal (maintenance is about ${metrics.tdee.toLocaleString()} kcal). Aim for around ${metrics.protein}g of protein and ${metrics.water}L of water daily. This is an estimate from standard formulas, not medical advice.`;
+}
+function bmiResponse(){
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics) return "I don't have your height and weight yet — add them in Settings → My Fitness Data and I'll calculate your BMI.";
+  return `Your estimated BMI is ${metrics.bmi}, which falls in the ${metrics.bmiCategory} range (a commonly used general guideline, not a diagnosis).`;
+}
+function bmrResponse(){
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics) return "I don't have your fitness data yet — add it in Settings → My Fitness Data and I'll estimate your BMR.";
+  return `Your estimated BMR (calories burned at rest) is ${metrics.bmr.toLocaleString()} kcal/day, and your maintenance calories (BMR × activity level) are about ${metrics.tdee.toLocaleString()} kcal/day.`;
+}
 
 const CHAT_FALLBACK = 'I\'m your AI fitness coach — I can help with exercise form, workout plans, and your form-analysis results. Try asking things like "How do I improve my squat?", "Give me a beginner leg workout", or "Why is my form score low?"';
 
@@ -2007,6 +2429,11 @@ function getLocalChatResponse(rawText){
   }
 
   if (/how (do|can) i improve my form\b/i.test(text) && !detectExerciseKey(text)) return improveFormGeneral();
+  if (/how (do|can|should) i improve\b/i.test(text) && !detectExerciseKey(text)) return howCanIImproveResponse();
+
+  if (/how many calories|calories should i eat|calorie target|daily calories/i.test(text)) return caloriesResponse();
+  if (/\bbmi\b|body mass index/i.test(text)) return bmiResponse();
+  if (/\bbmr\b|basal metabolic|maintenance calories/i.test(text)) return bmrResponse();
 
   if (/(today|what should i train)/i.test(text) && /(workout|train)/i.test(text)) return todaysWorkoutResponse();
   if (/workout|routine|leg day|push day|pull day|full.?body/i.test(text)) return generateWorkoutFromText(text);
