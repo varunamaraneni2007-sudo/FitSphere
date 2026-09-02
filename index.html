@@ -105,9 +105,12 @@
   .feedback-pill.good{ background:rgba(52,199,89,.4); }
   .feedback-pill.warn{ background:rgba(255,59,48,.4); }
 
-  .exercise-picker{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:14px 0; max-height:280px; overflow-y:auto; padding-right:2px; }
-  @media (max-width:640px){ .exercise-picker{ grid-template-columns:repeat(3,1fr); } }
-  @media (max-width:420px){ .exercise-picker{ grid-template-columns:repeat(2,1fr); } }
+  .exercise-picker{ margin:14px 0; max-height:300px; overflow-y:auto; padding-right:2px; }
+  .ex-group{ margin-bottom:14px; } .ex-group:last-child{ margin-bottom:0; }
+  .ex-group-label{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin:0 0 8px; }
+  .ex-group-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+  @media (max-width:640px){ .ex-group-grid{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:420px){ .ex-group-grid{ grid-template-columns:repeat(2,1fr); } }
   .ex-card{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 8px; border-radius:14px; border:2px solid transparent; background:var(--panel-2); cursor:pointer; font-weight:700; font-size:11.5px; color:var(--muted); text-align:center; }
   .ex-card .ex-icon{ font-size:22px; }
   .ex-card.active{ background:rgba(0,113,227,.1); border-color:var(--ex-color); color:var(--ex-color); }
@@ -160,6 +163,7 @@
 
   /* Progress */
   .chart{ display:flex; align-items:flex-end; gap:8px; height:140px; padding-top:10px; }
+  .chart.tall{ height:170px; }
   .chart .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
   .chart .bar{ width:100%; border-radius:6px 6px 2px 2px; background:var(--blue); min-height:3px; transition: height .4s ease; }
   .chart .bar-label{ font-size:10px; color:var(--muted); }
@@ -187,6 +191,12 @@
   .angle-row:last-of-type{ border-bottom:none; }
   .angle-row span:last-child{ font-weight:700; font-variant-numeric:tabular-nums; }
 
+  .rom-panel{ margin-top:6px; padding-top:10px; border-top:1px solid var(--line); }
+  .rom-head{ display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:7px; font-weight:600; }
+  .rom-track{ position:relative; height:8px; border-radius:999px; background:var(--panel-2); }
+  .rom-target-zone{ position:absolute; top:0; bottom:0; background:rgba(52,199,89,.4); border-radius:999px; }
+  .rom-marker{ position:absolute; top:-3px; width:14px; height:14px; border-radius:50%; background:var(--blue); border:2px solid var(--panel); box-shadow:var(--shadow); transform:translateX(-50%); transition:left .1s linear; }
+
   /* Rating */
   .rating-card{ text-align:center; }
   .rpe-row{ display:flex; justify-content:center; gap:8px; margin:16px 0 6px; flex-wrap:wrap; }
@@ -194,8 +204,238 @@
   .rpe-btn.selected{ border-color:var(--blue); background:rgba(0,113,227,.12); }
   .rpe-caption{ font-size:11.5px; color:var(--muted); margin-top:6px; }
 
+  /* Form Score */
+  .form-score-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .form-score-head .ex-name{ font-size:14px; font-weight:700; color:var(--muted); }
+  .form-score-big{ font-size:30px; font-weight:800; letter-spacing:-0.02em; }
+  .form-score-big span{ font-size:15px; font-weight:600; color:var(--muted); }
+  .form-score-big.good{ color:var(--green); } .form-score-big.warn{ color:var(--orange); } .form-score-big.bad{ color:var(--red); }
+  .fs-comp-row{ display:flex; align-items:center; gap:10px; padding:7px 0; }
+  .fs-comp-row .fs-comp-label{ font-size:12.5px; font-weight:600; width:118px; flex-shrink:0; }
+  .fs-comp-bar{ flex:1; height:7px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
+  .fs-comp-bar > div{ height:100%; border-radius:999px; transition: width .3s ease; }
+  .fs-comp-val{ font-size:12px; font-weight:700; width:34px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; }
+
+  /* Rep-by-rep */
+  .rep-log-list{ display:flex; flex-direction:column-reverse; gap:6px; max-height:220px; overflow-y:auto; }
+  .rep-log-row{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:var(--panel-2); font-size:12.5px; }
+  .rep-log-row .rep-log-icon{ font-size:14px; flex-shrink:0; }
+  .rep-log-row .rep-log-num{ font-weight:700; flex-shrink:0; width:46px; }
+  .rep-log-row .rep-log-issue{ color:var(--muted); flex:1; }
+  .rep-log-row.warn{ background:rgba(255,149,0,.1); } .rep-log-row.bad{ background:rgba(255,59,48,.1); }
+  .rep-log-row .rep-log-score{ font-weight:700; font-variant-numeric:tabular-nums; flex-shrink:0; }
+
+  /* Post-workout report */
+  .report-stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px; }
+  .report-stat{ background:var(--panel-2); border-radius:14px; padding:14px; text-align:center; }
+  .report-stat .rs-val{ font-size:22px; font-weight:800; }
+  .report-stat .rs-label{ font-size:11px; color:var(--muted); margin-top:2px; }
+  .report-mistake{ display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:12px; background:rgba(255,59,48,.1); color:var(--red); font-weight:700; font-size:13px; margin-bottom:10px; }
+  .report-mistake.none{ background:rgba(52,199,89,.12); color:var(--green); }
+  .report-suggestion{ font-size:12.5px; color:var(--muted); line-height:1.5; }
+
+  .heatmap-row{ display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); }
+  .heatmap-row:last-child{ border-bottom:none; }
+  .heatmap-dot{ font-size:13px; flex-shrink:0; }
+  .heatmap-label{ flex:1; font-size:13px; font-weight:600; }
+  .heatmap-val{ font-size:12.5px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .chart .bar-label.pct{ font-weight:700; }
+
+  /* AI Fitness Coach Chatbot */
+  .chat-fab{
+    position:fixed; right:20px; bottom:20px; width:58px; height:58px; border-radius:50%;
+    background:linear-gradient(135deg,#0071E3,#00C7BE); border:none; box-shadow:0 4px 18px rgba(0,113,227,.45), var(--shadow);
+    cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:25px; z-index:60;
+    transition: transform .2s cubic-bezier(.34,1.56,.64,1), opacity .2s ease;
+  }
+  .chat-fab:hover{ transform:scale(1.06); }
+  .chat-fab:active{ transform:scale(.94); }
+  .chat-fab.hidden{ transform:scale(0); opacity:0; pointer-events:none; }
+
+  .chat-window{
+    position:fixed; right:20px; bottom:20px; width:384px; max-width:calc(100vw - 32px); height:min(640px, calc(100vh - 40px));
+    background:var(--panel); border-radius:22px; box-shadow:0 12px 48px rgba(0,0,0,.28), var(--shadow);
+    display:flex; flex-direction:column; overflow:hidden; z-index:61;
+    transform-origin:bottom right; transform:scale(.85) translateY(18px); opacity:0; pointer-events:none;
+    transition: transform .25s cubic-bezier(.34,1.15,.4,1), opacity .2s ease;
+  }
+  .chat-window.open{ transform:scale(1) translateY(0); opacity:1; pointer-events:auto; }
+
+  .chat-header{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:linear-gradient(135deg,#0071E3,#00C7BE); color:#fff; flex-shrink:0; }
+  .chat-header-info{ display:flex; align-items:center; gap:10px; }
+  .chat-avatar{ width:36px; height:36px; border-radius:11px; background:rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .chat-title{ font-size:14px; font-weight:800; letter-spacing:-0.01em; }
+  .chat-subtitle{ font-size:11px; opacity:.85; }
+  .chat-header-actions{ display:flex; gap:6px; flex-shrink:0; }
+  .chat-header-actions .icon-btn{ width:30px; height:30px; background:rgba(255,255,255,.2); color:#fff; font-size:13px; }
+
+  .chat-insight{ margin:10px 12px 0; padding:11px 13px; border-radius:14px; background:linear-gradient(135deg, rgba(0,113,227,.1), rgba(0,199,190,.1)); border:1px solid rgba(0,113,227,.18); font-size:12px; line-height:1.5; color:var(--text); flex-shrink:0; }
+  .chat-insight b{ display:block; margin-bottom:3px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--blue); }
+
+  .chat-messages{ flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:10px; }
+  .chat-msg{ max-width:84%; padding:10px 13px; border-radius:16px; font-size:13px; line-height:1.5; white-space:pre-wrap; word-wrap:break-word; }
+  .chat-msg.user{ align-self:flex-end; background:var(--blue); color:#fff; border-bottom-right-radius:4px; }
+  .chat-msg.ai{ align-self:flex-start; background:var(--panel-2); color:var(--text); border-bottom-left-radius:4px; }
+
+  .chat-typing{ align-self:flex-start; background:var(--panel-2); padding:12px 16px; border-radius:16px; border-bottom-left-radius:4px; display:flex; gap:4px; }
+  .chat-typing span{ width:6px; height:6px; border-radius:50%; background:var(--muted); animation:chatTypingBounce 1.2s infinite ease-in-out; }
+  .chat-typing span:nth-child(2){ animation-delay:.15s; } .chat-typing span:nth-child(3){ animation-delay:.3s; }
+  @keyframes chatTypingBounce{ 0%,60%,100%{ transform:translateY(0); opacity:.5; } 30%{ transform:translateY(-4px); opacity:1; } }
+
+  .chat-suggestions{ display:flex; gap:6px; flex-wrap:wrap; padding:0 12px 10px; flex-shrink:0; }
+  .chat-chip{ font-size:11.5px; font-weight:700; padding:7px 11px; border-radius:999px; background:var(--panel-2); color:var(--blue); border:none; cursor:pointer; white-space:nowrap; font-family:inherit; }
+  .chat-chip:active{ transform:scale(.96); }
+
+  .chat-input-row{ display:flex; align-items:center; gap:8px; padding:10px 12px; border-top:1px solid var(--line); flex-shrink:0; }
+  .chat-input-row input{ flex:1; padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:var(--panel-2); color:var(--text); font-family:inherit; font-size:13px; }
+  .chat-send-btn{ width:38px; height:38px; border-radius:50%; border:none; background:var(--blue); color:#fff; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:inherit; }
+  .chat-send-btn:disabled{ opacity:.4; }
+
+  @media (max-width:640px){
+    .chat-window{ right:0; bottom:0; left:0; top:0; width:100%; max-width:100%; height:100%; border-radius:0; }
+    .chat-fab{ right:16px; bottom:16px; }
+  }
+
+  /* Fitness Data / metrics / modal */
+  .fitness-summary-row{ display:flex; align-items:center; gap:12px; }
+  .fitness-summary-avatar{ width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#0071E3,#00C7BE); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; color:#fff; }
+  .fitness-summary-lines div{ font-size:13px; font-weight:600; line-height:1.5; }
+  .fitness-summary-lines .fs-goal{ color:var(--blue); }
+
+  .metrics-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(88px,1fr)); gap:10px; }
+  .metric-mini{ background:var(--panel-2); border-radius:14px; padding:14px 10px; text-align:center; animation:cardPop .35s cubic-bezier(.34,1.4,.64,1) backwards; }
+  .metric-mini .mm-val{ font-size:17px; font-weight:800; letter-spacing:-0.01em; }
+  .metric-mini .mm-label{ font-size:10px; color:var(--muted); margin-top:3px; font-weight:600; }
+  @keyframes cardPop{ from{ opacity:0; transform:scale(.9) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+
+  .modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:70; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal-card{ background:var(--panel); border-radius:20px; width:100%; max-width:440px; max-height:88vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.35); transform:scale(.92) translateY(10px); transition:transform .2s cubic-bezier(.34,1.15,.4,1); }
+  .modal-overlay.open .modal-card{ transform:scale(1) translateY(0); }
+  .modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+  .modal-head h2{ font-size:16px; font-weight:800; margin:0; }
+  .modal-body{ padding:14px 20px 4px; }
+  .modal-actions{ display:flex; gap:10px; padding:16px 20px 20px; }
+  .modal-actions .btn{ flex:1; }
+
+  /* Fitness Score */
+  .fscore-wrap{ display:flex; align-items:center; gap:18px; margin-bottom:16px; }
+  .fscore-ring{ flex-shrink:0; }
+  .fscore-num{ font-size:32px; font-weight:800; letter-spacing:-0.02em; }
+  .fscore-num span{ font-size:14px; font-weight:600; color:var(--muted); }
+  .fscore-label{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .fscore-bars{ display:flex; flex-direction:column; gap:11px; }
+  .fscore-bar-row{ font-size:12.5px; }
+  .fscore-bar-head{ display:flex; justify-content:space-between; margin-bottom:5px; font-weight:600; }
+  .fscore-bar-head span:last-child{ color:var(--muted); font-weight:700; }
+  .fscore-bar-track{ height:7px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
+  .fscore-bar-fill{ height:100%; border-radius:999px; width:0%; transition:width .8s cubic-bezier(.22,.9,.3,1); }
+
+  #snapshotCard, #fitnessScoreCard, #aiInsightCard, #fitnessMetricsCard{ animation:cardPop .4s cubic-bezier(.34,1.3,.64,1) backwards; }
+  .fscore-num{ animation:cardPop .5s .1s cubic-bezier(.34,1.3,.64,1) backwards; }
+
+  .snapshot-list{ display:flex; flex-direction:column; gap:10px; }
+  .snapshot-row{ display:flex; align-items:center; gap:10px; font-size:13.5px; font-weight:700; }
+  .snapshot-row .sr-emoji{ width:20px; text-align:center; flex-shrink:0; }
+  .snapshot-row .sr-val{ color:var(--muted); font-weight:500; }
+
   .toast{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(10px); background:var(--text); color:var(--bg); padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:all .25s ease; z-index:50; max-width:88%; text-align:center; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* Exercise Guide */
+  .guide-search-card{ position:relative; }
+  .search-box{ display:flex; align-items:center; gap:10px; background:var(--panel-2); border-radius:14px; padding:12px 16px; }
+  .search-box .search-icon{ font-size:15px; opacity:.6; }
+  .search-box input{ flex:1; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--text); outline:none; }
+  .search-dropdown{ position:absolute; left:20px; right:20px; top:calc(100% - 8px); background:var(--panel); border-radius:14px; box-shadow:0 10px 32px rgba(0,0,0,.18); border:1px solid var(--line); z-index:20; max-height:320px; overflow-y:auto; padding:6px; }
+  .search-result-row{ display:flex; align-items:center; gap:12px; padding:10px 10px; border-radius:10px; cursor:pointer; }
+  .search-result-row:hover, .search-result-row.active{ background:var(--panel-2); }
+  .search-result-icon{ width:34px; height:34px; border-radius:10px; background:var(--panel-2); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .search-result-name{ font-size:13.5px; font-weight:700; }
+  .search-result-meta{ font-size:11px; color:var(--muted); }
+  .search-empty{ padding:16px; text-align:center; font-size:12.5px; color:var(--muted); }
+  .search-empty-chips{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
+
+  .guide-browse-group{ margin-bottom:18px; }
+  .guide-browse-label{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:9px; }
+  .guide-browse-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  @media (max-width:640px){ .guide-browse-grid{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:420px){ .guide-browse-grid{ grid-template-columns:repeat(2,1fr); } }
+  .guide-browse-card{ display:flex; flex-direction:column; align-items:center; gap:7px; padding:16px 8px; border-radius:16px; background:var(--panel); box-shadow:var(--shadow); cursor:pointer; text-align:center; }
+  .guide-browse-card .gb-icon{ font-size:24px; }
+  .guide-browse-card .gb-name{ font-size:11.5px; font-weight:700; }
+
+  .guide-back-btn{ display:inline-flex; align-items:center; gap:6px; background:none; border:none; color:var(--blue); font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; padding:0 0 14px; }
+
+  .guide-hero{ border-radius:20px; padding:28px 24px; color:#fff; margin-bottom:16px; position:relative; overflow:hidden; }
+  .guide-hero .gh-icon{ font-size:44px; }
+  .guide-hero .gh-name{ font-size:24px; font-weight:800; letter-spacing:-0.02em; margin-top:6px; }
+  .guide-hero .gh-desc{ font-size:13px; opacity:.92; margin-top:6px; max-width:520px; line-height:1.5; }
+  .guide-hero .gh-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+  .guide-hero .gh-tag{ font-size:11px; font-weight:700; padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.2); }
+
+  .guide-media{ border-radius:18px; background:var(--panel-2); padding:30px 20px; text-align:center; margin-bottom:18px; border:1.5px dashed var(--line); }
+  .guide-media .gm-icon{ font-size:56px; }
+  .guide-media .gm-caption{ font-size:12px; color:var(--muted); margin-top:10px; max-width:420px; margin-left:auto; margin-right:auto; line-height:1.5; }
+  .guide-media .gm-flow{ display:flex; align-items:center; justify-content:center; gap:10px; margin-top:16px; flex-wrap:wrap; font-size:11.5px; font-weight:700; color:var(--text); }
+  .guide-media .gm-flow span.arrow{ color:var(--muted); font-weight:400; }
+  .guide-media .gm-flow b{ background:var(--panel); padding:6px 12px; border-radius:999px; box-shadow:var(--shadow); }
+
+  .guide-steps{ list-style:none; padding:0; margin:0; counter-reset:step; }
+  .guide-steps li{ display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; line-height:1.5; }
+  .guide-steps li:last-child{ border-bottom:none; }
+  .guide-steps li::before{ counter-increment:step; content:counter(step); flex-shrink:0; width:24px; height:24px; border-radius:50%; background:var(--blue); color:#fff; font-size:11.5px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+
+  .guide-checklist{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px; }
+  .guide-checklist li{ display:flex; align-items:flex-start; gap:9px; font-size:13.5px; font-weight:600; }
+  .guide-checklist li::before{ content:'✓'; color:var(--green); font-weight:800; flex-shrink:0; }
+
+  .guide-mistake{ padding:12px 14px; border-radius:12px; background:rgba(255,59,48,.08); margin-bottom:9px; }
+  .guide-mistake:last-child{ margin-bottom:0; }
+  .guide-mistake .gm-title{ display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; color:var(--red); }
+  .guide-mistake .gm-fix{ font-size:12.5px; color:var(--muted); margin:4px 0 0 24px; line-height:1.4; }
+
+  .muscle-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:520px){ .muscle-grid{ grid-template-columns:1fr; } }
+  .muscle-col-label{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:9px; }
+  .muscle-chip{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:7px 12px; border-radius:999px; background:var(--panel-2); margin:0 6px 6px 0; }
+  .muscle-chip.primary{ background:rgba(0,113,227,.12); color:var(--blue); }
+
+  .details-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  @media (max-width:640px){ .details-grid{ grid-template-columns:1fr 1fr; } }
+  .detail-tile{ background:var(--panel-2); border-radius:14px; padding:14px 10px; text-align:center; }
+  .detail-tile .dt-val{ font-size:13px; font-weight:800; }
+  .detail-tile .dt-label{ font-size:10px; color:var(--muted); margin-top:3px; font-weight:600; }
+
+  .guide-history-row{ display:flex; align-items:center; justify-content:space-around; text-align:center; margin-bottom:14px; }
+  .guide-history-row .ghr-item .ghr-val{ font-size:22px; font-weight:800; }
+  .guide-history-row .ghr-item.up .ghr-val{ color:var(--green); }
+  .guide-history-row .ghr-item.down .ghr-val{ color:var(--red); }
+  .guide-history-row .ghr-item .ghr-label{ font-size:11px; color:var(--muted); margin-top:2px; }
+
+  .guide-cta-btn{ width:100%; font-size:15px; font-weight:800; padding:16px; border-radius:16px; border:none; background:linear-gradient(135deg,#0071E3,#00C7BE); color:#fff; cursor:pointer; box-shadow:0 6px 20px rgba(0,113,227,.35); transition:transform .15s ease; }
+  .guide-cta-btn:active{ transform:scale(.98); }
+  .guide-cta-btn:disabled{ background:var(--panel-2); color:var(--muted); box-shadow:none; cursor:not-allowed; }
+
+  /* Biomechanics engine UI */
+  .form-score-big.unknown{ color:var(--muted); }
+  .fs-confidence{ font-size:11.5px; color:var(--muted); font-weight:600; margin-bottom:10px; }
+  .fs-explain{ font-size:11.5px; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid var(--line); line-height:1.5; }
+  .rep-log-row.unknown{ background:var(--panel-2); opacity:.75; }
+
+  .report-fatigue{ background:rgba(255,149,0,.1); border-radius:14px; padding:13px 15px; margin-bottom:14px; }
+  .report-fatigue .rf-title{ font-size:12.5px; font-weight:800; color:var(--orange); letter-spacing:.02em; }
+  .report-fatigue .rf-msg{ font-size:12.5px; margin-top:5px; line-height:1.5; }
+  .report-fatigue .rf-suggestion{ font-size:12px; color:var(--muted); margin-top:6px; }
+
+  .readiness-badge{ position:absolute; top:14px; left:14px; display:flex; align-items:center; gap:7px; padding:7px 12px; border-radius:999px; background:rgba(0,0,0,.55); backdrop-filter:blur(8px); color:#fff; font-size:11.5px; font-weight:700; max-width:calc(100% - 28px); z-index:5; }
+  .readiness-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .readiness-dot.green{ background:var(--green); box-shadow:0 0 0 3px rgba(52,199,89,.3); }
+  .readiness-dot.yellow{ background:var(--orange); box-shadow:0 0 0 3px rgba(255,149,0,.3); }
+  .readiness-dot.red{ background:var(--red); box-shadow:0 0 0 3px rgba(255,59,48,.3); }
+
+  .debug-panel{ margin-top:14px; padding:12px 14px; border-radius:14px; background:#0d1117; color:#7ee787; font-family:'SF Mono',Menlo,Consolas,monospace; font-size:11px; line-height:1.7; white-space:pre-wrap; display:none; }
+  .debug-panel.on{ display:block; }
 </style>
 </head>
 <body>
@@ -216,6 +456,7 @@
 
   <nav class="tabs" id="tabs">
     <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="guide">Exercise Guide</button>
     <button data-view="coach">AI Coach</button>
     <button data-view="checkin">Check-in</button>
     <button data-view="progress">Progress</button>
@@ -231,6 +472,31 @@
         <div class="streak"><span id="streakNum">0</span><span>day streak 🔥</span></div>
         <div class="week-strip" id="weekStrip"></div>
         <div class="tip" id="tipText">Consistency beats intensity — a short session today keeps your streak alive.</div>
+      </div>
+
+      <div class="card guide-search-card">
+        <h2 class="section-title" style="margin-top:0;">What exercise are you doing today?</h2>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="dashSearchInput" placeholder="Search exercise… (e.g. squat, chest, deadlift)" autocomplete="off">
+        </div>
+        <div class="search-dropdown" id="dashSearchDropdown" style="display:none;"></div>
+      </div>
+
+      <div class="card" id="snapshotCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Your Fitness Snapshot</h2>
+        <div class="snapshot-list" id="snapshotList"></div>
+      </div>
+
+      <div class="card" id="fitnessScoreCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Fitness Score</h2>
+        <div id="fitnessScoreBody"></div>
+      </div>
+
+      <div class="card" id="aiInsightCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">AI Fitness Insight 💡</h2>
+        <p id="aiInsightText" style="font-size:13px; line-height:1.6; margin:0 0 8px;"></p>
+        <p id="aiInsightSystemText" style="font-size:13px; line-height:1.6; margin:0; padding-top:8px; border-top:1px solid var(--line); display:none;"></p>
       </div>
 
       <div class="grid3">
@@ -297,12 +563,32 @@
       </div>
     </section>
 
+    <!-- ================= EXERCISE GUIDE ================= -->
+    <section class="view" id="view-guide">
+      <div class="card guide-search-card">
+        <h2 class="section-title" style="margin-top:0;">What exercise are you doing today?</h2>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="guideSearchInput" placeholder="Search exercise… (e.g. squat, chest, deadlift)" autocomplete="off">
+        </div>
+        <div class="search-dropdown" id="guideSearchDropdown" style="display:none;"></div>
+      </div>
+
+      <div id="guideBrowseSection">
+        <h2 class="section-title">Browse by Category</h2>
+        <div id="guideBrowseGroups"></div>
+      </div>
+
+      <div id="guideDetailSection" style="display:none;"></div>
+    </section>
+
     <!-- ================= COACH ================= -->
     <section class="view" id="view-coach">
       <div class="card" id="coachMainCard">
         <div class="stage" id="stage">
           <video id="video" autoplay playsinline muted></video>
           <canvas id="canvas"></canvas>
+          <div class="readiness-badge" id="readinessBadge" style="display:none;"><span class="readiness-dot" id="readinessDot"></span><span id="readinessMsg">Checking…</span></div>
           <div class="stage-overlay">
             <div>
               <div class="rep-label" id="metricLabel">Reps</div>
@@ -313,6 +599,11 @@
         </div>
 
         <div class="exercise-picker" id="exercisePicker"></div>
+
+        <div class="toggle-row" style="padding:10px 0;">
+          <div><div class="label" style="font-size:12.5px;">Auto-Detect Exercise <span style="font-weight:400; color:var(--muted);">(Beta)</span></div><div class="desc">Recognizes Squat, Push-up, Bicep Curl, or Plank automatically, then starts tracking</div></div>
+          <div class="switch" id="toggleAutoDetect"></div>
+        </div>
 
         <div class="goal-row">
           <span style="font-size:13px; font-weight:600;">Rep goal:</span>
@@ -326,6 +617,33 @@
           <button class="btn ghost" id="resetBtn">Reset</button>
           <button class="btn ghost" id="finishBtn">Finish &amp; Save Session</button>
         </div>
+      </div>
+
+      <div class="card" id="reportCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Post-Workout Form Report</h2>
+        <div class="report-stats">
+          <div class="report-stat"><div class="rs-val" id="reportTotal">0</div><div class="rs-label">Reps Analyzed</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportAvgScore">0</div><div class="rs-label">Average Form Score</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportBest" style="color:var(--green);">—</div><div class="rs-label">Best Rep</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportLowest" style="color:var(--red);">—</div><div class="rs-label">Lowest Rep</div></div>
+        </div>
+        <div class="report-stats">
+          <div class="report-stat"><div class="rs-val" id="reportCorrect" style="color:var(--green);">0</div><div class="rs-label">Correct Reps</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportIncorrect" style="color:var(--red);">0</div><div class="rs-label">Incorrect Reps</div></div>
+          <div class="report-stat" id="reportConfidenceTile"><div class="rs-val" id="reportConfidence">—</div><div class="rs-label">Form Confidence</div></div>
+          <div class="report-stat" id="reportUnclearTile" style="display:none;"><div class="rs-val" id="reportUnclear">0</div><div class="rs-label">Unclear Reps</div></div>
+        </div>
+        <div id="reportFatigueBanner" class="report-fatigue" style="display:none;">
+          <div class="rf-title">⚠️ FORM FATIGUE DETECTED</div>
+          <div class="rf-msg" id="reportFatigueMsg"></div>
+          <div class="rf-suggestion">Suggestion: consider increasing rest time or reducing resistance.</div>
+        </div>
+        <h2 class="section-title" style="margin-top:0;">Most Common Mistake</h2>
+        <div class="report-mistake" id="reportMistake">—</div>
+        <div id="reportRomRow" class="angle-row" style="display:none;"><span>Average Depth (ROM)</span><span id="reportRomVal">—</span></div>
+        <div id="reportTempoRow" class="angle-row" style="display:none;"><span>Average Tempo</span><span id="reportTempoVal">—</span></div>
+        <h2 class="section-title">Improvement Suggestion</h2>
+        <p class="report-suggestion" id="reportSuggestion">—</p>
       </div>
 
       <div class="card" id="ratingCard" style="display:none;">
@@ -347,12 +665,29 @@
         </div>
       </div>
 
+      <div class="card" id="formScoreCard" style="display:none;">
+        <div class="form-score-head">
+          <span class="ex-name" id="formScoreExercise">—</span>
+          <div class="form-score-big" id="formScoreBig">— <span>/ 100</span></div>
+        </div>
+        <div id="formScoreComponents"></div>
+      </div>
+
+      <div class="card" id="repLogCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Rep-by-Rep Analysis</h2>
+        <div class="rep-log-list" id="repLogList"></div>
+      </div>
+
       <div class="card">
         <h2 class="section-title" style="margin-top:0;">Live Tracking</h2>
         <div class="status-line"><span class="dot" id="statusDot"></span><span id="statusText">Model not loaded</span></div>
         <div class="angle-row"><span id="primaryAngleLabel">Primary joint angle</span><span id="primaryAngle">—</span></div>
         <div class="angle-row"><span>Body alignment</span><span id="formAngle">—</span></div>
         <div class="angle-row"><span id="phaseRowLabel">Rep phase</span><span id="phaseLabel">—</span></div>
+        <div class="rom-panel" id="romPanel" style="display:none;">
+          <div class="rom-head"><span>Your Form vs Ideal (Range of Motion)</span><span id="romReadout">—</span></div>
+          <div class="rom-track"><div class="rom-target-zone" id="romTargetZone"></div><div class="rom-marker" id="romMarker"></div></div>
+        </div>
         <div class="tips-box">
           <h2 class="section-title" id="tipsTitle" style="margin-top:14px;">Squat form checklist</h2>
           <ul id="tipsList" class="tips-list"></ul>
@@ -361,8 +696,9 @@
           <h2 class="section-title">Live Form Corrections</h2>
           <div id="correctionsList"></div>
         </div>
+        <pre class="debug-panel" id="debugPanel"></pre>
       </div>
-      <p style="font-size:12px; color:var(--muted); text-align:center;">Runs Google's MediaPipe Pose Landmarker on-device — your video never leaves this browser.</p>
+      <p style="font-size:12px; color:var(--muted); text-align:center;">Runs Google's MediaPipe Pose Landmarker on-device — your video never leaves this browser. Form scoring is an on-device heuristic estimate, not a medical or clinical assessment.</p>
     </section>
 
     <!-- ================= CHECK-IN ================= -->
@@ -437,6 +773,15 @@
         <h2 class="section-title" style="margin-top:0;">Reps — Last 7 Days</h2>
         <div class="chart" id="chart7"></div>
       </div>
+      <div class="card" id="formHistoryCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Personal Form History</h2>
+        <div class="chart tall" id="formHistoryChart"></div>
+      </div>
+      <div class="card" id="heatmapCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Mistake Heatmap</h2>
+        <p style="font-size:12px; color:var(--muted); margin-top:0;">Average form-component scores across your last 10 sessions.</p>
+        <div id="heatmapList"></div>
+      </div>
       <div class="card">
         <h2 class="section-title" style="margin-top:0;">Recent Sessions</h2>
         <div id="sessionsList"><div class="empty-state">No sessions logged yet — finish a workout in AI Coach to see it here.</div></div>
@@ -482,6 +827,18 @@
         </div>
       </div>
       <div class="card">
+        <div class="section-head" style="margin:0 0 8px;">
+          <h2 class="section-title" style="margin:0;">My Fitness Data</h2>
+          <button class="link-btn" id="editFitnessDataBtn">Edit</button>
+        </div>
+        <div id="fitnessDataSummary"></div>
+      </div>
+      <div class="card" id="fitnessMetricsCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Estimated Daily Targets</h2>
+        <p style="font-size:11.5px; color:var(--muted); margin:0 0 12px;">Estimates based on standard formulas (Mifflin-St Jeor) — not medical advice.</p>
+        <div class="metrics-grid" id="fitnessMetricsGrid"></div>
+      </div>
+      <div class="card">
         <h2 class="section-title" style="margin-top:0;">Coaching</h2>
         <div class="toggle-row">
           <div><div class="label">Voice coaching</div><div class="desc">Speaks form feedback and rep milestones out loud</div></div>
@@ -494,6 +851,10 @@
         <div class="toggle-row">
           <div><div class="label">Daily reminder</div><div class="desc">Show a nudge on Dashboard if you haven't trained today</div></div>
           <div class="switch on" id="toggleReminder"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="label">Debug / Calibration Mode</div><div class="desc">Shows live landmarks, joint angles, confidence, and scoring math in AI Coach — for tuning, not everyday use</div></div>
+          <div class="switch" id="toggleDebug"></div>
         </div>
       </div>
       <div class="card">
@@ -515,6 +876,71 @@
     </section>
 
   </main>
+</div>
+
+<button class="chat-fab" id="chatFab" aria-label="Open AI Fitness Coach chat" title="AI Fitness Coach">💬</button>
+
+<div class="chat-window" id="chatWindow" aria-hidden="true">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar">🤖</div>
+      <div><div class="chat-title">AI Fitness Coach</div><div class="chat-subtitle">Form tips, workouts &amp; feedback</div></div>
+    </div>
+    <div class="chat-header-actions">
+      <button class="icon-btn" id="chatClearBtn" title="Clear chat">🗑️</button>
+      <button class="icon-btn" id="chatCloseBtn" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="chat-insight" id="chatInsight" style="display:none;"></div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-suggestions" id="chatSuggestions"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask about form, workouts, or your scores…" maxlength="300" autocomplete="off">
+    <button class="chat-send-btn" id="chatSendBtn" aria-label="Send message">➤</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="fitnessModalOverlay">
+  <div class="modal-card">
+    <div class="modal-head"><h2>Edit My Fitness Data</h2><button class="icon-btn" id="fitnessModalCloseBtn">✕</button></div>
+    <div class="modal-body">
+      <div class="field-grid">
+        <div class="field-row"><label for="fdAge">Age</label><input type="number" id="fdAge" min="10" max="100" placeholder="e.g. 21"></div>
+        <div class="field-row">
+          <label for="fdGender">Gender</label>
+          <select id="fdGender"><option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select>
+        </div>
+        <div class="field-row"><label for="fdHeight">Height (cm)</label><input type="number" id="fdHeight" min="100" max="250" placeholder="e.g. 175"></div>
+        <div class="field-row"><label for="fdWeight">Weight (kg)</label><input type="number" id="fdWeight" min="30" max="300" step="0.1" placeholder="e.g. 72"></div>
+        <div class="field-row">
+          <label for="fdActivity">Activity Level</label>
+          <select id="fdActivity">
+            <option value="">Select…</option>
+            <option value="sedentary">Sedentary</option>
+            <option value="light">Lightly Active</option>
+            <option value="moderate">Moderately Active</option>
+            <option value="active">Active</option>
+            <option value="very_active">Very Active</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label for="fdGoal">Fitness Goal</label>
+          <select id="fdGoal">
+            <option value="">Select…</option>
+            <option value="muscle">Build Muscle</option>
+            <option value="lose_weight">Lose Weight</option>
+            <option value="maintain">Maintain Weight</option>
+            <option value="endurance">Improve Endurance</option>
+          </select>
+        </div>
+        <div class="field-row"><label for="fdTargetWeight">Target Weight (kg, optional)</label><input type="number" id="fdTargetWeight" min="30" max="300" step="0.1" placeholder="optional"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="fitnessModalCancelBtn">Cancel</button>
+      <button class="btn primary" id="fitnessModalSaveBtn">Save</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -539,6 +965,22 @@ const DEFAULT_SETTINGS = {
   experience: 'beginner', units: 'metric', weeklyGoal: 3,
   reminderTime: '18:00', reminderOn: true,
   goal: 'strength', equipment: 'none', duration: '30', focus: 'fullbody',
+  age: null, gender: '', heightCm: null, weightKg: null,
+  activityLevel: '', profileGoal: '', targetWeightKg: null,
+  debugMode: false,
+};
+const ACTIVITY_LEVELS = {
+  sedentary: { label:'Sedentary', mult:1.2 },
+  light: { label:'Lightly Active', mult:1.375 },
+  moderate: { label:'Moderately Active', mult:1.55 },
+  active: { label:'Active', mult:1.725 },
+  very_active: { label:'Very Active', mult:1.9 },
+};
+const PROFILE_GOALS = {
+  muscle: { label:'Build Muscle', emoji:'💪', calorieAdj:300, proteinPerKg:1.8 },
+  lose_weight: { label:'Lose Weight', emoji:'📉', calorieAdj:-500, proteinPerKg:1.8 },
+  maintain: { label:'Maintain Weight', emoji:'⚖️', calorieAdj:0, proteinPerKg:1.4 },
+  endurance: { label:'Improve Endurance', emoji:'🏃', calorieAdj:100, proteinPerKg:1.4 },
 };
 let appData = structuredClone(DEFAULT_DATA);
 let settings = structuredClone(DEFAULT_SETTINGS);
@@ -573,6 +1015,7 @@ function applySettingsToUI(){
   document.getElementById('toggleVoice').classList.toggle('on', settings.voice);
   document.getElementById('toggleSound').classList.toggle('on', settings.sound);
   document.getElementById('toggleReminder').classList.toggle('on', settings.reminderOn);
+  document.getElementById('toggleDebug').classList.toggle('on', settings.debugMode);
   document.getElementById('repGoalInput').value = settings.repGoal;
   document.getElementById('expSelect').value = settings.experience;
   document.getElementById('unitsSelect').value = settings.units;
@@ -582,6 +1025,7 @@ function applySettingsToUI(){
   document.getElementById('equipmentSelect').value = settings.equipment;
   document.getElementById('durationSelect').value = settings.duration;
   document.getElementById('focusSelect').value = settings.focus;
+  renderFitnessDataSummary();
 }
 
 function bindSwitch(id, key){
@@ -595,6 +1039,7 @@ function bindSwitch(id, key){
 bindSwitch('toggleVoice', 'voice');
 bindSwitch('toggleSound', 'sound');
 bindSwitch('toggleReminder', 'reminderOn');
+bindSwitch('toggleDebug', 'debugMode');
 document.getElementById('toggleDark').onclick = () => { settings.theme = settings.theme === 'dark' ? 'light' : 'dark'; applyTheme(); saveSettings(); };
 
 document.getElementById('repGoalInput').onchange = (e) => { settings.repGoal = Math.max(1, parseInt(e.target.value)||15); saveSettings(); };
@@ -606,6 +1051,47 @@ document.getElementById('reminderTime').onchange = (e) => { settings.reminderTim
   const key = id.replace('Select','');
   document.getElementById(id).onchange = (e) => { settings[key] = e.target.value; saveSettings(); };
 });
+
+/* ---- My Fitness Data edit modal ---- */
+const fitnessModalOverlay = document.getElementById('fitnessModalOverlay');
+function openFitnessModal(){
+  document.getElementById('fdAge').value = settings.age || '';
+  document.getElementById('fdGender').value = settings.gender || '';
+  document.getElementById('fdHeight').value = settings.heightCm || '';
+  document.getElementById('fdWeight').value = settings.weightKg || '';
+  document.getElementById('fdActivity').value = settings.activityLevel || '';
+  document.getElementById('fdGoal').value = settings.profileGoal || '';
+  document.getElementById('fdTargetWeight').value = settings.targetWeightKg || '';
+  fitnessModalOverlay.style.display = 'flex';
+  requestAnimationFrame(() => fitnessModalOverlay.classList.add('open'));
+}
+function closeFitnessModal(){
+  fitnessModalOverlay.classList.remove('open');
+  setTimeout(() => { fitnessModalOverlay.style.display = 'none'; }, 200);
+}
+document.getElementById('editFitnessDataBtn').onclick = openFitnessModal;
+document.getElementById('fitnessModalCloseBtn').onclick = closeFitnessModal;
+document.getElementById('fitnessModalCancelBtn').onclick = closeFitnessModal;
+fitnessModalOverlay.addEventListener('click', (e) => { if (e.target === fitnessModalOverlay) closeFitnessModal(); });
+document.getElementById('fitnessModalSaveBtn').onclick = async () => {
+  const age = parseInt(document.getElementById('fdAge').value) || null;
+  const gender = document.getElementById('fdGender').value;
+  const heightCm = parseFloat(document.getElementById('fdHeight').value) || null;
+  const weightKg = parseFloat(document.getElementById('fdWeight').value) || null;
+  const activityLevel = document.getElementById('fdActivity').value;
+  const profileGoal = document.getElementById('fdGoal').value;
+  const targetWeightKg = parseFloat(document.getElementById('fdTargetWeight').value) || null;
+  if (!age || !gender || !heightCm || !weightKg || !activityLevel || !profileGoal){
+    alert('Please fill in age, gender, height, weight, activity level, and fitness goal.');
+    return;
+  }
+  Object.assign(settings, { age, gender, heightCm, weightKg, activityLevel, profileGoal, targetWeightKg });
+  await saveSettings();
+  renderFitnessDataSummary();
+  renderDashboard();
+  closeFitnessModal();
+  showToast('Fitness data saved');
+};
 
 document.getElementById('exportDataBtn').onclick = () => {
   const blob = new Blob([JSON.stringify({ appData, settings }, null, 2)], { type:'application/json' });
@@ -702,7 +1188,7 @@ function renderSessionsListHTML(sessions, limit){
   if (!recent.length) return '<div class="empty-state">No sessions logged yet — finish a workout in AI Coach to see it here.</div>';
   return recent.map(s => `
       <div class="session-row">
-        <div><b>${exerciseName(s.exercise)}</b><div class="meta">${s.date}${s.note ? ' · '+escapeHtml(s.note) : ''}</div></div>
+        <div><b>${exerciseName(s.exercise)}</b><div class="meta">${s.date}${s.note ? ' · '+escapeHtml(s.note) : ''}${s.formScore!=null ? ' · Form '+s.formScore+'/100' : ''}</div></div>
         <div style="text-align:right;">${s.reps ? s.reps + ' reps' : (s.holdSeconds ? s.holdSeconds + 's hold' : '')}${s.rpe ? '<div class="meta">'+RPE_EMOJI[s.rpe]+'</div>' : ''}</div>
       </div>`).join('');
 }
@@ -744,6 +1230,117 @@ function renderReminderTip(){
   return TIPS[new Date().getDate() % TIPS.length];
 }
 
+function renderFitnessDataSummary(){
+  const el = document.getElementById('fitnessDataSummary');
+  const s = settings;
+  if (!hasCompleteProfile(s)){
+    el.innerHTML = '<div class="empty-state">Add your fitness data to unlock personalized calorie, macro, and score insights.</div>';
+    document.getElementById('fitnessMetricsCard').style.display='none';
+    return;
+  }
+  const genderLabel = s.gender==='male' ? 'Male' : s.gender==='female' ? 'Female' : 'Other';
+  const goal = PROFILE_GOALS[s.profileGoal];
+  el.innerHTML = `
+    <div class="fitness-summary-row">
+      <div class="fitness-summary-avatar">${goal ? goal.emoji : '🧑'}</div>
+      <div class="fitness-summary-lines">
+        <div>${s.age} yrs · ${genderLabel}</div>
+        <div>${s.heightCm} cm · ${s.weightKg} kg${s.targetWeightKg ? ` · Target ${s.targetWeightKg} kg` : ''}</div>
+        <div>${ACTIVITY_LEVELS[s.activityLevel].label}</div>
+        <div class="fs-goal">🎯 Goal: ${goal ? goal.label : '—'}</div>
+      </div>
+    </div>`;
+  renderFitnessMetrics();
+}
+function renderFitnessMetrics(){
+  const metrics = computeFitnessMetrics(settings);
+  const card = document.getElementById('fitnessMetricsCard');
+  if (!metrics){ card.style.display='none'; return; }
+  card.style.display='';
+  const items = [
+    ['🔥', metrics.calorieTarget.toLocaleString()+' kcal', 'Daily Target'],
+    ['🥩', metrics.protein+' g', 'Protein'],
+    ['💧', metrics.water+' L', 'Water'],
+    ['📊', metrics.bmi, 'BMI'],
+    ['⚡', metrics.bmr.toLocaleString()+' kcal', 'BMR'],
+  ];
+  document.getElementById('fitnessMetricsGrid').innerHTML = items.map(([icon,val,label],i) =>
+    `<div class="metric-mini" style="animation-delay:${(i*.05).toFixed(2)}s"><div class="mm-val">${icon} ${val}</div><div class="mm-label">${label}</div></div>`
+  ).join('');
+}
+
+function renderSnapshot(){
+  const card = document.getElementById('snapshotCard');
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics && !appData.sessions.length){ card.style.display='none'; return; }
+  card.style.display='';
+  const rows = [];
+  const goal = PROFILE_GOALS[settings.profileGoal];
+  if (goal) rows.push(['🎯', `Goal: ${goal.label}`]);
+  if (metrics) rows.push(['🔥', `Daily Target: ${metrics.calorieTarget.toLocaleString()} kcal`]);
+  if (metrics) rows.push(['🥩', `Protein: ${metrics.protein} g`]);
+  const withScore = appData.sessions.filter(s=>s.formScore!=null);
+  if (withScore.length) rows.push(['📈', `Form Score: ${withScore[withScore.length-1].formScore}%`]);
+  const days = new Set(last7Days());
+  const doneThisWeek = new Set(appData.sessions.filter(s=>days.has(s.date)).map(s=>s.date)).size;
+  rows.push(['🏋️', `Workouts: ${doneThisWeek} this week`]);
+  document.getElementById('snapshotList').innerHTML = rows.map(([emoji,text]) => `<div class="snapshot-row"><span class="sr-emoji">${emoji}</span><span>${text}</span></div>`).join('');
+}
+
+function renderFitnessScore(){
+  const card = document.getElementById('fitnessScoreCard');
+  if (!appData.sessions.length && !settings.activityLevel){ card.style.display='none'; return; }
+  card.style.display='';
+  const { overall, scores } = computeFitnessScore();
+  const body = document.getElementById('fitnessScoreBody');
+  if (overall==null){
+    body.innerHTML = '<div class="empty-state">Not enough data yet — log a few workouts and set your activity level to unlock your Fitness Score.</div>';
+    return;
+  }
+  const circumference = 2*Math.PI*32;
+  const pct = overall/100;
+  const color = overall>=80 ? 'var(--green)' : overall>=60 ? 'var(--orange)' : 'var(--red)';
+  const LABELS = { form:'Form Quality', consistency:'Consistency', activity:'Activity', progress:'Progress' };
+  const order = ['form','consistency','activity','progress'];
+  body.innerHTML = `
+    <div class="fscore-wrap">
+      <svg class="fscore-ring" width="76" height="76" viewBox="0 0 76 76">
+        <circle cx="38" cy="38" r="32" fill="none" stroke="var(--panel-2)" stroke-width="8"/>
+        <circle cx="38" cy="38" r="32" fill="none" stroke="${color}" stroke-width="8" stroke-linecap="round"
+          stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${circumference.toFixed(1)}"
+          transform="rotate(-90 38 38)" id="fscoreRingCircle" style="transition:stroke-dashoffset 1s cubic-bezier(.22,.9,.3,1);"/>
+      </svg>
+      <div><div class="fscore-num">${overall}<span> / 100</span></div><div class="fscore-label">Overall Fitness Score</div></div>
+    </div>
+    <div class="fscore-bars">
+      ${order.filter(k=>scores[k]!=null).map(k => `
+        <div class="fscore-bar-row">
+          <div class="fscore-bar-head"><span>${LABELS[k]}</span><span>${scores[k]}</span></div>
+          <div class="fscore-bar-track"><div class="fscore-bar-fill" id="fbar-${k}" style="background:${scores[k]>=80?'var(--green)':scores[k]>=60?'var(--orange)':'var(--red)'}"></div></div>
+        </div>`).join('')}
+    </div>`;
+  requestAnimationFrame(()=>{
+    const circle = document.getElementById('fscoreRingCircle');
+    if (circle) circle.setAttribute('stroke-dashoffset', (circumference*(1-pct)).toFixed(1));
+    order.forEach(k => { const el=document.getElementById('fbar-'+k); if (el && scores[k]!=null) el.style.width = scores[k]+'%'; });
+  });
+}
+
+function renderAIInsightCard(){
+  const card = document.getElementById('aiInsightCard');
+  const profileText = generateProfileInsight();
+  const systemText = generateSystemInsight();
+  if (!profileText && !systemText){ card.style.display='none'; return; }
+  card.style.display='';
+  const textEl = document.getElementById('aiInsightText'), sysEl = document.getElementById('aiInsightSystemText');
+  if (profileText){ textEl.style.display=''; textEl.textContent = profileText; } else { textEl.style.display='none'; }
+  if (systemText){
+    sysEl.style.display=''; sysEl.textContent = systemText;
+    sysEl.style.borderTop = profileText ? '1px solid var(--line)' : 'none';
+    sysEl.style.paddingTop = profileText ? '8px' : '0';
+  } else sysEl.style.display='none';
+}
+
 function renderDashboard(){
   const streak = computeStreak(appData.sessions);
   document.getElementById('streakNum').textContent = streak;
@@ -758,6 +1355,9 @@ function renderDashboard(){
   renderGoalRing();
   document.getElementById('dashChart7').innerHTML = build7DayChartHTML(appData.sessions);
   document.getElementById('dashRecentList').innerHTML = renderSessionsListHTML(appData.sessions, 3);
+  renderSnapshot();
+  renderFitnessScore();
+  renderAIInsightCard();
 
   const nextBadge = nextLockedBadge();
   const nextBadgeSection = document.getElementById('nextBadgeSection');
@@ -794,28 +1394,170 @@ function checkBadges(){
   return newlyUnlocked;
 }
 
+/* ================= FITNESS PROFILE: BMR / TDEE / MACROS / SCORE ================= */
+function hasCompleteProfile(s){
+  return !!(s.age && s.heightCm && s.weightKg && s.gender && s.activityLevel && s.profileGoal);
+}
+function computeFitnessMetrics(s){
+  if (!hasCompleteProfile(s)) return null;
+  const { age, heightCm, weightKg, gender, activityLevel, profileGoal } = s;
+  let bmr;
+  if (gender==='male') bmr = 10*weightKg + 6.25*heightCm - 5*age + 5;
+  else if (gender==='female') bmr = 10*weightKg + 6.25*heightCm - 5*age - 161;
+  else bmr = 10*weightKg + 6.25*heightCm - 5*age - 78;
+  const activity = ACTIVITY_LEVELS[activityLevel] || ACTIVITY_LEVELS.moderate;
+  const tdee = bmr * activity.mult;
+  const goal = PROFILE_GOALS[profileGoal] || PROFILE_GOALS.maintain;
+  const calorieTarget = Math.round(tdee + goal.calorieAdj);
+  const protein = Math.round(weightKg * goal.proteinPerKg);
+  const water = Math.round((weightKg*0.033 + (['active','very_active'].includes(activityLevel) ? 0.4 : 0)) * 10) / 10;
+  const heightM = heightCm/100;
+  const bmi = Math.round((weightKg/(heightM*heightM))*10)/10;
+  const bmiCategory = bmi<18.5 ? 'underweight' : bmi<25 ? 'healthy' : bmi<30 ? 'overweight' : 'obese';
+  return { bmr:Math.round(bmr), tdee:Math.round(tdee), calorieTarget, protein, water, bmi, bmiCategory, activity, goal };
+}
+function generateProfileInsight(){
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics) return null;
+  const bmiPhrase = metrics.bmiCategory==='healthy'
+    ? `your BMI (${metrics.bmi}) is within the commonly used healthy range`
+    : `your BMI (${metrics.bmi}) is in the ${metrics.bmiCategory} range (a commonly used general guideline, not a diagnosis)`;
+  const goalPhrases = {
+    muscle:'Since your goal is muscle gain, focus on consistent resistance training, sufficient protein, recovery, and a modest calorie surplus.',
+    lose_weight:'Since your goal is weight loss, aim for a modest calorie deficit while keeping protein high to preserve muscle, and stay consistent with training.',
+    maintain:'Since your goal is maintaining your current weight, keep training consistent and match your intake to your estimated maintenance calories.',
+    endurance:'Since your goal is improving endurance, prioritize consistent cardio training, adequate carbohydrates, and recovery.',
+  };
+  return `You're currently ${ACTIVITY_LEVELS[settings.activityLevel].label.toLowerCase()} and ${bmiPhrase}. ${goalPhrases[settings.profileGoal] || goalPhrases.maintain}`;
+}
+
+/* Form-analysis trend — reads real session history only; returns null (never invents data) if there isn't enough. */
+function computeFormTrend(){
+  const sessions = appData.sessions.filter(s=>s.formScore!=null);
+  if (sessions.length < 2) return null;
+  const now = Date.now(), DAY = 86400000;
+  const ageOf = s => now - new Date(s.date+'T00:00:00').getTime();
+  const recent = sessions.filter(s => ageOf(s) <= 30*DAY);
+  const prior = sessions.filter(s => { const a = ageOf(s); return a > 30*DAY && a <= 60*DAY; });
+  const avg = arr => Math.round(arr.reduce((a,s)=>a+s.formScore,0)/arr.length);
+  if (recent.length && prior.length){
+    const recentAvg = avg(recent), priorAvg = avg(prior);
+    if (priorAvg>0 && recentAvg!==priorAvg) return { deltaPct: Math.round(((recentAvg-priorAvg)/priorAvg)*100), period:'month' };
+  }
+  const recentWeek = sessions.filter(s => ageOf(s) <= 7*DAY);
+  const priorWeek = sessions.filter(s => { const a = ageOf(s); return a > 7*DAY && a <= 14*DAY; });
+  if (recentWeek.length && priorWeek.length){
+    const recentAvg = avg(recentWeek), priorAvg = avg(priorWeek);
+    if (priorAvg>0 && recentAvg!==priorAvg) return { deltaPct: Math.round(((recentAvg-priorAvg)/priorAvg)*100), period:'week' };
+  }
+  return null;
+}
+function generateSystemInsight(){
+  const trend = computeFormTrend();
+  if (!trend) return null;
+  const goalActions = {
+    muscle:'continue prioritizing controlled reps and progressive resistance',
+    lose_weight:'keep your tempo controlled and stay consistent with both training and your calorie target',
+    maintain:'keep your form consistent and maintain your current training rhythm',
+    endurance:'keep your reps controlled while building up training volume gradually',
+  };
+  const action = goalActions[settings.profileGoal] || 'keep prioritizing controlled reps and full range of motion';
+  return trend.deltaPct >= 0
+    ? `Your form score has improved ${trend.deltaPct}% this ${trend.period}. Since your goal is ${(PROFILE_GOALS[settings.profileGoal]||{label:'fitness'}).label.toLowerCase()}, ${action}.`
+    : `Your form score has dropped ${Math.abs(trend.deltaPct)}% this ${trend.period}. Slow down and review the live corrections in AI Coach before increasing difficulty.`;
+}
+
+/* Fitness Score — only uses sub-scores backed by real data; needs at least 2 to produce an overall score. */
+function computeFitnessScore(){
+  const scores = {};
+  const scored = appData.sessions.filter(s=>s.formScore!=null).slice(-10);
+  if (scored.length) scores.form = Math.round(scored.reduce((a,s)=>a+s.formScore,0)/scored.length);
+  if (appData.sessions.length){
+    const days = new Set(last7Days());
+    const doneThisWeek = new Set(appData.sessions.filter(s=>days.has(s.date)).map(s=>s.date)).size;
+    scores.consistency = Math.min(100, Math.round((doneThisWeek/(settings.weeklyGoal||3))*100));
+  }
+  if (settings.activityLevel){
+    scores.activity = { sedentary:40, light:55, moderate:70, active:85, very_active:95 }[settings.activityLevel];
+  }
+  const trend = computeFormTrend();
+  if (trend) scores.progress = Math.max(0, Math.min(100, Math.round(50 + trend.deltaPct*2)));
+  const keys = Object.keys(scores);
+  if (keys.length < 2) return { overall:null, scores };
+  return { overall: Math.round(keys.reduce((a,k)=>a+scores[k],0)/keys.length), scores };
+}
+
 /* ================= PROGRESS VIEW ================= */
 function renderPersonalRecords(){
   const grid = document.getElementById('prGrid');
   const byExercise = {};
   appData.sessions.forEach(s => {
     const key = s.exercise;
-    if (!byExercise[key]) byExercise[key] = { reps:0, hold:0 };
+    if (!byExercise[key]) byExercise[key] = { reps:0, hold:0, bestForm:0 };
     if (s.reps > byExercise[key].reps) byExercise[key].reps = s.reps;
     if (s.holdSeconds > byExercise[key].hold) byExercise[key].hold = s.holdSeconds;
+    if (s.formScore > byExercise[key].bestForm) byExercise[key].bestForm = s.formScore;
   });
   const keys = Object.keys(byExercise);
   if (!keys.length){ grid.innerHTML = '<div class="empty-state">No records yet.</div>'; return; }
   grid.innerHTML = keys.map(k => {
     const r = byExercise[k];
     const val = r.hold ? `${r.hold}s hold` : `${r.reps} reps`;
-    return `<div class="pr-item"><div class="pr-name">${exerciseName(k)}</div><div class="pr-val">${val}</div></div>`;
+    return `<div class="pr-item"><div class="pr-name">${exerciseName(k)}</div><div class="pr-val">${val}</div>${r.bestForm ? `<div class="meta" style="margin-top:2px; font-size:11px; color:var(--muted);">Best form ${r.bestForm}/100</div>` : ''}</div>`;
   }).join('');
 }
+function weekKey(dateStr){
+  const d = new Date(dateStr+'T00:00:00');
+  const day = (d.getDay()+6)%7; // 0=Mon
+  d.setDate(d.getDate()-day);
+  return d.toISOString().slice(0,10);
+}
+function computeWeeklyFormHistory(sessions){
+  const withScore = sessions.filter(s=>s.formScore!=null);
+  if (!withScore.length) return [];
+  const byWeek = {};
+  withScore.forEach(s => { const k=weekKey(s.date); (byWeek[k]=byWeek[k]||[]).push(s.formScore); });
+  const weeks = Object.keys(byWeek).sort();
+  return weeks.slice(-6).map(k => ({
+    label: `Week ${weeks.indexOf(k)+1}`,
+    avg: Math.round(byWeek[k].reduce((a,b)=>a+b,0)/byWeek[k].length),
+  }));
+}
+function renderFormHistoryChart(){
+  const data = computeWeeklyFormHistory(appData.sessions);
+  const card = document.getElementById('formHistoryCard');
+  if (data.length < 2){ card.style.display='none'; return; }
+  card.style.display='';
+  document.getElementById('formHistoryChart').innerHTML = data.map(w => {
+    const h = Math.max(4, Math.round((w.avg/100)*90));
+    const color = w.avg>=85?'var(--green)':w.avg>=60?'var(--orange)':'var(--red)';
+    return `<div class="bar-col"><div class="bar-label pct">${w.avg}%</div><div class="bar" style="height:${h}px; background:${color}"></div><div class="bar-label">${w.label}</div></div>`;
+  }).join('');
+}
+
+function renderMistakeHeatmap(){
+  const card = document.getElementById('heatmapCard');
+  const recent = appData.sessions.filter(s=>s.categoryScores).slice(-10);
+  if (!recent.length){ card.style.display='none'; return; }
+  card.style.display='';
+  const sums = {}, counts = {};
+  recent.forEach(s => Object.entries(s.categoryScores).forEach(([cat,val]) => {
+    sums[cat] = (sums[cat]||0)+val; counts[cat] = (counts[cat]||0)+1;
+  }));
+  const rows = Object.keys(sums).map(cat => ({ cat, avg: Math.round(sums[cat]/counts[cat]) })).sort((a,b)=>a.avg-b.avg);
+  document.getElementById('heatmapList').innerHTML = rows.map(r => {
+    const dot = r.avg>=85 ? '🟢' : r.avg>=60 ? '🟡' : '🔴';
+    const status = r.avg>=85 ? 'Good' : r.avg>=60 ? 'Needs attention' : 'Problem area';
+    return `<div class="heatmap-row"><span class="heatmap-dot">${dot}</span><span class="heatmap-label">${r.cat}</span><span class="heatmap-val" style="color:${scoreColor(r.avg>=85?'good':r.avg>=60?'warn':'bad')}">${status} · ${r.avg}</span></div>`;
+  }).join('');
+}
+
 function renderProgress(){
   document.getElementById('chart7').innerHTML = build7DayChartHTML(appData.sessions);
   document.getElementById('sessionsList').innerHTML = renderSessionsListHTML(appData.sessions, 8);
   renderPersonalRecords();
+  renderFormHistoryChart();
+  renderMistakeHeatmap();
 
   const grid = document.getElementById('badgesGrid');
   grid.innerHTML = BADGE_DEFS.map(b => {
@@ -828,94 +1570,97 @@ function renderProgress(){
 /* Pose landmark indices (MediaPipe Pose): 11/12 shoulders, 13/14 elbows, 15/16 wrists,
    23/24 hips, 25/26 knees, 27/28 ankles, 31/32 foot index. */
 const EXERCISES = {
-  squat: { name:'Squat', type:'reps', color:'#0071E3', icon:'🏋️', category:'strength', equipment:'none',
+  squat: { name:'Squat', type:'reps', color:'#0071E3', icon:'🏋️', group:'Legs', category:'strength', equipment:'none',
     primary:[24,26,28], form:[12,24,26], topAngle:160, bottomAngle:110, formGoodMin:150, primaryLabel:'Knee angle',
+    /* Example of a per-exercise scoring override — every other exercise falls back to
+       FACTOR_TYPE_BASE_WEIGHT automatically, but squat's weighting can be tuned independently here. */
+    scoringWeights: { 'alignment_Knee Alignment':20, 'alignment_Back Posture':20, rom:20, tempo:15, symmetry:15, consistency:10 },
     tips:['Feet shoulder-width apart','Knees track over your toes, not caving in','Chest up, weight in your heels','Hips dip below knee height at the bottom'],
     corrections:[
-      { msg:'Knees caving in — push them outward over your toes', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
-      { msg:'Leaning too far forward — keep your chest up', test: (lm,a) => a.formAngle < 130 },
+      { msg:'Knees caving in — push them outward over your toes', category:'Knee Alignment', label:'Knee valgus', voice:'Push your knees outward.', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
+      { msg:'Leaning too far forward — keep your chest up', category:'Back Posture', label:'Excessive forward lean', voice:'Keep your chest up.', test: (lm,a) => a.formAngle < 130 },
     ] },
-  jumpSquat: { name:'Jump Squat', type:'reps', color:'#0071E3', icon:'🤾', category:'cardio', equipment:'none',
+  jumpSquat: { name:'Jump Squat', type:'reps', color:'#0071E3', icon:'💥', group:'Cardio', category:'cardio', equipment:'none',
     primary:[24,26,28], form:[12,24,26], topAngle:165, bottomAngle:105, formGoodMin:145, primaryLabel:'Knee angle',
     tips:['Explode upward from the bottom of the squat','Land softly with bent knees','Keep chest up throughout','Reset fully between reps'],
     corrections:[
-      { msg:'Knees caving in on landing — push them outward', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
-      { msg:'Leaning too far forward — keep your chest tall', test: (lm,a) => a.formAngle < 125 },
+      { msg:'Knees caving in on landing — push them outward', category:'Knee Alignment', label:'Knee valgus on landing', voice:'Push your knees outward.', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
+      { msg:'Leaning too far forward — keep your chest tall', category:'Back Posture', label:'Excessive forward lean', voice:'Keep your chest tall.', test: (lm,a) => a.formAngle < 125 },
     ] },
-  pushup:{ name:'Push-up', type:'reps', color:'#FF9500', icon:'💪', category:'strength', equipment:'none',
+  pushup:{ name:'Push-up', type:'reps', color:'#FF9500', icon:'🙌', group:'Arms', category:'strength', equipment:'none',
     primary:[12,14,16], form:[12,24,28], topAngle:155, bottomAngle:100, formGoodMin:155, primaryLabel:'Elbow angle',
     tips:['Hands slightly wider than shoulders','Body forms one straight line','Elbows ~45° from your torso','Chest lowers close to the floor'],
     corrections:[
-      { msg:'Hips sagging — brace your core to flatten your back', test: (lm,a) => a.formAngle < 145 && (lm[24].y - ((lm[12].y+lm[28].y)/2)) > 0.04 },
-      { msg:'Hips piking up — lower them into a straight line', test: (lm,a) => a.formAngle < 145 && (((lm[12].y+lm[28].y)/2) - lm[24].y) > 0.04 },
+      { msg:'Hips sagging — brace your core to flatten your back', category:'Hip Position', label:'Hips sagging', voice:'Brace your core, keep your hips level.', test: (lm,a) => a.formAngle < 145 && (lm[24].y - ((lm[12].y+lm[28].y)/2)) > 0.04 },
+      { msg:'Hips piking up — lower them into a straight line', category:'Hip Position', label:'Hips piking up', voice:'Lower your hips into a straight line.', test: (lm,a) => a.formAngle < 145 && (((lm[12].y+lm[28].y)/2) - lm[24].y) > 0.04 },
     ] },
-  tricepDip:{ name:'Tricep Dip', type:'reps', color:'#FF9500', icon:'🪑', category:'strength', equipment:'none',
+  tricepDip:{ name:'Tricep Dip', type:'reps', color:'#FF9500', icon:'🪑', group:'Arms', category:'strength', equipment:'none',
     primary:[12,14,16], form:[12,24,28], topAngle:160, bottomAngle:90, formGoodMin:150, primaryLabel:'Elbow angle',
     tips:['Hands close to your hips on a stable surface','Lower until elbows hit ~90°','Keep elbows pointing backward, not flared','Torso stays upright'],
     corrections:[
-      { msg:'Torso leaning too far forward — stay upright', test: (lm,a) => a.formAngle < 120 },
+      { msg:'Torso leaning too far forward — stay upright', category:'Torso Posture', label:'Excessive forward lean', voice:'Keep your torso upright.', test: (lm,a) => a.formAngle < 120 },
     ] },
-  lunge: { name:'Lunge', type:'reps', color:'#AF52DE', icon:'🦵', category:'strength', equipment:'none',
+  lunge: { name:'Lunge', type:'reps', color:'#AF52DE', icon:'🚶', group:'Legs', category:'strength', equipment:'none',
     primary:[24,26,28], form:[12,24,26], topAngle:165, bottomAngle:100, formGoodMin:155, primaryLabel:'Front knee angle',
     tips:['Step forward far enough for a 90° front knee','Back knee hovers just above the floor','Torso stays upright','Front knee stays behind your toes'],
     corrections:[
-      { msg:'Front knee caving inward — track it over your toes', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
-      { msg:'Leaning forward — keep your torso tall', test: (lm,a) => a.formAngle < 135 },
+      { msg:'Front knee caving inward — track it over your toes', category:'Knee Alignment', label:'Knee valgus', voice:'Track your knee over your toes.', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
+      { msg:'Leaning forward — keep your torso tall', category:'Torso Posture', label:'Excessive forward lean', voice:'Keep your torso tall.', test: (lm,a) => a.formAngle < 135 },
     ] },
-  sideLunge: { name:'Side Lunge', type:'reps', color:'#AF52DE', icon:'🤸', category:'mobility', equipment:'none',
+  sideLunge: { name:'Side Lunge', type:'reps', color:'#AF52DE', icon:'🤸', group:'Legs', category:'mobility', equipment:'none',
     primary:[24,26,28], form:[12,24,26], topAngle:165, bottomAngle:110, formGoodMin:150, primaryLabel:'Bent knee angle',
     tips:['Step wide to the side, toes forward','Push hips back as you bend one knee','Keep the straight leg extended','Push back to center through your heel'],
     corrections:[
-      { msg:'Leaning too far forward — keep your chest up', test: (lm,a) => a.formAngle < 130 },
+      { msg:'Leaning too far forward — keep your chest up', category:'Torso Posture', label:'Excessive forward lean', voice:'Keep your chest up.', test: (lm,a) => a.formAngle < 130 },
     ] },
-  gluteBridge:{ name:'Glute Bridge', type:'reps', color:'#34C759', icon:'🌉', category:'core', equipment:'none',
+  gluteBridge:{ name:'Glute Bridge', type:'reps', color:'#34C759', icon:'🌉', group:'Core', category:'core', equipment:'none',
     primary:[12,24,26], form:[24,26,28], topAngle:165, bottomAngle:120, formGoodMin:150, primaryLabel:'Hip extension angle',
     tips:['Feet flat, knees bent, shoulders on the floor','Squeeze glutes to lift hips in line with knees','Avoid arching your lower back excessively','Lower with control'],
     corrections:[] },
-  situp:{ name:'Sit-up', type:'reps', color:'#34C759', icon:'🧎', category:'core', equipment:'none',
+  situp:{ name:'Sit-up', type:'reps', color:'#34C759', icon:'🧎', group:'Core', category:'core', equipment:'none',
     primary:[12,24,26], form:[24,26,28], topAngle:160, bottomAngle:85, formGoodMin:0, primaryLabel:'Torso flexion angle',
     tips:['Knees bent, feet anchored','Curl your torso up, not just your neck','Exhale on the way up','Lower back down with control'],
     corrections:[] },
-  bicepCurl:{ name:'Bicep Curl', type:'reps', color:'#FF3B30', icon:'🏋️‍♀️', category:'strength', equipment:'dumbbells',
+  bicepCurl:{ name:'Bicep Curl', type:'reps', color:'#FF3B30', icon:'💪', group:'Arms', category:'strength', equipment:'dumbbells',
     primary:[12,14,16], form:[14,12,24], topAngle:150, bottomAngle:50, formGoodMin:0, primaryLabel:'Elbow angle',
     tips:['Elbows pinned to your sides','Curl with control, no swinging','Squeeze at the top','Lower fully to start'],
     corrections:[
-      { msg:'Elbow drifting forward — keep it pinned to your side', test: (lm) => (lm[14].x - lm[12].x) > 0.12 },
+      { msg:'Elbow drifting forward — keep it pinned to your side', category:'Elbow Position', label:'Elbow drift', voice:'Pin your elbow to your side.', test: (lm) => (lm[14].x - lm[12].x) > 0.12 },
     ] },
-  overheadPress:{ name:'Overhead Press', type:'reps', color:'#FF3B30', icon:'🙆', category:'strength', equipment:'dumbbells',
+  overheadPress:{ name:'Overhead Press', type:'reps', color:'#FF3B30', icon:'🙆', group:'Arms', category:'strength', equipment:'dumbbells',
     primary:[12,14,16], form:[12,24,28], topAngle:160, bottomAngle:90, formGoodMin:150, primaryLabel:'Elbow angle',
     tips:['Start with elbows bent near shoulders','Press straight overhead','Avoid arching your lower back','Lower with control'],
     corrections:[
-      { msg:'Leaning back excessively — brace your core', test: (lm,a) => a.formAngle < 140 },
+      { msg:'Leaning back excessively — brace your core', category:'Core Stability', label:'Excessive back lean', voice:'Brace your core.', test: (lm,a) => a.formAngle < 140 },
     ] },
-  plank: { name:'Plank', type:'hold', color:'#00C7BE', icon:'🧘', category:'core', equipment:'none',
+  plank: { name:'Plank', type:'hold', color:'#00C7BE', icon:'🧘', group:'Core', category:'core', equipment:'none',
     form:[12,24,28], formGoodMin:160, primaryLabel:'—',
     tips:['Hips level with shoulders — no sagging','Core braced, glutes squeezed','Elbows stacked under shoulders','Neck neutral, eyes toward the floor'],
     corrections:[
-      { msg:'Hips sagging — engage your core to flatten your back', test: (lm) => (lm[24].y - ((lm[12].y+lm[28].y)/2)) > 0.045 },
-      { msg:'Hips too high — lower into one straight line', test: (lm) => (((lm[12].y+lm[28].y)/2) - lm[24].y) > 0.045 },
+      { msg:'Hips sagging — engage your core to flatten your back', category:'Hip Alignment', label:'Hips sagging', voice:'Engage your core, keep your hips level.', test: (lm) => (lm[24].y - ((lm[12].y+lm[28].y)/2)) > 0.045 },
+      { msg:'Hips too high — lower into one straight line', category:'Hip Alignment', label:'Hips too high', voice:'Lower your hips into one straight line.', test: (lm) => (((lm[12].y+lm[28].y)/2) - lm[24].y) > 0.045 },
     ] },
-  wallSit:{ name:'Wall Sit', type:'hold', color:'#00C7BE', icon:'🪑', category:'strength', equipment:'none',
+  wallSit:{ name:'Wall Sit', type:'hold', color:'#00C7BE', icon:'🧱', group:'Legs', category:'strength', equipment:'none',
     form:[24,26,28], formGoodMin:80, primaryLabel:'—',
     tips:['Back flat against a wall','Thighs roughly parallel to the floor','Knees above ankles, not past toes','Hold steady, breathe normally'],
     corrections:[
-      { msg:'Not deep enough — lower until thighs are parallel to the floor', test: (lm,a) => a.formAngle > 130 },
+      { msg:'Not deep enough — lower until thighs are parallel to the floor', category:'Squat Depth', label:'Not deep enough', voice:'Lower down until your thighs are parallel.', test: (lm,a) => a.formAngle > 130 },
     ] },
-  superman:{ name:'Superman', type:'hold', color:'#00C7BE', icon:'🦸', category:'core', equipment:'none',
+  superman:{ name:'Superman', type:'hold', color:'#00C7BE', icon:'🦸', group:'Core', category:'core', equipment:'none',
     form:[12,24,28], formGoodMin:150, primaryLabel:'—',
     tips:['Lie face down, arms extended forward','Lift chest, arms and legs off the floor together','Squeeze glutes and back','Keep neck neutral'],
     corrections:[] },
-  highKnees:{ name:'High Knees', type:'reps', color:'#FF9500', icon:'🏃', category:'cardio', equipment:'none',
+  highKnees:{ name:'High Knees', type:'reps', color:'#FF9500', icon:'🏃', group:'Cardio', category:'cardio', equipment:'none',
     primary:[12,24,26], form:[24,26,28], topAngle:160, bottomAngle:90, formGoodMin:0, primaryLabel:'Hip drive angle',
     tips:['Drive knees up toward hip height','Stay light on your feet','Keep torso upright','Pump your arms in rhythm'],
     corrections:[] },
-  mountainClimber:{ name:'Mountain Climber', type:'reps', color:'#FF9500', icon:'⛰️', category:'cardio', equipment:'none',
+  mountainClimber:{ name:'Mountain Climber', type:'reps', color:'#FF9500', icon:'⛰️', group:'Cardio', category:'cardio', equipment:'none',
     primary:[24,26,28], form:[12,24,28], topAngle:160, bottomAngle:95, formGoodMin:140, primaryLabel:'Drive-knee angle',
     tips:['Start in a strong plank','Drive knees toward your chest, alternating','Keep hips low and level','Maintain a quick, controlled pace'],
     corrections:[
-      { msg:'Hips rising too high — keep a flat plank line', test: (lm,a) => a.formAngle < 140 },
+      { msg:'Hips rising too high — keep a flat plank line', category:'Hip Alignment', label:'Hips rising', voice:'Keep a flat plank line.', test: (lm,a) => a.formAngle < 140 },
     ] },
-  calfRaise:{ name:'Calf Raise', type:'reps', color:'#34C759', icon:'🦶', category:'strength', equipment:'none',
+  calfRaise:{ name:'Calf Raise', type:'reps', color:'#34C759', icon:'🦶', group:'Legs', category:'strength', equipment:'none',
     primary:[26,28,32], form:[24,26,28], topAngle:165, bottomAngle:150, formGoodMin:0, primaryLabel:'Ankle angle',
     tips:['Stand tall, feet hip-width apart','Rise onto the balls of your feet','Pause at the top, squeeze calves','Lower slowly with control'],
     corrections:[] },
@@ -1033,10 +1778,53 @@ const tipsTitleEl = document.getElementById('tipsTitle'), tipsListEl = document.
 const goalProgress = document.getElementById('goalProgress');
 const correctionsBox = document.getElementById('correctionsBox'), correctionsListEl = document.getElementById('correctionsList');
 const coachMainCard = document.getElementById('coachMainCard'), ratingCard = document.getElementById('ratingCard');
+const formScoreCard = document.getElementById('formScoreCard'), formScoreExerciseEl = document.getElementById('formScoreExercise');
+const formScoreBigEl = document.getElementById('formScoreBig'), formScoreComponentsEl = document.getElementById('formScoreComponents');
+const repLogCard = document.getElementById('repLogCard'), repLogListEl = document.getElementById('repLogList');
+const reportCard = document.getElementById('reportCard');
+const romPanel = document.getElementById('romPanel'), romReadoutEl = document.getElementById('romReadout');
+const romTargetZoneEl = document.getElementById('romTargetZone'), romMarkerEl = document.getElementById('romMarker');
+const readinessBadge = document.getElementById('readinessBadge'), readinessDot = document.getElementById('readinessDot'), readinessMsg = document.getElementById('readinessMsg');
+const debugPanel = document.getElementById('debugPanel');
+let lastReadinessLevel = null, debugFrameCounter = 0;
+function updateReadinessBadge(readiness){
+  readinessBadge.style.display = '';
+  if (readiness.level !== lastReadinessLevel){
+    readinessDot.className = 'readiness-dot ' + readiness.level;
+    lastReadinessLevel = readiness.level;
+  }
+  readinessMsg.textContent = readiness.level==='green' ? '🟢 Excellent' : readiness.level==='yellow' ? `🟡 ${readiness.msg}` : `🔴 ${readiness.msg}`;
+}
+function updateDebugPanel(cfg, data){
+  debugPanel.classList.toggle('on', !!settings.debugMode);
+  if (!settings.debugMode) return;
+  debugFrameCounter++;
+  if (debugFrameCounter % 4 !== 0) return; // throttle DOM writes so debug mode doesn't cost real-time performance
+  const lines = [
+    `EXERCISE: ${currentExercise}    REP STATE: ${(data.phase||'').toUpperCase()}`,
+    data.primaryAngle!=null ? `Primary angle (${cfg.primaryLabel||'—'}): ${data.primaryAngle.toFixed(1)}°` : null,
+    data.formAngle!=null ? `Form/torso angle: ${data.formAngle.toFixed(1)}°` : null,
+    `Landmark confidence (this frame): ${(data.confidence*100).toFixed(0)}%`,
+    repTrack ? `Rep window frames: ${repTrack.frames}  |  min primary this rep: ${repTrack.minPrimary===Infinity?'—':repTrack.minPrimary.toFixed(1)+'°'}` : null,
+    repTrack && repTrack.rightSamples.length ? `Symmetry samples: ${repTrack.rightSamples.length} (tracked vs mirrored side)` : null,
+    `Rep confidence so far: ${computeConfidencePct(repTrack)}%`,
+    repLog.length ? (() => { const last = repLog[repLog.length-1]; return `Last rep score: ${last.overall!=null?last.overall:'—'} (${last.status})  factors: ${last.factors.map(f=>`${f.label}=${f.score}`).join(', ')}`; })() : null,
+  ].filter(Boolean);
+  debugPanel.textContent = lines.join('\n');
+}
 
-exercisePicker.innerHTML = Object.entries(EXERCISES).map(([key,ex],i) => `
-  <button class="ex-card${i===0?' active':''}" data-ex="${key}" style="--ex-color:${ex.color}"><span class="ex-icon">${ex.icon}</span><span>${ex.name}</span></button>
-`).join('');
+const EXERCISE_GROUP_ORDER = ['Legs','Arms','Core','Cardio'];
+function renderExercisePicker(){
+  const entries = Object.entries(EXERCISES);
+  exercisePicker.innerHTML = EXERCISE_GROUP_ORDER.map(group => {
+    const inGroup = entries.filter(([,ex]) => ex.group === group);
+    if (!inGroup.length) return '';
+    const cards = inGroup.map(([key,ex]) => `
+      <button class="ex-card${key===currentExercise?' active':''}" data-ex="${key}" style="--ex-color:${ex.color}"><span class="ex-icon">${ex.icon}</span><span>${ex.name}</span></button>
+    `).join('');
+    return `<div class="ex-group"><div class="ex-group-label">${group}</div><div class="ex-group-grid">${cards}</div></div>`;
+  }).join('');
+}
 
 let poseLandmarker=null, running=false, currentExercise='squat';
 let repCount=0, phase='top', reachedDepth=false, lastRepTime=0, holdStartTime=null, bestHoldMs=0;
@@ -1046,10 +1834,286 @@ let missedFrames=0; const MISSED_FRAMES_BEFORE_WARNING=8;
 let lastSpokenMilestone=0;
 let pendingRating = { rpe:0 };
 
-function smooth(h,v,w){ h.push(v); if(h.length>w) h.shift(); return h.reduce((a,b)=>a+b,0)/h.length; }
+/* ===== Form Score / Rep-by-Rep / Voice Coach state ===== */
+let repLog = [];              // finished reps: {index, overall, comps, issues, status}
+let repTrack = freshRepTrack();
+let holdTrack = freshRepTrack();
+let holdScoreSamples = [];    // rolling {overall, comps, issues} snapshots while holding, for hold-type report
+let prevActiveCategories = new Set();
+let lastVoiceAt = 0;
+const VOICE_COOLDOWN_MS = 2200;
+
+/* ===== Automatic Exercise Detection (beta) ===== */
+let autoDetectOn = false, autoDetectLocked = false;
+let autoDetectHistory = { elbow:[], knee:[] };
+let autoDetectStreakKey = null, autoDetectStreakCount = 0;
+const AUTO_DETECT_CONFIRM = 30; // ~1s of consistent frames
+function stdev(arr){ if (arr.length<2) return 0; const m=arr.reduce((a,b)=>a+b,0)/arr.length; return Math.sqrt(arr.reduce((a,b)=>a+(b-m)**2,0)/arr.length); }
+function resetAutoDetectHistory(){ autoDetectHistory={elbow:[],knee:[]}; autoDetectStreakKey=null; autoDetectStreakCount=0; }
+function classifyCandidateFrame(lm){
+  const shoulder=lm[12], elbow=lm[14], wrist=lm[16], hip=lm[24], knee=lm[26], ankle=lm[28];
+  if ([shoulder,elbow,wrist,hip,knee,ankle].some(p=>!p)) return null;
+  if (Math.min(...[shoulder,elbow,wrist,hip,knee,ankle].map(p=>p.visibility??1)) < 0.5) return null;
+  const torsoDX = Math.abs(shoulder.x-hip.x), torsoDY = Math.abs(shoulder.y-hip.y);
+  const standing = torsoDY > torsoDX*1.2;
+  const horizontal = torsoDX > torsoDY*1.2;
+  const elbowAngle = angleBetween(shoulder,elbow,wrist);
+  const kneeAngle = angleBetween(hip,knee,ankle);
+  autoDetectHistory.elbow.push(elbowAngle); if (autoDetectHistory.elbow.length>20) autoDetectHistory.elbow.shift();
+  autoDetectHistory.knee.push(kneeAngle); if (autoDetectHistory.knee.length>20) autoDetectHistory.knee.shift();
+  const elbowMoving = stdev(autoDetectHistory.elbow) > 8;
+  const kneeMoving = stdev(autoDetectHistory.knee) > 8;
+  const elbowNearTorso = Math.abs(elbow.x-shoulder.x) < 0.15;
+  if (standing && kneeMoving && elbowAngle > 140) return 'squat';
+  if (standing && elbowNearTorso && elbowAngle < 150 && elbowMoving) return 'bicepCurl';
+  if (horizontal && elbowMoving) return 'pushup';
+  if (horizontal && !elbowMoving && elbowAngle > 140) return 'plank';
+  return null;
+}
+function runAutoDetect(lm){
+  const guess = classifyCandidateFrame(lm);
+  if (guess && guess===autoDetectStreakKey) autoDetectStreakCount++;
+  else { autoDetectStreakKey=guess; autoDetectStreakCount = guess?1:0; }
+  if (guess && autoDetectStreakCount>=AUTO_DETECT_CONFIRM){
+    selectExercise(guess);
+    autoDetectLocked = true;
+    showToast(`${EXERCISES[guess].name} detected`);
+    coachSpeak(`${EXERCISES[guess].name} detected.`);
+  }
+}
+
+function freshRepTrack(){
+  return { frames:0, minPrimary:Infinity, formSamples:[], categoryHits:{}, categoryLabels:{},
+    startTime: performance.now(), bottomEnterAt:null, bottomExitAt:null,
+    confidenceSamples:[], rightSamples:[], leftSamples:[] };
+}
+const IDEAL_MIN_DOWN_MS = 1000;
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+/* ================= BIOMECHANICS ENGINE =================
+   Pipeline (per the pose data MediaPipe already provides):
+   Pose Detection (unchanged) -> Landmark Processor/Smoothing (smooth(), confidence capture)
+   -> Rep State Machine (phase/topStreak/bottomStreak, unchanged) -> Biomechanical Feature
+   Extraction (angles, mirrored L/R angles, tempo) -> Exercise-Specific Form Rules (factor list
+   built from EXERCISES config) -> Rep Scoring Engine (computeRepScore) -> Confidence Engine
+   (computeRepConfidence) -> AI Explanation (explainRepScore/suggestionFor) -> Workout Analytics
+   (buildReport, detectFatigue). Kept as pure functions with minimal shared state so each stage
+   is independently testable, even though the project is a single static file with no bundler. */
+
+/* MediaPipe Pose landmark pairs (right index -> left index) for L/R symmetry comparison.
+   The exercise library's primary/form triples already use the right-side indices (12,14,16,
+   24,26,28) — the left-side landmarks were always present in every frame, just unused. */
+const MIRROR_MAP = {11:12,12:11,13:14,14:13,15:16,16:15,23:24,24:23,25:26,26:25,27:28,28:27,31:32,32:31};
+function mirrorTriple(t){ return t.map(i => MIRROR_MAP[i] ?? i); }
+// Movements that are asymmetric by design (one leg forward, one back) — comparing sides isn't a meaningful "symmetry" signal for these.
+const SYMMETRY_EXCLUDED = new Set(['lunge','sideLunge']);
+
+/* Confidence Engine — average landmark visibility across a rep/hold window, 0-100. */
+function computeConfidencePct(track){
+  if (!track.confidenceSamples.length) return 0;
+  return Math.round(clamp(track.confidenceSamples.reduce((a,b)=>a+b,0)/track.confidenceSamples.length, 0, 1) * 100);
+}
+const LOW_CONFIDENCE_THRESHOLD = 45; // below this, don't confidently score the rep at all
+
+/* Camera-readiness indicator — checked continuously, independent of rep state. */
+function computeReadiness(lm, cfg){
+  const idx = [...new Set([...(cfg.primary||[]), ...(cfg.form||[])])];
+  if (!idx.length) return { level:'green', msg:'Ready' };
+  const present = idx.map(i => lm[i]).filter(Boolean);
+  if (present.length < idx.length) return { level:'red', msg:'Body not fully detected — step back so your whole body is visible.' };
+  const avgVis = present.reduce((a,p)=>a+(p.visibility??1),0) / present.length;
+  if (avgVis < 0.5) return { level:'red', msg:'Body not detected properly — check lighting and camera angle.' };
+  if (avgVis < 0.75) return { level:'yellow', msg:'Adjust your position for a clearer view.' };
+  return { level:'green', msg:'Excellent visibility' };
+}
+
+/* Reusable scoring primitives — the exercise-specific "form rules" are just these primitives
+   parameterized by each exercise's config, so adding a new exercise doesn't mean writing new
+   scoring math. */
+function scoreSymmetryFactor(rightSamples, leftSamples){
+  if (!rightSamples.length || !leftSamples.length) return null;
+  const n = Math.min(rightSamples.length, leftSamples.length);
+  let diffSum = 0;
+  for (let i=0;i<n;i++) diffSum += Math.abs(rightSamples[i]-leftSamples[i]);
+  return clamp(Math.round(100 - (diffSum/n)*2.5), 0, 100);
+}
+function scoreTempoFactor(downMs){
+  if (downMs==null || downMs<=0) return null;
+  if (downMs < IDEAL_MIN_DOWN_MS) return clamp(Math.round(55 + (downMs/IDEAL_MIN_DOWN_MS)*45), 40, 100);
+  if (downMs > 4000) return clamp(Math.round(100 - (downMs-4000)/80), 55, 100);
+  return 100;
+}
+function scoreDeviationFromRunningAverage(value, runningAvg){
+  if (runningAvg==null) return 100;
+  return clamp(Math.round(100 - Math.abs(value-runningAvg)*2), 0, 100);
+}
+
+/* Exercise-configurable scoring weights. Base weight is by FACTOR TYPE (not hardcoded per exercise
+   in the UI) so every exercise gets a sensible multi-factor breakdown automatically; an exercise
+   can still override specific factor keys (see EXERCISES.squat.scoringWeights) when it needs
+   different emphasis. This whole object is the "exercise configuration" the weights live in. */
+const FACTOR_TYPE_BASE_WEIGHT = { alignment:20, depth:20, form:20, tempo:15, symmetry:15, consistency:10 };
+function getFactorWeights(cfg, factors){
+  const overrides = cfg.scoringWeights || {};
+  const base = {};
+  factors.forEach(f => { base[f.key] = overrides[f.key]!=null ? overrides[f.key] : (FACTOR_TYPE_BASE_WEIGHT[f.type] || 10); });
+  const sum = Object.values(base).reduce((a,b)=>a+b,0) || 1;
+  const norm = {};
+  Object.keys(base).forEach(k => { norm[k] = base[k]/sum; });
+  return norm;
+}
+function buildFactorList(cfg, track, key){
+  const factors = [];
+  if (cfg.corrections && cfg.corrections.length){
+    [...new Set(cfg.corrections.map(c=>c.category))].forEach(cat => {
+      const ratio = track.frames ? (track.categoryHits[cat]||0)/track.frames : 0;
+      factors.push({ key:'alignment_'+cat, label:cat, type:'alignment', score: clamp(Math.round(100-ratio*100), 0, 100) });
+    });
+  } else if (track.formSamples.length){
+    const avgForm = track.formSamples.reduce((a,b)=>a+b,0)/track.formSamples.length;
+    factors.push({ key:'form', label:'Form', type:'form', score: clamp(Math.round(100 - Math.max(0, cfg.formGoodMin-avgForm)*2), 0, 100) });
+  }
+  if (cfg.primary && track.minPrimary !== Infinity){
+    const margin = cfg.bottomAngle - track.minPrimary;
+    factors.push({ key:'rom', label: cfg.type==='hold' ? 'Hold Depth' : 'Range of Motion', type:'depth', score: clamp(Math.round(70+margin*2.5), 60, 100) });
+  }
+  if (track.bottomEnterAt!=null){
+    const tempoScore = scoreTempoFactor(track.bottomEnterAt - track.startTime);
+    if (tempoScore!=null) factors.push({ key:'tempo', label:'Tempo & Control', type:'tempo', score: tempoScore });
+  }
+  if (!SYMMETRY_EXCLUDED.has(key)){
+    const symScore = scoreSymmetryFactor(track.rightSamples, track.leftSamples);
+    if (symScore!=null) factors.push({ key:'symmetry', label:'Symmetry', type:'symmetry', score: symScore });
+  }
+  return factors;
+}
+/* Rep Scoring Engine — multi-factor, weighted, confidence-aware, with a point-loss explanation. */
+function computeRepScore(cfg, track, repHistory, key){
+  const factors = buildFactorList(cfg, track, key);
+  if (!factors.length) return { overall:100, factors:[], comps:{}, issues:[], status:'good', confidence:computeConfidencePct(track), lowConfidence:false, explanation:[] };
+  const baseline = Math.round(factors.reduce((a,f)=>a+f.score,0)/factors.length);
+  if (repHistory && repHistory.length){
+    const runningAvg = repHistory.reduce((a,r)=>a+(r.overall??baseline),0)/repHistory.length;
+    factors.push({ key:'consistency', label:'Consistency', type:'consistency', score: scoreDeviationFromRunningAverage(baseline, runningAvg) });
+  }
+  const weights = getFactorWeights(cfg, factors);
+  const confidence = computeConfidencePct(track);
+  const lowConfidence = confidence>0 && confidence < LOW_CONFIDENCE_THRESHOLD;
+  const overall = lowConfidence ? null : Math.round(factors.reduce((a,f)=>a+f.score*(weights[f.key]||0), 0));
+  const comps = {}; factors.forEach(f => { comps[f.label] = f.score; });
+  const issues = factors.filter(f => f.type!=='depth' && f.type!=='form' && f.score<75).map(f => track.categoryLabels[f.label] || f.label);
+  const status = lowConfidence ? 'unknown' : (overall>=85 ? 'good' : overall>=60 ? 'warn' : 'bad');
+  const explanation = overall==null ? [] : factors
+    .map(f => ({ label:f.label, loss: Math.round((100-f.score)*(weights[f.key]||0)) }))
+    .filter(l=>l.loss>0).sort((a,b)=>b.loss-a.loss);
+  return { overall, factors, comps, issues, status, confidence, lowConfidence, explanation };
+}
+/* Rep-to-rep consistency across the whole set — flags fatigue rather than just averaging it away. */
+function detectFatigue(log){
+  const scored = log.filter(r=>r.overall!=null);
+  if (scored.length < 4) return null;
+  const half = Math.floor(scored.length/2);
+  const avg = arr => arr.reduce((a,r)=>a+r.overall,0)/arr.length;
+  const drop = Math.round(avg(scored.slice(0,half)) - avg(scored.slice(half)));
+  if (drop >= 8) return { drop, laterReps: scored.length-half, message:`Your form quality decreased during the final ${scored.length-half} reps.` };
+  return null;
+}
+
+const ANGLE_JUMP_REJECT_DEG = 45; // reject implausible single-frame angle spikes (likely a pose-detection glitch) rather than letting them corrupt the smoothed reading
+function smooth(h,v,w){
+  if (h.length && Math.abs(v-h[h.length-1]) > ANGLE_JUMP_REJECT_DEG) v = h[h.length-1];
+  h.push(v); if(h.length>w) h.shift();
+  return h.reduce((a,b)=>a+b,0)/h.length;
+}
 function angleBetween(a,b,c){ const ab={x:a.x-b.x,y:a.y-b.y}, cb={x:c.x-b.x,y:c.y-b.y}; const dot=ab.x*cb.x+ab.y*cb.y; const mA=Math.hypot(ab.x,ab.y), mC=Math.hypot(cb.x,cb.y); return Math.acos(Math.min(1,Math.max(-1,dot/(mA*mC))))*180/Math.PI; }
 function setFeedback(t,k){ feedbackPill.textContent=t; feedbackPill.className='feedback-pill'+(k?' '+k:''); }
 function formatTime(ms){ const s=Math.floor(ms/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+
+function coachSpeak(text){
+  const now = performance.now();
+  if (now - lastVoiceAt < VOICE_COOLDOWN_MS) return;
+  lastVoiceAt = now;
+  speak(text);
+}
+
+/* Compute a 0-100 score + component breakdown for the tracking window just finished. */
+function finalizeScore(cfg, track){
+  const comps = {};
+  if (cfg.primary && track.minPrimary !== Infinity){
+    const margin = cfg.bottomAngle - track.minPrimary; // positive = went deeper than required
+    comps['Depth'] = clamp(Math.round(70 + margin*2.5), 60, 100);
+  }
+  if (cfg.corrections && cfg.corrections.length){
+    const cats = [...new Set(cfg.corrections.map(c=>c.category))];
+    cats.forEach(cat => {
+      const hits = track.categoryHits[cat] || 0;
+      const ratio = track.frames ? hits/track.frames : 0;
+      comps[cat] = clamp(Math.round(100 - ratio*100), 0, 100);
+    });
+  } else {
+    const avgForm = track.formSamples.length ? track.formSamples.reduce((a,b)=>a+b,0)/track.formSamples.length : cfg.formGoodMin;
+    comps['Form'] = clamp(Math.round(100 - Math.max(0, cfg.formGoodMin-avgForm)*2), 0, 100);
+  }
+  const vals = Object.values(comps);
+  const overall = vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 100;
+  const issues = Object.entries(comps).filter(([k,v]) => k!=='Depth' && k!=='Form' && v<75).map(([k]) => track.categoryLabels[k] || k);
+  const status = overall>=85 ? 'good' : overall>=60 ? 'warn' : 'bad';
+  return { overall, comps, issues, status };
+}
+
+function updateRomGauge(cfg, angle){
+  if (!cfg.primary){ romPanel.style.display='none'; return; }
+  romPanel.style.display='';
+  const pct = clamp((angle/180)*100, 0, 100);
+  const targetPct = clamp((cfg.bottomAngle/180)*100, 0, 100);
+  romMarkerEl.style.left = pct+'%';
+  romTargetZoneEl.style.width = targetPct+'%';
+  romReadoutEl.textContent = `Yours: ${angle.toFixed(0)}°  ·  Target: ≤${cfg.bottomAngle}°`;
+}
+
+function scoreColor(status){ return status==='good' ? 'var(--green)' : status==='warn' ? 'var(--orange)' : status==='unknown' ? 'var(--muted)' : 'var(--red)'; }
+function scoreIcon(status){ return status==='good' ? '✅' : status==='warn' ? '⚠️' : status==='unknown' ? '❔' : '❌'; }
+
+function renderFormScoreCard(){
+  const cfg = EXERCISES[currentExercise];
+  const source = cfg.type==='hold' ? holdScoreSamples[holdScoreSamples.length-1] : repLog[repLog.length-1];
+  if (!source){ formScoreCard.style.display='none'; return; }
+  formScoreCard.style.display='';
+  formScoreExerciseEl.textContent = cfg.name;
+  if (source.lowConfidence){
+    formScoreBigEl.innerHTML = `— <span>/ 100</span>`;
+    formScoreBigEl.className = 'form-score-big unknown';
+  } else {
+    formScoreBigEl.innerHTML = `${source.overall} <span>/ 100</span>`;
+    formScoreBigEl.className = 'form-score-big ' + source.status;
+  }
+  const confBadge = `<div class="fs-confidence">Analysis Confidence: <b style="color:${source.confidence>=75?'var(--green)':source.confidence>=45?'var(--orange)':'var(--red)'}">${source.confidence}%</b></div>`;
+  if (source.lowConfidence){
+    formScoreComponentsEl.innerHTML = confBadge + `<div class="empty-state" style="padding:16px 4px;">⚠️ Unable to confidently analyze this rep. Please adjust your position or camera.</div>`;
+    return;
+  }
+  const compsHtml = Object.entries(source.comps).map(([label,val]) => `
+    <div class="fs-comp-row">
+      <div class="fs-comp-label">${label}</div>
+      <div class="fs-comp-bar"><div style="width:${val}%; background:${val>=85?'var(--green)':val>=60?'var(--orange)':'var(--red)'}"></div></div>
+      <div class="fs-comp-val">${val}</div>
+    </div>`).join('');
+  const explainHtml = (source.explanation && source.explanation.length)
+    ? `<div class="fs-explain"><b>Why this score:</b> ${source.explanation.slice(0,3).map(l=>`${l.label} −${l.loss}`).join(' · ')}</div>` : '';
+  formScoreComponentsEl.innerHTML = confBadge + compsHtml + explainHtml;
+}
+
+function renderRepLog(){
+  if (!repLog.length){ repLogCard.style.display='none'; return; }
+  repLogCard.style.display='';
+  repLogListEl.innerHTML = repLog.map(r => `
+    <div class="rep-log-row ${r.status}">
+      <span class="rep-log-icon">${scoreIcon(r.status)}</span>
+      <span class="rep-log-num">Rep ${r.index}</span>
+      <span class="rep-log-issue">${r.lowConfidence ? 'Low camera confidence' : (r.issues.length ? r.issues.join(', ') : 'Good form')}${(!r.lowConfidence && r.tempo) ? ` · ${(r.tempo.down/1000).toFixed(1)}s down` : ''}</span>
+      <span class="rep-log-score" style="color:${scoreColor(r.status)}">${r.overall!=null ? r.overall : '—'}</span>
+    </div>`).join('');
+}
 
 function selectExercise(key){
   if (!EXERCISES[key]) return;
@@ -1065,6 +2129,7 @@ function renderExerciseUI(){
     metricLabelEl.textContent='Hold time'; repCountEl.textContent='0:00';
     primaryAngleLabelEl.textContent='N/A — hold exercise'; primaryAngleEl.textContent='—';
     phaseRowLabelEl.textContent='Best hold'; phaseLabelEl.textContent='0:00';
+    romPanel.style.display='none';
   } else {
     metricLabelEl.textContent='Reps'; repCountEl.textContent=repCount;
     primaryAngleLabelEl.textContent=cfg.primaryLabel; phaseRowLabelEl.textContent='Rep phase';
@@ -1087,24 +2152,124 @@ exercisePicker.addEventListener('click', (e) => {
 function resetState(){
   repCount=0; phase='top'; reachedDepth=false; bottomStreak=0; topStreak=0;
   primaryHistory=[]; formHistory=[]; lastRepTime=0; holdStartTime=null; bestHoldMs=0; lastSpokenMilestone=0;
+  repLog=[]; repTrack=freshRepTrack(); holdTrack=freshRepTrack(); holdScoreSamples=[]; prevActiveCategories=new Set(); lastVoiceAt=0;
   renderExerciseUI(); setFeedback('Ready', null);
-  ratingCard.style.display='none'; coachMainCard.style.display='';
+  formScoreCard.style.display='none'; repLogCard.style.display='none';
+  ratingCard.style.display='none'; reportCard.style.display='none'; coachMainCard.style.display='';
+  readinessBadge.style.display='none'; lastReadinessLevel=null; debugPanel.textContent='';
 }
-resetBtn.onclick = resetState;
+resetBtn.onclick = () => { resetState(); if (autoDetectOn){ autoDetectLocked=false; resetAutoDetectHistory(); } };
+
+document.getElementById('toggleAutoDetect').onclick = () => {
+  autoDetectOn = !autoDetectOn;
+  document.getElementById('toggleAutoDetect').classList.toggle('on', autoDetectOn);
+  autoDetectLocked = false; resetAutoDetectHistory();
+  if (autoDetectOn) setFeedback('Auto-detect on — move into frame', null);
+};
+
+const IMPROVEMENT_TIPS = {
+  'Knee valgus':'Focus on pushing your knees outward, in line with your toes, throughout the movement.',
+  'Knee valgus on landing':'Land with your knees tracking over your toes — try slowing down your landing.',
+  'Excessive forward lean':'Keep your chest lifted and your core braced to stay more upright.',
+  'Hips sagging':'Brace your core hard to keep a flat line from shoulders to heels.',
+  'Hips piking up':'Squeeze your glutes and lower your hips back into a straight line.',
+  'Hips too high':'Lower your hips into one straight line with your shoulders and heels.',
+  'Hips rising':'Keep your hips low and level — imagine a flat tabletop.',
+  'Elbow drift':'Pin your elbow to your side for the entire rep.',
+  'Excessive back lean':'Brace your core and press straight overhead instead of leaning back.',
+  'Not deep enough':'Sink lower until your thighs are roughly parallel to the floor.',
+  'Rushed tempo':'Slow down — a controlled 2-3 second tempo builds more strength and control.',
+};
+function suggestionFor(label){ return IMPROVEMENT_TIPS[label] || 'Focus on slow, controlled reps and keep an eye on the live corrections for real-time cues.'; }
+
+function buildReport(cfg){
+  const source = cfg.type==='hold' ? holdScoreSamples : repLog;
+  const total = source.length;
+  const scored = source.filter(r => !r.lowConfidence && r.overall!=null);
+  const unclear = total - scored.length;
+  const correct = scored.filter(r=>r.status==='good').length;
+  const incorrect = scored.length - correct;
+  const avgScore = scored.length ? Math.round(scored.reduce((a,r)=>a+r.overall,0)/scored.length) : 0;
+  const bestScore = scored.length ? Math.max(...scored.map(r=>r.overall)) : null;
+  const lowestScore = scored.length ? Math.min(...scored.map(r=>r.overall)) : null;
+  const avgConfidence = source.length ? Math.round(source.reduce((a,r)=>a+(r.confidence||0),0)/source.length) : null;
+  const tally = {};
+  scored.forEach(r => r.issues.forEach(i => { tally[i] = (tally[i]||0)+1; }));
+  const entries = Object.entries(tally).sort((a,b)=>b[1]-a[1]);
+  const mostCommon = entries.length ? entries[0][0] : null;
+
+  const categorySums = {}, categoryCounts = {};
+  scored.forEach(r => Object.entries(r.comps).forEach(([cat,val]) => {
+    categorySums[cat] = (categorySums[cat]||0)+val; categoryCounts[cat] = (categoryCounts[cat]||0)+1;
+  }));
+  const categoryScores = {};
+  Object.keys(categorySums).forEach(cat => { categoryScores[cat] = Math.round(categorySums[cat]/categoryCounts[cat]); });
+
+  const depthReps = repLog.filter(r=>r.depthAngle!=null && !r.lowConfidence);
+  const avgDepthAngle = depthReps.length ? Math.round(depthReps.reduce((a,r)=>a+r.depthAngle,0)/depthReps.length) : null;
+  const targetAngle = depthReps.length ? depthReps[0].targetAngle : null;
+
+  const tempoReps = repLog.filter(r=>r.tempo && !r.lowConfidence);
+  const avgTempo = tempoReps.length ? {
+    down: Math.round(tempoReps.reduce((a,r)=>a+r.tempo.down,0)/tempoReps.length),
+    bottom: Math.round(tempoReps.reduce((a,r)=>a+r.tempo.bottom,0)/tempoReps.length),
+    up: Math.round(tempoReps.reduce((a,r)=>a+r.tempo.up,0)/tempoReps.length),
+  } : null;
+
+  const fatigue = cfg.type==='reps' ? detectFatigue(repLog) : null;
+
+  return { total, unclear, correct, incorrect, avgScore, bestScore, lowestScore, avgConfidence, mostCommon, categoryScores, avgDepthAngle, targetAngle, avgTempo, fatigue };
+}
+
+function renderReportCard(report){
+  reportCard.style.display='';
+  document.getElementById('reportTotal').textContent = report.total;
+  document.getElementById('reportAvgScore').textContent = report.avgScore;
+  document.getElementById('reportBest').textContent = report.bestScore!=null ? report.bestScore : '—';
+  document.getElementById('reportLowest').textContent = report.lowestScore!=null ? report.lowestScore : '—';
+  document.getElementById('reportCorrect').textContent = report.correct;
+  document.getElementById('reportIncorrect').textContent = report.incorrect;
+  document.getElementById('reportConfidence').textContent = report.avgConfidence!=null ? report.avgConfidence+'%' : '—';
+  const unclearTile = document.getElementById('reportUnclearTile');
+  if (report.unclear > 0){ unclearTile.style.display=''; document.getElementById('reportUnclear').textContent = report.unclear; }
+  else unclearTile.style.display='none';
+  const fatigueBanner = document.getElementById('reportFatigueBanner');
+  if (report.fatigue){ fatigueBanner.style.display=''; document.getElementById('reportFatigueMsg').textContent = report.fatigue.message; }
+  else fatigueBanner.style.display='none';
+  const mistakeEl = document.getElementById('reportMistake');
+  if (report.mostCommon){ mistakeEl.textContent = report.mostCommon; mistakeEl.classList.remove('none'); }
+  else { mistakeEl.textContent = 'None — clean form throughout!'; mistakeEl.classList.add('none'); }
+  const romRow = document.getElementById('reportRomRow');
+  if (report.avgDepthAngle!=null){ romRow.style.display=''; document.getElementById('reportRomVal').textContent = `${report.avgDepthAngle}° (Recommended: ≤${report.targetAngle}°)`; }
+  else romRow.style.display='none';
+  const tempoRow = document.getElementById('reportTempoRow');
+  if (report.avgTempo){ tempoRow.style.display=''; const t=report.avgTempo; tempoRow.querySelector('#reportTempoVal').textContent = `Down ${(t.down/1000).toFixed(1)}s · Bottom ${(t.bottom/1000).toFixed(1)}s · Up ${(t.up/1000).toFixed(1)}s`; }
+  else tempoRow.style.display='none';
+  document.getElementById('reportSuggestion').textContent = report.mostCommon
+    ? suggestionFor(report.mostCommon)
+    : 'Great work — keep training at this level and consider increasing reps or difficulty next session.';
+}
 
 finishBtn.onclick = async () => {
   const cfg = EXERCISES[currentExercise];
   if (cfg.type === 'reps' && repCount === 0){ alert('Log at least one rep before saving.'); return; }
   if (cfg.type === 'hold' && bestHoldMs === 0){ alert('Hold at least briefly before saving.'); return; }
   pendingRating = { rpe:0, note:'' };
+  const report = buildReport(cfg);
   appData.sessions.push({
     date: new Date().toISOString().slice(0,10),
     exercise: currentExercise,
     reps: cfg.type==='reps' ? repCount : 0,
     holdSeconds: cfg.type==='hold' ? Math.round(bestHoldMs/1000) : 0,
+    formScore: report.avgScore,
+    correctReps: report.correct,
+    incorrectReps: report.incorrect,
+    mostCommonMistake: report.mostCommon,
+    categoryScores: report.categoryScores,
   });
   await saveData();
   coachMainCard.style.display='none';
+  renderReportCard(report);
   ratingCard.style.display='';
   document.getElementById('rpeRow').querySelectorAll('.rpe-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('sessionNote').value='';
@@ -1126,6 +2291,7 @@ document.getElementById('saveRatingBtn').onclick = async () => {
   renderDashboard();
   showToast(`Session saved!${unlocked.length ? ' New badge: '+unlocked[0].name : ''}`);
   resetState();
+  if (autoDetectOn){ autoDetectLocked=false; resetAutoDetectHistory(); }
 };
 
 async function initModel(){
@@ -1163,6 +2329,7 @@ function loop(){
       const lm = result.landmarks[0]; const drawer = new DrawingUtils(ctx); const cfg = EXERCISES[currentExercise];
       drawer.drawLandmarks(lm,{radius:3,color:cfg.color});
       drawer.drawConnectors(lm, PoseLandmarker.POSE_CONNECTIONS, {color:'rgba(255,255,255,0.85)', lineWidth:2});
+      if (autoDetectOn && !autoDetectLocked) runAutoDetect(lm);
       evaluateExercise(lm);
     } else {
       missedFrames++;
@@ -1186,11 +2353,34 @@ function renderCorrections(activeMessages){
     correctionsListEl.innerHTML = activeMessages.map(m => `<div class="correction-chip">${m}</div>`).join('');
   }
 }
-function evaluateCorrections(lm, angles){
+function evaluateCorrections(lm, angles, track){
   const cfg = EXERCISES[currentExercise];
-  if (!cfg.corrections || !cfg.corrections.length) return [];
+  if (track){
+    track.frames++;
+    if (angles.formAngle!=null) track.formSamples.push(angles.formAngle);
+    if (angles.confidence!=null) track.confidenceSamples.push(angles.confidence);
+  }
+  if (!cfg.corrections || !cfg.corrections.length){ prevActiveCategories = new Set(); return []; }
   const active = [];
-  cfg.corrections.forEach(c => { try{ if (c.test(lm, angles)) active.push(c.msg); }catch(e){} });
+  const activeCats = new Set();
+  cfg.corrections.forEach(c => {
+    try{
+      if (c.test(lm, angles)){
+        active.push(c.msg);
+        activeCats.add(c.category);
+        if (track) track.categoryLabels[c.category] = c.label;
+      }
+    }catch(e){}
+  });
+  if (track){ activeCats.forEach(cat => { track.categoryHits[cat] = (track.categoryHits[cat]||0)+1; }); }
+  // Real-time voice cue on newly-triggered issues (hands-free coaching mid-rep)
+  activeCats.forEach(cat => {
+    if (!prevActiveCategories.has(cat)){
+      const corr = cfg.corrections.find(c => c.category===cat);
+      if (corr && corr.voice) coachSpeak(corr.voice);
+    }
+  });
+  prevActiveCategories = activeCats;
   renderCorrections(active);
   return active;
 }
@@ -1198,18 +2388,33 @@ function evaluateCorrections(lm, angles){
 function evaluateExercise(lm){
   const cfg = EXERCISES[currentExercise];
   if (cfg.type==='hold'){ evaluateHold(lm,cfg); return; }
+  const readiness = computeReadiness(lm, cfg);
+  updateReadinessBadge(readiness);
   const [pa,pb,pc]=cfg.primary, [fa,fb,fc]=cfg.form;
   const pts=[lm[pa],lm[pb],lm[pc],lm[fa],lm[fb],lm[fc]];
   if (pts.some(p=>!p)) return;
-  if (Math.min(...pts.map(p=>p.visibility??1)) < 0.5){ setFeedback('Move fully into frame','warn'); return; }
+  const minVis = Math.min(...pts.map(p=>p.visibility??1));
+  if (minVis < 0.5){ setFeedback('Move fully into frame','warn'); return; }
   const primaryAngle = smooth(primaryHistory, angleBetween(lm[pa],lm[pb],lm[pc]), SMOOTH_WINDOW);
   const formAngle = smooth(formHistory, angleBetween(lm[fa],lm[fb],lm[fc]), SMOOTH_WINDOW);
   primaryAngleEl.textContent = primaryAngle.toFixed(0)+'°'; formAngleEl.textContent = formAngle.toFixed(0)+'°';
   const formOK = formAngle >= cfg.formGoodMin; markTips(formOK);
-  const activeCorrections = evaluateCorrections(lm, { primaryAngle, formAngle });
+  if (phase==='top' && primaryAngle < cfg.topAngle-20){ phase='descending'; reachedDepth=false; bottomStreak=0; repTrack=freshRepTrack(); }
+  const activeCorrections = evaluateCorrections(lm, { primaryAngle, formAngle, confidence:minVis }, repTrack);
+  repTrack.minPrimary = Math.min(repTrack.minPrimary, primaryAngle);
+  if (!SYMMETRY_EXCLUDED.has(currentExercise)){
+    const [ma,mb,mc] = mirrorTriple(cfg.primary);
+    const mpts = [lm[ma],lm[mb],lm[mc]];
+    if (mpts.every(Boolean) && Math.min(...mpts.map(p=>p.visibility??1))>=0.5){
+      repTrack.rightSamples.push(primaryAngle);
+      repTrack.leftSamples.push(angleBetween(mpts[0],mpts[1],mpts[2]));
+    }
+  }
+  updateDebugPanel(cfg, { primaryAngle, formAngle, confidence:minVis, phase });
   const now = performance.now();
-  if (phase==='top' && primaryAngle < cfg.topAngle-20){ phase='descending'; reachedDepth=false; bottomStreak=0; }
-  if (phase==='descending'){ if (primaryAngle<=cfg.bottomAngle){ bottomStreak++; if(bottomStreak>=CONFIRM_FRAMES){phase='bottom'; reachedDepth=true; topStreak=0;} } else bottomStreak=0; }
+  if (phase==='descending'){ if (primaryAngle<=cfg.bottomAngle){ bottomStreak++; if(bottomStreak>=CONFIRM_FRAMES){phase='bottom'; reachedDepth=true; topStreak=0; repTrack.bottomEnterAt=now;} } else bottomStreak=0; }
+  if (phase==='bottom' && repTrack.bottomEnterAt!=null && repTrack.bottomExitAt==null && primaryAngle>cfg.bottomAngle){ repTrack.bottomExitAt=now; }
+  updateRomGauge(cfg, primaryAngle);
   if (phase==='bottom'||phase==='descending'){
     if (primaryAngle>=cfg.topAngle) topStreak++; else topStreak=0;
     if (topStreak>=CONFIRM_FRAMES){
@@ -1217,11 +2422,30 @@ function evaluateExercise(lm){
       if (canCount){
         repCount++; repCountEl.textContent=repCount; pulseRepCount(); lastRepTime=now; updateGoalProgress();
         const repGood = formOK && !activeCorrections.length;
-        beep(repGood?880:440);
-        setFeedback(repGood?'Nice rep!':'Rep counted — watch your form', repGood?'good':'warn');
-        if (repCount % 5 === 0 && repCount !== lastSpokenMilestone){ lastSpokenMilestone = repCount; speak(`${repCount} reps`); }
-        else if (repCount === settings.repGoal){ speak('Goal reached! Great work.'); }
-        else if (activeCorrections.length){ speak(activeCorrections[0]); }
+        const scoreResult = computeRepScore(cfg, repTrack, repLog, currentExercise);
+        const bottomEnterAt = repTrack.bottomEnterAt ?? now, bottomExitAt = repTrack.bottomExitAt ?? bottomEnterAt;
+        const tempo = { down: Math.round(bottomEnterAt-repTrack.startTime), bottom: Math.round(bottomExitAt-bottomEnterAt), up: Math.round(now-bottomExitAt) };
+        const rushed = tempo.down > 0 && tempo.down < IDEAL_MIN_DOWN_MS;
+        if (rushed && !scoreResult.lowConfidence){
+          scoreResult.issues.push('Rushed tempo');
+          if (scoreResult.status==='good') scoreResult.status='warn';
+        }
+        scoreResult.index = repCount; scoreResult.tempo = tempo;
+        scoreResult.depthAngle = repTrack.minPrimary===Infinity ? null : Math.round(repTrack.minPrimary);
+        scoreResult.targetAngle = cfg.bottomAngle;
+        repLog.push(scoreResult);
+        renderRepLog(); renderFormScoreCard();
+        if (scoreResult.lowConfidence){
+          setFeedback('⚠️ Unable to confidently analyze this rep', 'warn');
+          coachSpeak('I lost track of you — try adjusting your position.');
+        } else {
+          beep(repGood?880:440);
+          setFeedback(repGood?'Nice rep!':'Rep counted — watch your form', repGood?'good':'warn');
+          if (repCount % 5 === 0 && repCount !== lastSpokenMilestone){ lastSpokenMilestone = repCount; coachSpeak(`${repCount} reps`); }
+          else if (repCount === settings.repGoal){ coachSpeak('Goal reached! Great work.'); }
+          else if (rushed){ coachSpeak('Slow down.'); }
+          else if (scoreResult.status==='good'){ coachSpeak(scoreResult.overall>=95 ? 'Great depth!' : 'Nice rep!'); }
+        }
       } else if (!reachedDepth) setFeedback('Go lower — depth not reached','warn');
       phase='top'; reachedDepth=false; bottomStreak=0; topStreak=0;
     }
@@ -1237,14 +2461,25 @@ function evaluateExercise(lm){
   phaseLabelEl.textContent = phase[0].toUpperCase()+phase.slice(1);
 }
 function evaluateHold(lm,cfg){
+  const readiness = computeReadiness(lm, cfg);
+  updateReadinessBadge(readiness);
   const [fa,fb,fc]=cfg.form; const pts=[lm[fa],lm[fb],lm[fc]];
   if (pts.some(p=>!p)) return;
-  if (Math.min(...pts.map(p=>p.visibility??1)) < 0.5){ setFeedback('Move fully into frame','warn'); holdStartTime=null; return; }
+  const minVis = Math.min(...pts.map(p=>p.visibility??1));
+  if (minVis < 0.5){ setFeedback('Move fully into frame','warn'); holdStartTime=null; return; }
   const formAngle = smooth(formHistory, angleBetween(lm[fa],lm[fb],lm[fc]), SMOOTH_WINDOW);
   formAngleEl.textContent = formAngle.toFixed(0)+'°';
   const formOK = formAngle >= cfg.formGoodMin; markTips(formOK);
-  const activeCorrections = evaluateCorrections(lm, { formAngle });
+  const activeCorrections = evaluateCorrections(lm, { formAngle, confidence:minVis }, holdTrack);
+  updateDebugPanel(cfg, { primaryAngle:null, formAngle, confidence:minVis, phase:'hold' });
   const now = performance.now();
+  if (holdTrack.frames % 30 === 0){
+    const snap = computeRepScore(cfg, holdTrack, holdScoreSamples, currentExercise);
+    holdScoreSamples.push(snap);
+    if (holdScoreSamples.length > 200) holdScoreSamples.shift();
+    renderFormScoreCard();
+    if (!snap.lowConfidence && snap.status==='good' && snap.overall>=95) coachSpeak('Great form — hold it.');
+  }
   if (formOK && !activeCorrections.length){
     if (holdStartTime===null) holdStartTime=now;
     const elapsed = now-holdStartTime; repCountEl.textContent = formatTime(elapsed);
@@ -1257,8 +2492,730 @@ function evaluateHold(lm,cfg){
 }
 startBtn.onclick = startCamera;
 
+/* ================= EXERCISE FORM GUIDE ================= */
+/* Extends EXERCISES (the live pose-tracking config) with the richer content a guide page needs.
+   Reuses cfg.tips as the Form Checklist and cfg.corrections as part of Common Mistakes wherever
+   an exercise is camera-trackable, instead of re-authoring that content. A handful of well-known
+   exercises that aren't camera-trackable (deadlift, bench press, lat pulldown, leg press — no
+   pose config exists for these) are included as guide-only entries so search/browse feels
+   complete; their "Check My Form" CTA is disabled rather than pretending to analyze them. */
+const GENERIC_MISTAKES = [
+  { mistake:'Moving too fast', fix:'Slow down to maintain control and maximize muscle engagement.' },
+  { mistake:'Partial range of motion', fix:'Complete the full movement path for the best results.' },
+];
+const EXTRA_GUIDE_DATA = {
+  squat: { difficulty:'Beginner', equipmentLabel:'Bodyweight (barbell optional)', muscles:{primary:['Quadriceps','Glutes'],secondary:['Hamstrings','Core']}, setsReps:'3-4 sets × 8-12 reps', restSec:90, tags:['legs','quads','glutes','lower body'],
+    description:'A foundational lower-body movement that builds strength in your legs and glutes while teaching hip and knee control.',
+    instructions:['Stand with feet approximately shoulder-width apart, toes slightly turned out.','Keep your chest up and spine neutral.','Brace your core.','Push your hips back and bend your knees to lower down.','Descend under control until your thighs are roughly parallel to the floor.','Drive through your feet to return to the starting position.'],
+    extraMistakes:[{mistake:'Rounding your lower back', fix:'Keep your chest up and brace your core to maintain a neutral spine.'},{mistake:'Heels lifting off the ground', fix:'Keep your weight balanced through your whole foot, especially your heels.'},{mistake:'Moving too fast', fix:'Slow your descent to 2-3 seconds for better control and muscle engagement.'}] },
+  jumpSquat: { difficulty:'Intermediate', equipmentLabel:'Bodyweight', muscles:{primary:['Quadriceps','Glutes'],secondary:['Calves','Core']}, setsReps:'3 sets × 10-15 reps', restSec:60, tags:['legs','cardio','explosive','power'],
+    description:'An explosive variation of the squat that builds power and cardiovascular conditioning.',
+    extraMistakes:[{mistake:'Landing with stiff knees', fix:'Land softly with bent knees to absorb impact and protect your joints.'}] },
+  pushup: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Chest','Triceps'],secondary:['Shoulders','Core']}, setsReps:'3 sets × 8-15 reps', restSec:60, tags:['chest','arms','triceps','upper body'],
+    description:'A classic bodyweight press that builds upper-body pushing strength and core stability.',
+    instructions:['Start in a plank with hands slightly wider than shoulder-width.','Keep your body in one straight line from shoulders to heels.','Brace your core and lower your chest toward the floor, elbows at about 45°.','Lower until your chest nearly touches the ground.','Push through your palms to return to the starting position.'],
+    extraMistakes:[{mistake:'Flaring elbows out to 90°', fix:'Keep elbows closer to your torso, around a 45° angle, to protect your shoulders.'}] },
+  tricepDip: { difficulty:'Intermediate', equipmentLabel:'Bench or sturdy chair', muscles:{primary:['Triceps'],secondary:['Chest','Shoulders']}, setsReps:'3 sets × 8-12 reps', restSec:60, tags:['arms','triceps','chest'],
+    description:'A bodyweight press that isolates the triceps using a bench, chair, or dip bars.' },
+  lunge: { difficulty:'Beginner', equipmentLabel:'Bodyweight (dumbbells optional)', muscles:{primary:['Quadriceps','Glutes'],secondary:['Hamstrings','Core']}, setsReps:'3 sets × 8-10 reps per leg', restSec:60, tags:['legs','glutes','lower body'],
+    description:'A single-leg movement that builds strength, balance, and hip stability.',
+    instructions:['Stand tall with feet hip-width apart.','Step forward with one leg, lowering your hips until both knees are bent near 90°.','Keep your front knee tracking over your toes and your torso upright.','Push through your front heel to return to standing.','Repeat, alternating legs.'],
+    extraMistakes:[{mistake:'Taking too short a step', fix:'Step far enough forward that your front shin stays roughly vertical at the bottom.'}] },
+  sideLunge: { difficulty:'Intermediate', equipmentLabel:'Bodyweight', muscles:{primary:['Glutes','Adductors'],secondary:['Quadriceps','Hamstrings']}, setsReps:'3 sets × 8-10 reps per leg', restSec:60, tags:['legs','glutes','inner thigh'],
+    description:'A lateral movement that builds hip and inner-thigh strength while improving mobility.' },
+  gluteBridge: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Glutes'],secondary:['Hamstrings','Core']}, setsReps:'3 sets × 12-15 reps', restSec:45, tags:['glutes','core','lower body'],
+    description:'A floor-based hip extension movement that isolates and activates the glutes.' },
+  situp: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Abdominals'],secondary:['Hip Flexors']}, setsReps:'3 sets × 12-20 reps', restSec:45, tags:['core','abs'],
+    description:'A classic core exercise that builds abdominal strength and endurance.' },
+  bicepCurl: { difficulty:'Beginner', equipmentLabel:'Dumbbells', muscles:{primary:['Biceps'],secondary:['Forearms']}, setsReps:'3 sets × 10-12 reps', restSec:60, tags:['arms','biceps'],
+    description:'An isolation movement that builds bicep strength and size.',
+    instructions:['Stand tall holding a dumbbell in each hand, arms extended, palms forward.','Keep your elbows pinned to your sides.','Curl the weights up toward your shoulders with control.','Squeeze your biceps briefly at the top.','Lower the weights back down slowly to the starting position.'],
+    extraMistakes:[{mistake:'Swinging your body for momentum', fix:'Keep your torso still — let your biceps do the work, not momentum.'}] },
+  overheadPress: { difficulty:'Intermediate', equipmentLabel:'Dumbbells', muscles:{primary:['Shoulders'],secondary:['Triceps','Core']}, setsReps:'3 sets × 8-10 reps', restSec:90, tags:['shoulders','arms'],
+    description:'A vertical press that builds shoulder strength and overhead stability.',
+    instructions:['Stand tall holding dumbbells at shoulder height, palms facing forward.','Brace your core to keep your ribs stacked over your hips.','Press the weights straight overhead until your arms are fully extended.','Avoid arching your lower back as you press.','Lower the weights back to shoulder height with control.'] },
+  plank: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Abdominals'],secondary:['Shoulders','Glutes']}, setsReps:'3 sets × 20-45s hold', restSec:45, tags:['core','abs'],
+    description:'An isometric hold that builds core stability and total-body tension control.',
+    instructions:['Get into a forearm plank with elbows under your shoulders.','Extend your legs behind you, resting on your toes.','Form one straight line from your shoulders to your heels.','Brace your core and squeeze your glutes.','Hold the position while breathing normally.'] },
+  wallSit: { difficulty:'Beginner', equipmentLabel:'Wall', muscles:{primary:['Quadriceps'],secondary:['Glutes']}, setsReps:'3 sets × 20-40s hold', restSec:60, tags:['legs','quads'],
+    description:'An isometric hold that builds quad endurance and mental toughness.' },
+  superman: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Lower Back'],secondary:['Glutes','Shoulders']}, setsReps:'3 sets × 10-15s hold', restSec:45, tags:['back','core'],
+    description:'A floor-based extension that strengthens the posterior chain and lower back.' },
+  highKnees: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Hip Flexors'],secondary:['Core','Calves']}, setsReps:'3 sets × 30-40s', restSec:45, tags:['cardio','legs'],
+    description:'A high-intensity cardio drill that raises heart rate and builds hip drive.' },
+  mountainClimber: { difficulty:'Intermediate', equipmentLabel:'Bodyweight', muscles:{primary:['Core'],secondary:['Shoulders','Legs']}, setsReps:'3 sets × 20-30s', restSec:45, tags:['cardio','core'],
+    description:'A dynamic plank variation that combines core stability with cardio conditioning.' },
+  calfRaise: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Calves'],secondary:[]}, setsReps:'3 sets × 15-20 reps', restSec:45, tags:['legs','calves'],
+    description:'An isolation movement that builds calf strength and ankle stability.' },
+  deadlift: { name:'Deadlift', icon:'🏋️', group:'Legs', difficulty:'Intermediate', equipmentLabel:'Barbell', muscles:{primary:['Hamstrings','Glutes'],secondary:['Lower Back','Core','Forearms']}, setsReps:'3-4 sets × 5-8 reps', restSec:120, tags:['legs','back','hamstrings','glutes','posterior chain'],
+    description:'A foundational hip-hinge movement that builds total-body pulling strength.',
+    instructions:['Stand with feet hip-width apart, bar over your midfoot.','Hinge at the hips and bend your knees to grip the bar just outside your knees.','Flatten your back and lift your chest before initiating the pull.','Drive through your heels, keeping the bar close to your shins.','Extend your hips and knees together to stand tall, then lock out.','Reverse the motion with control to lower the bar back down.'],
+    formChecklist:['Neutral spine throughout','Bar stays close to your shins','Hips and knees extend together','Full lockout at the top','Controlled, unhurried descent'],
+    extraMistakes:[{mistake:'Rounding your lower back', fix:'Brace your core hard and keep your spine neutral throughout.'},{mistake:'Bar drifting away from your shins', fix:'Keep it close — think of dragging it up your legs.'},{mistake:'Hips shooting up first', fix:'Push the floor away with your legs and hips together.'}] },
+  benchPress: { name:'Bench Press', icon:'🏋️‍♂️', group:'Arms', difficulty:'Intermediate', equipmentLabel:'Barbell + Bench', muscles:{primary:['Chest'],secondary:['Triceps','Shoulders']}, setsReps:'3-4 sets × 6-10 reps', restSec:120, tags:['chest','arms','triceps'],
+    description:'A horizontal press that builds chest, shoulder, and triceps strength.',
+    instructions:['Lie on the bench with eyes under the bar, feet flat on the floor.','Grip the bar slightly wider than shoulder-width.','Unrack the bar and lower it with control to your mid-chest.','Keep your elbows at roughly a 45° angle from your torso.','Press the bar back up to full arm extension over your chest.'],
+    formChecklist:['Feet flat on the floor','Shoulder blades retracted','Elbows at roughly 45° from your torso','Bar path stays over your mid-chest','Full lockout at the top'],
+    extraMistakes:[{mistake:'Bouncing the bar off your chest', fix:'Lower with control and pause briefly rather than bouncing for momentum.'},{mistake:'Flaring elbows to 90°', fix:'Keep elbows closer to 45° from your torso to protect your shoulders.'}] },
+  latPulldown: { name:'Lat Pulldown', icon:'🧗', group:'Arms', difficulty:'Beginner', equipmentLabel:'Cable Machine', muscles:{primary:['Lats (Back)'],secondary:['Biceps']}, setsReps:'3 sets × 10-12 reps', restSec:75, tags:['back','arms','lats'],
+    description:'A vertical pulling movement that builds width and strength in your back.',
+    instructions:['Sit at the machine and grip the bar wider than shoulder-width.','Brace your core and lean back slightly.','Pull the bar down to your upper chest, driving your elbows down and back.','Squeeze your shoulder blades together at the bottom.','Slowly extend your arms back up to the starting position.'],
+    formChecklist:['Slight backward lean, not a big swing','Elbows drive down and back','Bar meets your upper chest','Shoulder blades squeeze together','Controlled return to the top'],
+    extraMistakes:[{mistake:'Using momentum to yank the bar down', fix:'Slow down and let your back muscles do the work, not body swing.'}] },
+  legPress: { name:'Leg Press', icon:'🦿', group:'Legs', difficulty:'Beginner', equipmentLabel:'Leg Press Machine', muscles:{primary:['Quadriceps','Glutes'],secondary:['Hamstrings']}, setsReps:'3-4 sets × 10-12 reps', restSec:90, tags:['legs','quads','glutes'],
+    description:'A machine-based squat pattern that lets you load your legs safely with back support.',
+    instructions:['Sit in the machine with feet shoulder-width apart on the platform.','Release the safety and let your knees bend toward your chest under control.','Lower until your knees reach about 90°, keeping your lower back on the pad.','Drive through your feet to extend your legs back to the start.','Avoid locking your knees out fully at the top.'],
+    formChecklist:['Lower back stays on the pad','Knees track over your toes','Controlled descent to about 90°',"Don't lock your knees out fully",'Full foot contact with the platform'],
+    extraMistakes:[{mistake:'Locking knees out fully at the top', fix:'Stop just short of lockout to keep tension on your muscles and protect your joints.'}] },
+};
+
+function dedupeMistakes(list){
+  const seen = new Set(), out = [];
+  list.forEach(m => { if (m && !seen.has(m.mistake)){ seen.add(m.mistake); out.push(m); } });
+  return out.length ? out : GENERIC_MISTAKES;
+}
+function getGuideEntry(key){
+  const extra = EXTRA_GUIDE_DATA[key];
+  if (!extra) return null;
+  const cfg = EXERCISES[key];
+  const correctionMistakes = (cfg && cfg.corrections) ? cfg.corrections.map(c => ({ mistake:c.label, fix:c.voice })) : [];
+  return {
+    key,
+    trackable: !!cfg,
+    name: cfg ? cfg.name : extra.name,
+    icon: cfg ? cfg.icon : extra.icon,
+    color: cfg ? cfg.color : '#0071E3',
+    group: cfg ? cfg.group : extra.group,
+    difficulty: extra.difficulty,
+    equipmentLabel: extra.equipmentLabel,
+    muscles: extra.muscles,
+    setsReps: extra.setsReps,
+    restSec: extra.restSec,
+    description: extra.description,
+    instructions: extra.instructions || (cfg ? cfg.tips.slice() : []),
+    formChecklist: cfg ? cfg.tips : (extra.formChecklist || extra.instructions || []),
+    mistakes: dedupeMistakes([...correctionMistakes, ...(extra.extraMistakes||[])]),
+  };
+}
+function allGuideKeys(){ return Object.keys(EXTRA_GUIDE_DATA); }
+
+/* ---- Smart search: name match -> synonym match -> body-part tag match -> fuzzy misspelling match ---- */
+function levenshtein(a,b){
+  const dp = [];
+  for (let i=0;i<=a.length;i++) dp.push([i]);
+  for (let j=1;j<=b.length;j++) dp[0][j]=j;
+  for (let i=1;i<=a.length;i++){
+    for (let j=1;j<=b.length;j++){
+      dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+    }
+  }
+  return dp[a.length][b.length];
+}
+function searchExercises(query){
+  const q = (query||'').trim().toLowerCase();
+  if (!q) return [];
+  const keys = allGuideKeys();
+  const nameMatches = keys.filter(k => getGuideEntry(k).name.toLowerCase().includes(q));
+  if (nameMatches.length) return nameMatches.map(getGuideEntry);
+
+  const synKey = detectExerciseKey(q);
+  if (synKey && EXTRA_GUIDE_DATA[synKey]) return [getGuideEntry(synKey)];
+
+  const tagMatches = keys.filter(k => (EXTRA_GUIDE_DATA[k].tags||[]).some(t => t.includes(q) || q.includes(t)));
+  if (tagMatches.length) return tagMatches.map(getGuideEntry);
+
+  const fuzzy = keys.filter(k => getGuideEntry(k).name.toLowerCase().split(/\s+/).some(word => {
+    const maxDist = word.length<=4 ? 1 : 2;
+    return levenshtein(word, q) <= maxDist;
+  }));
+  return fuzzy.map(getGuideEntry);
+}
+
+/* ---- Reusable autocomplete wiring — used by both the Dashboard quick-search and the full Guide search ---- */
+function wireExerciseSearchInput(inputEl, dropdownEl, onSelect){
+  let activeIndex = -1, currentResults = [];
+  function updateActive(){ dropdownEl.querySelectorAll('.search-result-row').forEach((row,i)=>row.classList.toggle('active', i===activeIndex)); }
+  function pick(key){ inputEl.value=''; dropdownEl.style.display='none'; onSelect(key); }
+  function renderDropdown(query){
+    if (!query.trim()){ dropdownEl.style.display='none'; return; }
+    const results = searchExercises(query).slice(0,10);
+    currentResults = results; activeIndex = -1;
+    if (!results.length){
+      dropdownEl.innerHTML = `<div class="search-empty">We couldn't find "${escapeHtml(query)}". Try one of these:
+        <div class="search-empty-chips">${['Squat','Push-up','Plank','Lunge'].map(n=>`<button class="chat-chip" data-fallback="${n}">${n}</button>`).join('')}</div></div>`;
+      dropdownEl.style.display = '';
+      dropdownEl.querySelectorAll('[data-fallback]').forEach(btn => { btn.onclick = () => pick(detectExerciseKey(btn.dataset.fallback) || 'squat'); });
+      return;
+    }
+    dropdownEl.innerHTML = results.map((e,i) => `
+      <div class="search-result-row" data-idx="${i}" data-key="${e.key}">
+        <div class="search-result-icon">${e.icon}</div>
+        <div><div class="search-result-name">${e.name}</div><div class="search-result-meta">${e.group}${e.trackable ? ' · Live AI tracking' : ''}</div></div>
+      </div>`).join('');
+    dropdownEl.style.display = '';
+    dropdownEl.querySelectorAll('.search-result-row').forEach(row => { row.onclick = () => pick(row.dataset.key); });
+  }
+  inputEl.addEventListener('input', () => renderDropdown(inputEl.value));
+  inputEl.addEventListener('focus', () => { if (inputEl.value.trim()) renderDropdown(inputEl.value); });
+  inputEl.addEventListener('keydown', (e) => {
+    if (dropdownEl.style.display==='none' || !currentResults.length) return;
+    if (e.key==='ArrowDown'){ e.preventDefault(); activeIndex = Math.min(activeIndex+1, currentResults.length-1); updateActive(); }
+    else if (e.key==='ArrowUp'){ e.preventDefault(); activeIndex = Math.max(activeIndex-1, 0); updateActive(); }
+    else if (e.key==='Enter'){ e.preventDefault(); const p = currentResults[activeIndex>=0?activeIndex:0]; if (p) pick(p.key); }
+  });
+  document.addEventListener('click', (e) => { if (e.target!==inputEl && !dropdownEl.contains(e.target)) dropdownEl.style.display='none'; });
+}
+
+/* ---- Personalized guidance + real-data-only history ---- */
+function personalizedGuidanceFor(){
+  const lines = [];
+  if (settings.experience==='beginner') lines.push('Start with a lighter load and prioritize technique over speed or weight.');
+  else if (settings.experience==='advanced') lines.push('Focus on progressive overload while keeping your form crisp under heavier loads.');
+  if (settings.profileGoal==='muscle') lines.push('Recommended focus: controlled reps and progressive resistance.');
+  else if (settings.profileGoal==='lose_weight') lines.push('Recommended focus: keep rest periods tight and pair this with consistent cardio for your goal.');
+  else if (settings.profileGoal==='endurance') lines.push('Recommended focus: higher reps with shorter rest to build muscular endurance.');
+  else if (settings.profileGoal==='maintain') lines.push('Recommended focus: stay consistent — steady training beats sporadic intensity.');
+  return lines.join(' ');
+}
+function exerciseHistoryFor(key){
+  const sessions = appData.sessions.filter(s=>s.exercise===key && s.formScore!=null);
+  if (!sessions.length) return null;
+  const current = sessions[sessions.length-1];
+  const previous = sessions.length>1 ? sessions[sessions.length-2] : null;
+  return {
+    current: current.formScore,
+    previous: previous ? previous.formScore : null,
+    improvement: previous ? current.formScore-previous.formScore : null,
+    previousMistake: previous ? previous.mostCommonMistake : null,
+    currentMistake: current.mostCommonMistake,
+  };
+}
+
+/* ---- Guide page rendering ---- */
+function renderGuideBrowse(){
+  const groups = {};
+  allGuideKeys().forEach(k => { const e = getGuideEntry(k); (groups[e.group]=groups[e.group]||[]).push(e); });
+  const order = ['Legs','Arms','Core','Cardio'];
+  document.getElementById('guideBrowseGroups').innerHTML = order.filter(g=>groups[g]).map(g => `
+    <div class="guide-browse-group">
+      <div class="guide-browse-label">${g}</div>
+      <div class="guide-browse-grid">
+        ${groups[g].map(e => `<div class="guide-browse-card" data-guide-key="${e.key}"><div class="gb-icon">${e.icon}</div><div class="gb-name">${e.name}</div></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function buildGuideDetailHTML(e){
+  const muscles = e.muscles || { primary:[], secondary:[] };
+  const details = [
+    ['🏆', e.difficulty, 'Difficulty'],
+    ['🏋️', e.equipmentLabel, 'Equipment'],
+    ['🔁', e.setsReps, 'Sets × Reps'],
+    ['⏱️', e.restSec+'s', 'Rest Period'],
+  ];
+  const history = exerciseHistoryFor(e.key);
+  const personalized = personalizedGuidanceFor();
+  return `
+    <button class="guide-back-btn" id="guideBackBtn">← Back to Browse</button>
+
+    <div class="guide-hero" style="background:linear-gradient(135deg, ${e.color}, #00C7BE);">
+      <div class="gh-icon">${e.icon}</div>
+      <div class="gh-name">${e.name}</div>
+      <div class="gh-desc">${escapeHtml(e.description||'')}</div>
+      <div class="gh-tags"><span class="gh-tag">${e.difficulty}</span><span class="gh-tag">${e.group}</span>${e.trackable ? '<span class="gh-tag">🎥 Live AI Tracking</span>' : ''}</div>
+    </div>
+
+    <!-- MEDIA SLOT: drop an exercise-specific video/GIF/image here later, e.g. <video src="…"> or <img src="…"> -->
+    <div class="guide-media">
+      <div class="gm-icon">${e.icon}</div>
+      <div class="gm-flow"><b>Starting Position</b><span class="arrow">→</span><b>Controlled Movement</b><span class="arrow">→</span><b>Ending Position</b></div>
+      <div class="gm-caption">${e.trackable ? 'Use "Check My Form" below to see your own movement tracked live against this pattern using your camera.' : "Live camera tracking isn't available for this exercise yet — follow the steps below for correct form."}</div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">How to Perform</h2>
+      <ol class="guide-steps">${(e.instructions||[]).map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">Form Checklist</h2>
+      <ul class="guide-checklist">${(e.formChecklist||[]).map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ul>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">Common Mistakes</h2>
+      ${e.mistakes.map(m => `<div class="guide-mistake"><div class="gm-title">❌ ${escapeHtml(m.mistake)}</div><div class="gm-fix">${escapeHtml(m.fix)}</div></div>`).join('')}
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">Muscle Targets</h2>
+      <div class="muscle-grid">
+        <div><div class="muscle-col-label">Primary</div>${muscles.primary.map(m=>`<span class="muscle-chip primary">💪 ${m}</span>`).join('')}</div>
+        <div><div class="muscle-col-label">Secondary</div>${muscles.secondary.length ? muscles.secondary.map(m=>`<span class="muscle-chip">${m}</span>`).join('') : '<span style="font-size:12px; color:var(--muted);">—</span>'}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">Exercise Details</h2>
+      <div class="details-grid">${details.map(([icon,val,label])=>`<div class="detail-tile"><div class="dt-val">${icon} ${val}</div><div class="dt-label">${label}</div></div>`).join('')}</div>
+    </div>
+
+    ${personalized ? `<div class="card"><h2 class="section-title" style="margin-top:0;">Personalized Guidance</h2><p style="font-size:13px; line-height:1.55; margin:0;">${escapeHtml(personalized)}</p></div>` : ''}
+
+    ${history ? `<div class="card"><h2 class="section-title" style="margin-top:0;">Your Progress</h2>
+      <div class="guide-history-row">
+        ${history.previous!=null ? `<div class="ghr-item"><div class="ghr-val">${history.previous}</div><div class="ghr-label">Previous Score</div></div>` : ''}
+        <div class="ghr-item"><div class="ghr-val">${history.current}</div><div class="ghr-label">Current Score</div></div>
+        ${history.improvement!=null ? `<div class="ghr-item ${history.improvement>=0?'up':'down'}"><div class="ghr-val">${history.improvement>=0?'+':''}${history.improvement}</div><div class="ghr-label">Improvement</div></div>` : ''}
+      </div>
+      ${(history.previousMistake || history.currentMistake) ? `<div style="font-size:12.5px; color:var(--muted); line-height:1.6;">
+        ${history.previousMistake ? `<div><b>Previous issue:</b> ${escapeHtml(history.previousMistake)}</div>` : ''}
+        ${history.currentMistake ? `<div><b>Current issue:</b> ${escapeHtml(history.currentMistake)}</div>` : (history.previousMistake ? '<div><b>Current:</b> No recurring issues flagged — nice clean form!</div>' : '')}
+      </div>` : ''}
+    </div>` : ''}
+
+    <div class="card">
+      ${e.trackable
+        ? `<button class="guide-cta-btn" id="guideCheckFormBtn">🎥 Check My Form</button>`
+        : `<button class="guide-cta-btn" disabled>🎥 Live tracking not available for this exercise yet</button><p style="font-size:11.5px; color:var(--muted); text-align:center; margin:10px 0 0;">Try Squat, Push-up, Lunge, Plank, Bicep Curl, or Overhead Press for live AI camera coaching.</p>`}
+    </div>
+  `;
+}
+function openExerciseGuide(key){
+  const entry = getGuideEntry(key);
+  if (!entry) return;
+  document.getElementById('guideBrowseSection').style.display = 'none';
+  const detailSection = document.getElementById('guideDetailSection');
+  detailSection.style.display = '';
+  detailSection.innerHTML = buildGuideDetailHTML(entry);
+  detailSection.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('guideBackBtn').onclick = closeExerciseGuide;
+  const cta = document.getElementById('guideCheckFormBtn');
+  if (cta) cta.onclick = () => { selectExercise(key); showView('coach'); };
+}
+function closeExerciseGuide(){
+  const detailSection = document.getElementById('guideDetailSection');
+  detailSection.style.display = 'none';
+  detailSection.innerHTML = '';
+  document.getElementById('guideBrowseSection').style.display = '';
+}
+function goToExerciseGuide(key){ showView('guide'); openExerciseGuide(key); }
+document.getElementById('guideBrowseGroups').addEventListener('click', (e) => {
+  const card = e.target.closest('.guide-browse-card'); if (!card) return;
+  openExerciseGuide(card.dataset.guideKey);
+});
+wireExerciseSearchInput(document.getElementById('guideSearchInput'), document.getElementById('guideSearchDropdown'), openExerciseGuide);
+wireExerciseSearchInput(document.getElementById('dashSearchInput'), document.getElementById('dashSearchDropdown'), goToExerciseGuide);
+
+/* ================= AI FITNESS COACH CHATBOT ================= */
+
+/* ---- API layer -------------------------------------------------------
+   Everything below answers entirely on-device using the local knowledge
+   base + rule engine (getLocalChatResponse) — no network call, no API
+   key, nothing to configure. This keeps the chatbot fully working with
+   zero backend.
+
+   TO UPGRADE TO A REAL LLM (e.g. Claude):
+   1. Stand up a minimal backend/serverless endpoint (Cloudflare Worker,
+      Vercel/Netlify function, AWS Lambda, etc.) that holds your API key
+      as a SERVER-SIDE secret and proxies chat requests to your provider.
+      Never put an API key in this file — it ships to every visitor's browser.
+   2. Set CHAT_API_ENDPOINT below to that endpoint's URL.
+   3. Set CHAT_USE_REMOTE to true.
+   fetchRemoteAIResponse() already POSTs { message, context } — context
+   includes the user's recent sessions/settings/AI insight so your backend
+   (and whatever LLM it calls) has the same form-analysis data the local
+   engine uses. No other app code needs to change.
+------------------------------------------------------------------------- */
+const CHAT_USE_REMOTE = false;
+const CHAT_API_ENDPOINT = ''; // e.g. 'https://your-backend.example.com/api/chat'
+
+async function fetchRemoteAIResponse(userText, context){
+  const res = await fetch(CHAT_API_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: userText, context }),
+  });
+  if (!res.ok) throw new Error('AI backend request failed: ' + res.status);
+  const data = await res.json();
+  return data.reply;
+}
+
+function buildChatContext(){
+  return {
+    settings: { experience: settings.experience, goal: settings.goal, equipment: settings.equipment, weeklyGoal: settings.weeklyGoal },
+    profile: { activityLevel: settings.activityLevel, profileGoal: settings.profileGoal },
+    metrics: computeFitnessMetrics(settings),
+    fitnessScore: computeFitnessScore(),
+    recentSessions: appData.sessions.slice(-10),
+    insight: computeAIInsight(),
+  };
+}
+
+async function getChatResponse(userText){
+  const context = buildChatContext();
+  if (CHAT_USE_REMOTE && CHAT_API_ENDPOINT){
+    try { return await fetchRemoteAIResponse(userText, context); }
+    catch (e) { console.warn('Remote AI backend unavailable, falling back to local engine.', e); }
+  }
+  return getLocalChatResponse(userText);
+}
+
+/* ---- AI Insights (reads the same session data AI Coach writes) ------- */
+function computeAIInsight(){
+  const sessions = appData.sessions;
+  if (!sessions.length) return null;
+  const latest = sessions[sessions.length-1];
+  const withScore = sessions.filter(s=>s.formScore!=null);
+  const best = withScore.length ? withScore.reduce((a,b)=> b.formScore>a.formScore?b:a) : null;
+  const tally = {};
+  sessions.slice(-10).forEach(s => { if (s.mostCommonMistake) tally[s.mostCommonMistake] = (tally[s.mostCommonMistake]||0)+1; });
+  const topEntry = Object.entries(tally).sort((a,b)=>b[1]-a[1])[0];
+  let improvement = null;
+  if (latest.formScore!=null){
+    const sameExercise = sessions.filter(s=>s.exercise===latest.exercise && s.formScore!=null);
+    const idx = sameExercise.indexOf(latest);
+    if (idx>0) improvement = latest.formScore - sameExercise[idx-1].formScore;
+  }
+  return { latest, best, topMistake: topEntry ? topEntry[0] : null, improvement };
+}
+function renderInsightText(insight){
+  if (!insight || !insight.latest) return "Complete a workout in AI Coach and I'll start giving you personalized insights here.";
+  const { latest, best, topMistake, improvement } = insight;
+  const parts = [];
+  if (latest.formScore!=null) parts.push(`Today's ${exerciseName(latest.exercise)} form score: ${latest.formScore}/100.`);
+  if (improvement!=null){
+    parts.push(improvement>=0
+      ? `That's up ${improvement} point${improvement===1?'':'s'} from your last ${exerciseName(latest.exercise)} session.`
+      : `That's down ${Math.abs(improvement)} point${Math.abs(improvement)===1?'':'s'} from last time.`);
+  }
+  if (topMistake) parts.push(`Most common issue lately: ${topMistake}.`);
+  if (best && best.exercise!==latest.exercise) parts.push(`Best performing exercise: ${exerciseName(best.exercise)} (${best.formScore}/100).`);
+  parts.push(`Next session focus: ${topMistake || 'consistent tempo and full range of motion'}.`);
+  return parts.join(' ');
+}
+
+/* ---- Exercise knowledge base (reuses EXERCISES tips/corrections) ----- */
+const DEADLIFT_GUIDE = {
+  name:'Deadlift',
+  tips:['Feet hip-width apart, bar over your midfoot','Hinge at the hips with a flat back, chest up','Grip just outside your knees, drive through your heels','Keep the bar close to your shins the whole way up','Lock out hips and knees together at the top'],
+  mistakes:[['Rounding your lower back','brace your core hard and keep your spine neutral throughout.'],
+            ['Bar drifting away from your shins','keep it close — think of dragging it up your legs.'],
+            ['Hips shooting up first','push the floor away with your legs and hips together.']],
+};
+const IMPROVE_GUIDES = {
+  squat:"Your biggest focus should be knee alignment, depth, and controlled movement. Keep your knees tracking over your toes, keep your chest stable, and descend slowly. Try 3 sets of 8–10 controlled reps.",
+  pushup:"Focus on a straight body line from shoulders to heels and full range of motion. Keep your core braced so your hips don't sag or pike, and lower until your chest nears the floor. Try 3 sets of 8–12 reps.",
+  lunge:"Prioritize a stable front knee and an upright torso. Step far enough forward for a 90° front knee, keep it tracking over your toes, and control the descent. Try 3 sets of 8–10 reps per leg.",
+  deadlift:"Focus on a flat back and a strong hip hinge. Keep the bar close to your shins, chest up, and drive through your heels — think \"push the floor away\" rather than pulling with your back. Try 3 sets of 5–8 reps.",
+  plank:"Focus on one straight line from shoulders to heels. Brace your core, squeeze your glutes, and keep your neck neutral. Build up hold time in 15–20 second increments.",
+  bicepCurl:"Keep your elbows pinned to your sides and move with control — no swinging. Squeeze at the top and lower fully each rep. Try 3 sets of 10–12 reps.",
+  overheadPress:"Brace your core to avoid arching your lower back, and press straight overhead rather than forward. Try 3 sets of 8–10 reps.",
+};
+const EXERCISE_SYNONYMS = {
+  'jump squat':'jumpSquat', squats:'squat', squat:'squat',
+  'push-up':'pushup', 'push up':'pushup', pushups:'pushup', pushup:'pushup',
+  'side lunge':'sideLunge', lunges:'lunge', lunge:'lunge',
+  deadlifts:'deadlift', deadlift:'deadlift',
+  planks:'plank', plank:'plank',
+  'bicep curls':'bicepCurl', 'bicep curl':'bicepCurl', curls:'bicepCurl', curl:'bicepCurl',
+  'shoulder press':'overheadPress', 'overhead press':'overheadPress',
+  'tricep dip':'tricepDip', dips:'tricepDip', dip:'tricepDip',
+  'glute bridge':'gluteBridge', bridge:'gluteBridge',
+  'sit-up':'situp', 'sit up':'situp', situps:'situp', situp:'situp',
+  'wall sit':'wallSit', superman:'superman',
+  'high knees':'highKnees',
+  'mountain climbers':'mountainClimber', 'mountain climber':'mountainClimber',
+  'calf raises':'calfRaise', 'calf raise':'calfRaise',
+};
+function detectExerciseKey(text){
+  const t = (text||'').toLowerCase();
+  const keys = Object.keys(EXERCISE_SYNONYMS).sort((a,b)=>b.length-a.length);
+  for (const k of keys) if (t.includes(k)) return EXERCISE_SYNONYMS[k];
+  return null;
+}
+function formGuideDetailed(key){
+  if (key==='deadlift'){
+    const g = DEADLIFT_GUIDE;
+    return `${g.name} — Step by Step\n${g.tips.map(t=>'• '+t).join('\n')}\n\nCommon mistakes:\n${g.mistakes.map(([m,fix])=>`• ${m} — ${fix}`).join('\n')}`;
+  }
+  const cfg = EXERCISES[key];
+  if (!cfg) return null;
+  const mistakes = (cfg.corrections||[]).map(c=>`• ${c.label} — ${c.voice}`).join('\n');
+  return `${cfg.name} — Step by Step\n${cfg.tips.map(t=>'• '+t).join('\n')}${mistakes?`\n\nCommon mistakes:\n${mistakes}`:''}`;
+}
+function formGuideConcise(key){
+  if (IMPROVE_GUIDES[key]) return IMPROVE_GUIDES[key];
+  const cfg = EXERCISES[key];
+  if (!cfg) return null;
+  const tips = cfg.tips.slice(0,2).join(' and ').toLowerCase();
+  const fix = cfg.corrections && cfg.corrections[0] ? ' ' + cfg.corrections[0].voice : '';
+  return `Focus on ${tips}.${fix} Try 3 sets of 10–12 controlled reps.`;
+}
+function formGuideFor(key, detailed){
+  return detailed ? (formGuideDetailed(key) || formGuideConcise(key)) : formGuideConcise(key);
+}
+
+/* ---- Safety guardrails (checked before anything else) ---------------- */
+const PAIN_KEYWORDS = /\b(hurt|hurts|hurting|pain|painful|injur\w*|sprain\w*|strain\w*|numb\w*|dislocat\w*|torn?\b)\b/i;
+function safetyResponse(text){
+  const exKey = detectExerciseKey(text);
+  let tip = '';
+  if (exKey){
+    const cfg = EXERCISES[exKey];
+    const firstCorrection = cfg && cfg.corrections && cfg.corrections[0];
+    if (firstCorrection) tip = ` One general thing worth double-checking: ${firstCorrection.voice.toLowerCase()}`;
+  }
+  return `I can't diagnose pain or injuries — I'm a form coach, not a medical professional. If something hurts, stop the movement right away and rest.${tip} If the pain is sharp, doesn't ease up, or keeps happening, please see a doctor or physiotherapist before continuing to train that movement.`;
+}
+
+/* ---- General fitness Q&A --------------------------------------------- */
+const GENERAL_QA = [
+  { test:/warm.?up/i, reply:"Spend 5–8 minutes on light cardio plus dynamic stretches (leg swings, arm circles, bodyweight squats) to raise your heart rate and prep your joints before training." },
+  { test:/cool.?down/i, reply:"Finish with a few minutes of light walking and static stretching for the muscles you trained — hold each stretch 20–30 seconds." },
+  { test:/how many sets|sets and reps|sets should i/i, reply:"For most goals: 3–4 sets of 8–12 reps builds strength and size, 2–3 sets of 12–20 reps favors endurance. Beginners can start with 2–3 sets and add volume over time." },
+  { test:/rest (period|time|between)/i, reply:"Rest 60–90 seconds between sets for hypertrophy, and 2–3 minutes for heavier strength work. You should feel recovered, not gassed, before the next set." },
+  { test:/how often|workout frequency|days? a week/i, reply:"3–4 sessions a week, with at least one rest day between working the same muscle group, is a solid and sustainable starting point." },
+];
+
+/* ---- Personalization: fold chat statements into existing settings ---- */
+function tryUpdateProfileFromMessage(text){
+  const t = text.toLowerCase();
+  const updated = [];
+  if (/\bbeginner\b/.test(t)){ settings.experience='beginner'; updated.push('experience level (beginner)'); }
+  else if (/\bintermediate\b/.test(t)){ settings.experience='intermediate'; updated.push('experience level (intermediate)'); }
+  else if (/\badvanced\b/.test(t)){ settings.experience='advanced'; updated.push('experience level (advanced)'); }
+  if (/strength|get stronger|build muscle/.test(t)){ settings.goal='strength'; updated.push('goal (strength)'); }
+  else if (/\bcardio\b|endurance/.test(t)){ settings.goal='cardio'; updated.push('goal (cardio)'); }
+  else if (/\bcore\b|\babs\b/.test(t)){ settings.goal='core'; updated.push('goal (core)'); }
+  else if (/mobility|flexib/.test(t)){ settings.goal='mobility'; updated.push('goal (mobility)'); }
+  if (updated.length) saveSettings();
+  return updated;
+}
+
+/* ---- Workout generation (reuses the exact same buildPlan() as Check-in) */
+function formatWorkout(plan, title){
+  return `${title}\n${plan.items.map(i=>`• ${i.name} — ${i.detail}`).join('\n')}`;
+}
+function todaysWorkoutResponse(){
+  const today = new Date().toISOString().slice(0,10);
+  const todaysCheckins = appData.checkins.filter(c=>c.date===today);
+  let cls=1, goal=settings.goal, duration=parseInt(settings.duration)||30, focus=settings.focus, equipment=settings.equipment;
+  if (todaysCheckins.length){
+    const c = todaysCheckins[todaysCheckins.length-1];
+    cls=c.cls; goal=c.goal; duration=parseInt(c.duration)||30; focus=c.focus; equipment=c.equipment;
+  }
+  const plan = buildPlan(cls, goal, equipment, duration, focus, settings.experience);
+  return formatWorkout(plan, "Today's Workout");
+}
+function generateWorkoutFromText(text){
+  const t = text.toLowerCase();
+  let focus = 'fullbody';
+  if (/\bleg(s)?\b|lower body|leg day/.test(t)) focus='lower';
+  else if (/upper body|\bpush\b|\bpull\b|\barm(s)?\b|\bchest\b|\bback\b|push day|pull day/.test(t)) focus='upper';
+  let goal = settings.goal;
+  if (/cardio|hiit|endurance/.test(t)) goal='cardio';
+  else if (/\bcore\b|\babs\b/.test(t)) goal='core';
+  else if (/mobility|stretch|recovery/.test(t)) goal='mobility';
+  else if (/strength|muscle|push day|pull day|leg day/.test(t)) goal='strength';
+  let experience = settings.experience;
+  if (/beginner/.test(t)) experience='beginner';
+  else if (/intermediate/.test(t)) experience='intermediate';
+  else if (/advanced/.test(t)) experience='advanced';
+  const durMatch = t.match(/(\d+)\s*(?:min|minute)/);
+  const duration = durMatch ? parseInt(durMatch[1]) : (parseInt(settings.duration)||30);
+  const plan = buildPlan(1, goal, settings.equipment, duration, focus, experience);
+  const title = `${duration}-Minute ${focus==='lower'?'Leg':focus==='upper'?'Upper-Body':'Full-Body'} Workout`;
+  return formatWorkout(plan, title);
+}
+
+/* ---- Analysis intents (connects to the live form-correction system) -- */
+function analyzeExercise(key){
+  const sessions = appData.sessions.filter(s=>s.exercise===key && s.formScore!=null);
+  if (!sessions.length) return `You haven't logged a scored ${exerciseName(key)} session yet — head to AI Coach to get your first form score!`;
+  const latest = sessions[sessions.length-1];
+  let msg = `Your last ${exerciseName(key)} score was ${latest.formScore}/100.`;
+  if (latest.mostCommonMistake) msg += ` Your biggest issue was ${latest.mostCommonMistake.toLowerCase()}. ${suggestionFor(latest.mostCommonMistake)}`;
+  else msg += ` No recurring issues flagged — nice clean form!`;
+  return msg;
+}
+function whyLowScoreResponse(){
+  const latest = [...appData.sessions].reverse().find(s=>s.formScore!=null);
+  if (!latest) return "You don't have a scored session yet — finish a set in AI Coach and I'll break down what's affecting your score.";
+  if (latest.formScore>=85) return `Good news — your last score (${exerciseName(latest.exercise)}: ${latest.formScore}/100) was actually strong! Keep doing what you're doing.`;
+  return `Your last ${exerciseName(latest.exercise)} score was ${latest.formScore}/100, mainly due to ${latest.mostCommonMistake ? latest.mostCommonMistake.toLowerCase() : 'inconsistent form'}. ${latest.mostCommonMistake ? suggestionFor(latest.mostCommonMistake) : 'Try slowing your tempo and focusing on full range of motion.'}`;
+}
+function improveFormGeneral(){
+  const latest = [...appData.sessions].reverse().find(s=>s.formScore!=null);
+  if (latest) return `Your last session (${exerciseName(latest.exercise)}) scored ${latest.formScore}/100.${latest.mostCommonMistake ? ` Your main issue was ${latest.mostCommonMistake.toLowerCase()} — ${suggestionFor(latest.mostCommonMistake)}` : ' Keep it up — nice clean form!'} In general: move slower, keep full range of motion, and watch the live corrections in AI Coach.`;
+  return "Great question! In general: slow your tempo down, keep full range of motion, and keep your core braced throughout. Head to AI Coach and I'll start giving you exercise-specific feedback based on your live form score.";
+}
+/* Broader "how can I improve" — combines profile goal + form-analysis history, per the request to
+   make the chatbot feel like it's reasoning over the whole system rather than one isolated feature. */
+function howCanIImproveResponse(){
+  const parts = [];
+  const latest = [...appData.sessions].reverse().find(s=>s.formScore!=null);
+  if (latest){
+    parts.push(`Your last session (${exerciseName(latest.exercise)}) scored ${latest.formScore}/100${latest.mostCommonMistake ? `, mainly held back by ${latest.mostCommonMistake.toLowerCase()}` : ''}.`);
+    if (latest.mostCommonMistake) parts.push(suggestionFor(latest.mostCommonMistake));
+  }
+  const trend = computeFormTrend();
+  if (trend) parts.push(trend.deltaPct>=0
+    ? `You're already trending up ${trend.deltaPct}% this ${trend.period} — keep it up.`
+    : `Your form dipped ${Math.abs(trend.deltaPct)}% this ${trend.period}, so ease off intensity and focus on control.`);
+  if (settings.profileGoal){
+    const goalTips = {
+      muscle:'Keep prioritizing progressive resistance and consistent protein intake.',
+      lose_weight:'Stay consistent with your calorie target and keep training volume up to preserve muscle.',
+      maintain:'Keep your routine consistent — small, steady improvements compound over time.',
+      endurance:'Gradually build training volume while keeping your form controlled.',
+    };
+    parts.push(goalTips[settings.profileGoal]);
+  }
+  if (!parts.length) return "Start by logging a few sessions in AI Coach — once I have your form scores (and your fitness profile in Settings), I can give you specific, personalized advice.";
+  parts.push('Move slower, keep full range of motion, and watch the live corrections in AI Coach.');
+  return parts.join(' ');
+}
+function caloriesResponse(){
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics) return "I don't have your fitness data yet — add your age, height, weight, activity level, and goal in Settings → My Fitness Data, and I'll calculate your personalized calorie target.";
+  return `Based on your profile, your estimated daily target is ${metrics.calorieTarget.toLocaleString()} kcal (maintenance is about ${metrics.tdee.toLocaleString()} kcal). Aim for around ${metrics.protein}g of protein and ${metrics.water}L of water daily. This is an estimate from standard formulas, not medical advice.`;
+}
+function bmiResponse(){
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics) return "I don't have your height and weight yet — add them in Settings → My Fitness Data and I'll calculate your BMI.";
+  return `Your estimated BMI is ${metrics.bmi}, which falls in the ${metrics.bmiCategory} range (a commonly used general guideline, not a diagnosis).`;
+}
+function bmrResponse(){
+  const metrics = computeFitnessMetrics(settings);
+  if (!metrics) return "I don't have your fitness data yet — add it in Settings → My Fitness Data and I'll estimate your BMR.";
+  return `Your estimated BMR (calories burned at rest) is ${metrics.bmr.toLocaleString()} kcal/day, and your maintenance calories (BMR × activity level) are about ${metrics.tdee.toLocaleString()} kcal/day.`;
+}
+
+const CHAT_FALLBACK = 'I\'m your AI fitness coach — I can help with exercise form, workout plans, and your form-analysis results. Try asking things like "How do I improve my squat?", "Give me a beginner leg workout", or "Why is my form score low?"';
+
+function getLocalChatResponse(rawText){
+  const text = (rawText||'').trim();
+  if (!text) return "Ask me anything about your workouts or form!";
+  if (PAIN_KEYWORDS.test(text)) return safetyResponse(text);
+  if (/^(hi|hello|hey|yo|sup|good (morning|afternoon|evening))\b/i.test(text)) return "Hey! 💪 I'm your AI Fitness Coach. Ask me about exercise form, workouts, or your latest form scores — I'm here to help you train smarter.";
+
+  const profileUpdates = tryUpdateProfileFromMessage(text);
+
+  if (/form score low|why (is|was) my (form )?score/i.test(text)) return whyLowScoreResponse();
+
+  const analyzeMatch = text.match(/analy[sz]e my ([\w\s]+)/i);
+  if (analyzeMatch || /how did (i|my (workout|session)) (do|go)/i.test(text)){
+    const key = (analyzeMatch && detectExerciseKey(analyzeMatch[1])) || detectExerciseKey(text)
+      || (appData.sessions.length ? appData.sessions[appData.sessions.length-1].exercise : null);
+    if (key) return analyzeExercise(key);
+  }
+
+  if (/how (do|can) i improve my form\b/i.test(text) && !detectExerciseKey(text)) return improveFormGeneral();
+  if (/how (do|can|should) i improve\b/i.test(text) && !detectExerciseKey(text)) return howCanIImproveResponse();
+
+  if (/how many calories|calories should i eat|calorie target|daily calories/i.test(text)) return caloriesResponse();
+  if (/\bbmi\b|body mass index/i.test(text)) return bmiResponse();
+  if (/\bbmr\b|basal metabolic|maintenance calories/i.test(text)) return bmrResponse();
+
+  if (/(today|what should i train)/i.test(text) && /(workout|train)/i.test(text)) return todaysWorkoutResponse();
+  if (/workout|routine|leg day|push day|pull day|full.?body/i.test(text)) return generateWorkoutFromText(text);
+
+  const exKey = detectExerciseKey(text);
+  if (exKey){
+    const detailed = /step.?by.?step|in detail|breakdown|explain/i.test(text);
+    const guide = formGuideFor(exKey, detailed);
+    if (guide) return guide;
+  }
+
+  for (const qa of GENERAL_QA) if (qa.test.test(text)) return qa.reply;
+
+  if (profileUpdates.length) return `Got it — noted your ${profileUpdates.join(' and ')}. I'll tailor workouts and tips accordingly. Ask me for a workout anytime!`;
+
+  return CHAT_FALLBACK;
+}
+
+/* ---- Chat UI ----------------------------------------------------------*/
+const chatFab = document.getElementById('chatFab'), chatWindow = document.getElementById('chatWindow');
+const chatMessagesEl = document.getElementById('chatMessages'), chatInput = document.getElementById('chatInput');
+const chatSendBtn = document.getElementById('chatSendBtn'), chatSuggestionsEl = document.getElementById('chatSuggestions');
+const chatInsightEl = document.getElementById('chatInsight'), chatClearBtn = document.getElementById('chatClearBtn'), chatCloseBtn = document.getElementById('chatCloseBtn');
+
+const CHAT_SUGGESTIONS = ['Analyze my squat', 'Create a workout', 'How do I improve my form?', "Give me today's workout", 'Why is my form score low?'];
+let chatHistory = [];
+
+function chatGreetingMessage(){ return "Hey! 💪 I'm your AI Fitness Coach. Ask me about exercise form, workouts, or your latest form scores."; }
+function loadChatHistory(){ try{ const raw = localStorage.getItem('fitsphere.chat'); if (raw) chatHistory = JSON.parse(raw); }catch(e){} }
+function saveChatHistory(){ try{ localStorage.setItem('fitsphere.chat', JSON.stringify(chatHistory.slice(-40))); }catch(e){} }
+
+function formatChatText(text){
+  return escapeHtml(text).replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+}
+function renderChatMessages(){
+  chatMessagesEl.innerHTML = chatHistory.map(m => `<div class="chat-msg ${m.role}">${formatChatText(m.text)}</div>`).join('');
+  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+}
+function renderChatSuggestions(){
+  chatSuggestionsEl.innerHTML = CHAT_SUGGESTIONS.map(s => `<button class="chat-chip" data-prompt="${escapeHtml(s)}">${s}</button>`).join('');
+}
+function renderChatInsight(){
+  const insight = computeAIInsight();
+  if (!insight || !insight.latest){ chatInsightEl.style.display='none'; return; }
+  chatInsightEl.style.display='';
+  chatInsightEl.innerHTML = `<b>AI Insight 💡</b>${escapeHtml(renderInsightText(insight))}`;
+}
+function showChatTyping(){
+  const el = document.createElement('div');
+  el.className = 'chat-typing'; el.id = 'chatTypingIndicator';
+  el.innerHTML = '<span></span><span></span><span></span>';
+  chatMessagesEl.appendChild(el);
+  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+}
+function hideChatTyping(){ const el = document.getElementById('chatTypingIndicator'); if (el) el.remove(); }
+
+async function sendChatMessage(rawText){
+  const text = (rawText||'').trim();
+  if (!text) return;
+  chatHistory.push({ role:'user', text });
+  renderChatMessages(); saveChatHistory();
+  chatInput.value = '';
+  chatSendBtn.disabled = true;
+  showChatTyping();
+  await new Promise(r => setTimeout(r, 380 + Math.random()*420));
+  hideChatTyping();
+  let reply;
+  try{ reply = await getChatResponse(text); }
+  catch(e){ reply = "Sorry, I hit a snag processing that — mind rephrasing?"; }
+  chatHistory.push({ role:'ai', text: reply });
+  renderChatMessages(); saveChatHistory();
+  chatSendBtn.disabled = false;
+  renderChatInsight();
+  chatInput.focus();
+}
+
+function openChat(){
+  chatWindow.classList.add('open'); chatWindow.setAttribute('aria-hidden','false');
+  chatFab.classList.add('hidden');
+  if (!chatHistory.length){ chatHistory.push({ role:'ai', text: chatGreetingMessage() }); saveChatHistory(); }
+  renderChatMessages(); renderChatInsight();
+  setTimeout(()=>chatInput.focus(), 200);
+}
+function closeChat(){
+  chatWindow.classList.remove('open'); chatWindow.setAttribute('aria-hidden','true');
+  chatFab.classList.remove('hidden');
+}
+chatFab.onclick = openChat;
+chatCloseBtn.onclick = closeChat;
+chatClearBtn.onclick = () => { chatHistory = [{ role:'ai', text: chatGreetingMessage() }]; saveChatHistory(); renderChatMessages(); };
+chatSendBtn.onclick = () => sendChatMessage(chatInput.value);
+chatInput.addEventListener('keydown', e => { if (e.key==='Enter'){ e.preventDefault(); sendChatMessage(chatInput.value); } });
+chatSuggestionsEl.addEventListener('click', e => { const btn = e.target.closest('.chat-chip'); if (btn) sendChatMessage(btn.dataset.prompt); });
+
 /* ================= INIT ================= */
+renderExercisePicker();
 renderExerciseUI();
+renderGuideBrowse();
+loadChatHistory();
+renderChatSuggestions();
 loadAll();
 </script>
 </body>
