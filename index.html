@@ -416,6 +416,26 @@
   .guide-cta-btn{ width:100%; font-size:15px; font-weight:800; padding:16px; border-radius:16px; border:none; background:linear-gradient(135deg,#0071E3,#00C7BE); color:#fff; cursor:pointer; box-shadow:0 6px 20px rgba(0,113,227,.35); transition:transform .15s ease; }
   .guide-cta-btn:active{ transform:scale(.98); }
   .guide-cta-btn:disabled{ background:var(--panel-2); color:var(--muted); box-shadow:none; cursor:not-allowed; }
+
+  /* Biomechanics engine UI */
+  .form-score-big.unknown{ color:var(--muted); }
+  .fs-confidence{ font-size:11.5px; color:var(--muted); font-weight:600; margin-bottom:10px; }
+  .fs-explain{ font-size:11.5px; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid var(--line); line-height:1.5; }
+  .rep-log-row.unknown{ background:var(--panel-2); opacity:.75; }
+
+  .report-fatigue{ background:rgba(255,149,0,.1); border-radius:14px; padding:13px 15px; margin-bottom:14px; }
+  .report-fatigue .rf-title{ font-size:12.5px; font-weight:800; color:var(--orange); letter-spacing:.02em; }
+  .report-fatigue .rf-msg{ font-size:12.5px; margin-top:5px; line-height:1.5; }
+  .report-fatigue .rf-suggestion{ font-size:12px; color:var(--muted); margin-top:6px; }
+
+  .readiness-badge{ position:absolute; top:14px; left:14px; display:flex; align-items:center; gap:7px; padding:7px 12px; border-radius:999px; background:rgba(0,0,0,.55); backdrop-filter:blur(8px); color:#fff; font-size:11.5px; font-weight:700; max-width:calc(100% - 28px); z-index:5; }
+  .readiness-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .readiness-dot.green{ background:var(--green); box-shadow:0 0 0 3px rgba(52,199,89,.3); }
+  .readiness-dot.yellow{ background:var(--orange); box-shadow:0 0 0 3px rgba(255,149,0,.3); }
+  .readiness-dot.red{ background:var(--red); box-shadow:0 0 0 3px rgba(255,59,48,.3); }
+
+  .debug-panel{ margin-top:14px; padding:12px 14px; border-radius:14px; background:#0d1117; color:#7ee787; font-family:'SF Mono',Menlo,Consolas,monospace; font-size:11px; line-height:1.7; white-space:pre-wrap; display:none; }
+  .debug-panel.on{ display:block; }
 </style>
 </head>
 <body>
@@ -568,6 +588,7 @@
         <div class="stage" id="stage">
           <video id="video" autoplay playsinline muted></video>
           <canvas id="canvas"></canvas>
+          <div class="readiness-badge" id="readinessBadge" style="display:none;"><span class="readiness-dot" id="readinessDot"></span><span id="readinessMsg">Checking…</span></div>
           <div class="stage-overlay">
             <div>
               <div class="rep-label" id="metricLabel">Reps</div>
@@ -601,10 +622,21 @@
       <div class="card" id="reportCard" style="display:none;">
         <h2 class="section-title" style="margin-top:0;">Post-Workout Form Report</h2>
         <div class="report-stats">
-          <div class="report-stat"><div class="rs-val" id="reportTotal">0</div><div class="rs-label">Total Reps</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportTotal">0</div><div class="rs-label">Reps Analyzed</div></div>
           <div class="report-stat"><div class="rs-val" id="reportAvgScore">0</div><div class="rs-label">Average Form Score</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportBest" style="color:var(--green);">—</div><div class="rs-label">Best Rep</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportLowest" style="color:var(--red);">—</div><div class="rs-label">Lowest Rep</div></div>
+        </div>
+        <div class="report-stats">
           <div class="report-stat"><div class="rs-val" id="reportCorrect" style="color:var(--green);">0</div><div class="rs-label">Correct Reps</div></div>
           <div class="report-stat"><div class="rs-val" id="reportIncorrect" style="color:var(--red);">0</div><div class="rs-label">Incorrect Reps</div></div>
+          <div class="report-stat" id="reportConfidenceTile"><div class="rs-val" id="reportConfidence">—</div><div class="rs-label">Form Confidence</div></div>
+          <div class="report-stat" id="reportUnclearTile" style="display:none;"><div class="rs-val" id="reportUnclear">0</div><div class="rs-label">Unclear Reps</div></div>
+        </div>
+        <div id="reportFatigueBanner" class="report-fatigue" style="display:none;">
+          <div class="rf-title">⚠️ FORM FATIGUE DETECTED</div>
+          <div class="rf-msg" id="reportFatigueMsg"></div>
+          <div class="rf-suggestion">Suggestion: consider increasing rest time or reducing resistance.</div>
         </div>
         <h2 class="section-title" style="margin-top:0;">Most Common Mistake</h2>
         <div class="report-mistake" id="reportMistake">—</div>
@@ -664,8 +696,9 @@
           <h2 class="section-title">Live Form Corrections</h2>
           <div id="correctionsList"></div>
         </div>
+        <pre class="debug-panel" id="debugPanel"></pre>
       </div>
-      <p style="font-size:12px; color:var(--muted); text-align:center;">Runs Google's MediaPipe Pose Landmarker on-device — your video never leaves this browser.</p>
+      <p style="font-size:12px; color:var(--muted); text-align:center;">Runs Google's MediaPipe Pose Landmarker on-device — your video never leaves this browser. Form scoring is an on-device heuristic estimate, not a medical or clinical assessment.</p>
     </section>
 
     <!-- ================= CHECK-IN ================= -->
@@ -819,6 +852,10 @@
           <div><div class="label">Daily reminder</div><div class="desc">Show a nudge on Dashboard if you haven't trained today</div></div>
           <div class="switch on" id="toggleReminder"></div>
         </div>
+        <div class="toggle-row">
+          <div><div class="label">Debug / Calibration Mode</div><div class="desc">Shows live landmarks, joint angles, confidence, and scoring math in AI Coach — for tuning, not everyday use</div></div>
+          <div class="switch" id="toggleDebug"></div>
+        </div>
       </div>
       <div class="card">
         <h2 class="section-title" style="margin-top:0;">Appearance</h2>
@@ -930,6 +967,7 @@ const DEFAULT_SETTINGS = {
   goal: 'strength', equipment: 'none', duration: '30', focus: 'fullbody',
   age: null, gender: '', heightCm: null, weightKg: null,
   activityLevel: '', profileGoal: '', targetWeightKg: null,
+  debugMode: false,
 };
 const ACTIVITY_LEVELS = {
   sedentary: { label:'Sedentary', mult:1.2 },
@@ -977,6 +1015,7 @@ function applySettingsToUI(){
   document.getElementById('toggleVoice').classList.toggle('on', settings.voice);
   document.getElementById('toggleSound').classList.toggle('on', settings.sound);
   document.getElementById('toggleReminder').classList.toggle('on', settings.reminderOn);
+  document.getElementById('toggleDebug').classList.toggle('on', settings.debugMode);
   document.getElementById('repGoalInput').value = settings.repGoal;
   document.getElementById('expSelect').value = settings.experience;
   document.getElementById('unitsSelect').value = settings.units;
@@ -1000,6 +1039,7 @@ function bindSwitch(id, key){
 bindSwitch('toggleVoice', 'voice');
 bindSwitch('toggleSound', 'sound');
 bindSwitch('toggleReminder', 'reminderOn');
+bindSwitch('toggleDebug', 'debugMode');
 document.getElementById('toggleDark').onclick = () => { settings.theme = settings.theme === 'dark' ? 'light' : 'dark'; applyTheme(); saveSettings(); };
 
 document.getElementById('repGoalInput').onchange = (e) => { settings.repGoal = Math.max(1, parseInt(e.target.value)||15); saveSettings(); };
@@ -1532,6 +1572,9 @@ function renderProgress(){
 const EXERCISES = {
   squat: { name:'Squat', type:'reps', color:'#0071E3', icon:'🏋️', group:'Legs', category:'strength', equipment:'none',
     primary:[24,26,28], form:[12,24,26], topAngle:160, bottomAngle:110, formGoodMin:150, primaryLabel:'Knee angle',
+    /* Example of a per-exercise scoring override — every other exercise falls back to
+       FACTOR_TYPE_BASE_WEIGHT automatically, but squat's weighting can be tuned independently here. */
+    scoringWeights: { 'alignment_Knee Alignment':20, 'alignment_Back Posture':20, rom:20, tempo:15, symmetry:15, consistency:10 },
     tips:['Feet shoulder-width apart','Knees track over your toes, not caving in','Chest up, weight in your heels','Hips dip below knee height at the bottom'],
     corrections:[
       { msg:'Knees caving in — push them outward over your toes', category:'Knee Alignment', label:'Knee valgus', voice:'Push your knees outward.', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
@@ -1741,6 +1784,34 @@ const repLogCard = document.getElementById('repLogCard'), repLogListEl = documen
 const reportCard = document.getElementById('reportCard');
 const romPanel = document.getElementById('romPanel'), romReadoutEl = document.getElementById('romReadout');
 const romTargetZoneEl = document.getElementById('romTargetZone'), romMarkerEl = document.getElementById('romMarker');
+const readinessBadge = document.getElementById('readinessBadge'), readinessDot = document.getElementById('readinessDot'), readinessMsg = document.getElementById('readinessMsg');
+const debugPanel = document.getElementById('debugPanel');
+let lastReadinessLevel = null, debugFrameCounter = 0;
+function updateReadinessBadge(readiness){
+  readinessBadge.style.display = '';
+  if (readiness.level !== lastReadinessLevel){
+    readinessDot.className = 'readiness-dot ' + readiness.level;
+    lastReadinessLevel = readiness.level;
+  }
+  readinessMsg.textContent = readiness.level==='green' ? '🟢 Excellent' : readiness.level==='yellow' ? `🟡 ${readiness.msg}` : `🔴 ${readiness.msg}`;
+}
+function updateDebugPanel(cfg, data){
+  debugPanel.classList.toggle('on', !!settings.debugMode);
+  if (!settings.debugMode) return;
+  debugFrameCounter++;
+  if (debugFrameCounter % 4 !== 0) return; // throttle DOM writes so debug mode doesn't cost real-time performance
+  const lines = [
+    `EXERCISE: ${currentExercise}    REP STATE: ${(data.phase||'').toUpperCase()}`,
+    data.primaryAngle!=null ? `Primary angle (${cfg.primaryLabel||'—'}): ${data.primaryAngle.toFixed(1)}°` : null,
+    data.formAngle!=null ? `Form/torso angle: ${data.formAngle.toFixed(1)}°` : null,
+    `Landmark confidence (this frame): ${(data.confidence*100).toFixed(0)}%`,
+    repTrack ? `Rep window frames: ${repTrack.frames}  |  min primary this rep: ${repTrack.minPrimary===Infinity?'—':repTrack.minPrimary.toFixed(1)+'°'}` : null,
+    repTrack && repTrack.rightSamples.length ? `Symmetry samples: ${repTrack.rightSamples.length} (tracked vs mirrored side)` : null,
+    `Rep confidence so far: ${computeConfidencePct(repTrack)}%`,
+    repLog.length ? (() => { const last = repLog[repLog.length-1]; return `Last rep score: ${last.overall!=null?last.overall:'—'} (${last.status})  factors: ${last.factors.map(f=>`${f.label}=${f.score}`).join(', ')}`; })() : null,
+  ].filter(Boolean);
+  debugPanel.textContent = lines.join('\n');
+}
 
 const EXERCISE_GROUP_ORDER = ['Legs','Arms','Core','Cardio'];
 function renderExercisePicker(){
@@ -1811,9 +1882,142 @@ function runAutoDetect(lm){
   }
 }
 
-function freshRepTrack(){ return { frames:0, minPrimary:Infinity, formSamples:[], categoryHits:{}, categoryLabels:{}, startTime: performance.now(), bottomEnterAt:null, bottomExitAt:null }; }
+function freshRepTrack(){
+  return { frames:0, minPrimary:Infinity, formSamples:[], categoryHits:{}, categoryLabels:{},
+    startTime: performance.now(), bottomEnterAt:null, bottomExitAt:null,
+    confidenceSamples:[], rightSamples:[], leftSamples:[] };
+}
 const IDEAL_MIN_DOWN_MS = 1000;
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+/* ================= BIOMECHANICS ENGINE =================
+   Pipeline (per the pose data MediaPipe already provides):
+   Pose Detection (unchanged) -> Landmark Processor/Smoothing (smooth(), confidence capture)
+   -> Rep State Machine (phase/topStreak/bottomStreak, unchanged) -> Biomechanical Feature
+   Extraction (angles, mirrored L/R angles, tempo) -> Exercise-Specific Form Rules (factor list
+   built from EXERCISES config) -> Rep Scoring Engine (computeRepScore) -> Confidence Engine
+   (computeRepConfidence) -> AI Explanation (explainRepScore/suggestionFor) -> Workout Analytics
+   (buildReport, detectFatigue). Kept as pure functions with minimal shared state so each stage
+   is independently testable, even though the project is a single static file with no bundler. */
+
+/* MediaPipe Pose landmark pairs (right index -> left index) for L/R symmetry comparison.
+   The exercise library's primary/form triples already use the right-side indices (12,14,16,
+   24,26,28) — the left-side landmarks were always present in every frame, just unused. */
+const MIRROR_MAP = {11:12,12:11,13:14,14:13,15:16,16:15,23:24,24:23,25:26,26:25,27:28,28:27,31:32,32:31};
+function mirrorTriple(t){ return t.map(i => MIRROR_MAP[i] ?? i); }
+// Movements that are asymmetric by design (one leg forward, one back) — comparing sides isn't a meaningful "symmetry" signal for these.
+const SYMMETRY_EXCLUDED = new Set(['lunge','sideLunge']);
+
+/* Confidence Engine — average landmark visibility across a rep/hold window, 0-100. */
+function computeConfidencePct(track){
+  if (!track.confidenceSamples.length) return 0;
+  return Math.round(clamp(track.confidenceSamples.reduce((a,b)=>a+b,0)/track.confidenceSamples.length, 0, 1) * 100);
+}
+const LOW_CONFIDENCE_THRESHOLD = 45; // below this, don't confidently score the rep at all
+
+/* Camera-readiness indicator — checked continuously, independent of rep state. */
+function computeReadiness(lm, cfg){
+  const idx = [...new Set([...(cfg.primary||[]), ...(cfg.form||[])])];
+  if (!idx.length) return { level:'green', msg:'Ready' };
+  const present = idx.map(i => lm[i]).filter(Boolean);
+  if (present.length < idx.length) return { level:'red', msg:'Body not fully detected — step back so your whole body is visible.' };
+  const avgVis = present.reduce((a,p)=>a+(p.visibility??1),0) / present.length;
+  if (avgVis < 0.5) return { level:'red', msg:'Body not detected properly — check lighting and camera angle.' };
+  if (avgVis < 0.75) return { level:'yellow', msg:'Adjust your position for a clearer view.' };
+  return { level:'green', msg:'Excellent visibility' };
+}
+
+/* Reusable scoring primitives — the exercise-specific "form rules" are just these primitives
+   parameterized by each exercise's config, so adding a new exercise doesn't mean writing new
+   scoring math. */
+function scoreSymmetryFactor(rightSamples, leftSamples){
+  if (!rightSamples.length || !leftSamples.length) return null;
+  const n = Math.min(rightSamples.length, leftSamples.length);
+  let diffSum = 0;
+  for (let i=0;i<n;i++) diffSum += Math.abs(rightSamples[i]-leftSamples[i]);
+  return clamp(Math.round(100 - (diffSum/n)*2.5), 0, 100);
+}
+function scoreTempoFactor(downMs){
+  if (downMs==null || downMs<=0) return null;
+  if (downMs < IDEAL_MIN_DOWN_MS) return clamp(Math.round(55 + (downMs/IDEAL_MIN_DOWN_MS)*45), 40, 100);
+  if (downMs > 4000) return clamp(Math.round(100 - (downMs-4000)/80), 55, 100);
+  return 100;
+}
+function scoreDeviationFromRunningAverage(value, runningAvg){
+  if (runningAvg==null) return 100;
+  return clamp(Math.round(100 - Math.abs(value-runningAvg)*2), 0, 100);
+}
+
+/* Exercise-configurable scoring weights. Base weight is by FACTOR TYPE (not hardcoded per exercise
+   in the UI) so every exercise gets a sensible multi-factor breakdown automatically; an exercise
+   can still override specific factor keys (see EXERCISES.squat.scoringWeights) when it needs
+   different emphasis. This whole object is the "exercise configuration" the weights live in. */
+const FACTOR_TYPE_BASE_WEIGHT = { alignment:20, depth:20, form:20, tempo:15, symmetry:15, consistency:10 };
+function getFactorWeights(cfg, factors){
+  const overrides = cfg.scoringWeights || {};
+  const base = {};
+  factors.forEach(f => { base[f.key] = overrides[f.key]!=null ? overrides[f.key] : (FACTOR_TYPE_BASE_WEIGHT[f.type] || 10); });
+  const sum = Object.values(base).reduce((a,b)=>a+b,0) || 1;
+  const norm = {};
+  Object.keys(base).forEach(k => { norm[k] = base[k]/sum; });
+  return norm;
+}
+function buildFactorList(cfg, track, key){
+  const factors = [];
+  if (cfg.corrections && cfg.corrections.length){
+    [...new Set(cfg.corrections.map(c=>c.category))].forEach(cat => {
+      const ratio = track.frames ? (track.categoryHits[cat]||0)/track.frames : 0;
+      factors.push({ key:'alignment_'+cat, label:cat, type:'alignment', score: clamp(Math.round(100-ratio*100), 0, 100) });
+    });
+  } else if (track.formSamples.length){
+    const avgForm = track.formSamples.reduce((a,b)=>a+b,0)/track.formSamples.length;
+    factors.push({ key:'form', label:'Form', type:'form', score: clamp(Math.round(100 - Math.max(0, cfg.formGoodMin-avgForm)*2), 0, 100) });
+  }
+  if (cfg.primary && track.minPrimary !== Infinity){
+    const margin = cfg.bottomAngle - track.minPrimary;
+    factors.push({ key:'rom', label: cfg.type==='hold' ? 'Hold Depth' : 'Range of Motion', type:'depth', score: clamp(Math.round(70+margin*2.5), 60, 100) });
+  }
+  if (track.bottomEnterAt!=null){
+    const tempoScore = scoreTempoFactor(track.bottomEnterAt - track.startTime);
+    if (tempoScore!=null) factors.push({ key:'tempo', label:'Tempo & Control', type:'tempo', score: tempoScore });
+  }
+  if (!SYMMETRY_EXCLUDED.has(key)){
+    const symScore = scoreSymmetryFactor(track.rightSamples, track.leftSamples);
+    if (symScore!=null) factors.push({ key:'symmetry', label:'Symmetry', type:'symmetry', score: symScore });
+  }
+  return factors;
+}
+/* Rep Scoring Engine — multi-factor, weighted, confidence-aware, with a point-loss explanation. */
+function computeRepScore(cfg, track, repHistory, key){
+  const factors = buildFactorList(cfg, track, key);
+  if (!factors.length) return { overall:100, factors:[], comps:{}, issues:[], status:'good', confidence:computeConfidencePct(track), lowConfidence:false, explanation:[] };
+  const baseline = Math.round(factors.reduce((a,f)=>a+f.score,0)/factors.length);
+  if (repHistory && repHistory.length){
+    const runningAvg = repHistory.reduce((a,r)=>a+(r.overall??baseline),0)/repHistory.length;
+    factors.push({ key:'consistency', label:'Consistency', type:'consistency', score: scoreDeviationFromRunningAverage(baseline, runningAvg) });
+  }
+  const weights = getFactorWeights(cfg, factors);
+  const confidence = computeConfidencePct(track);
+  const lowConfidence = confidence>0 && confidence < LOW_CONFIDENCE_THRESHOLD;
+  const overall = lowConfidence ? null : Math.round(factors.reduce((a,f)=>a+f.score*(weights[f.key]||0), 0));
+  const comps = {}; factors.forEach(f => { comps[f.label] = f.score; });
+  const issues = factors.filter(f => f.type!=='depth' && f.type!=='form' && f.score<75).map(f => track.categoryLabels[f.label] || f.label);
+  const status = lowConfidence ? 'unknown' : (overall>=85 ? 'good' : overall>=60 ? 'warn' : 'bad');
+  const explanation = overall==null ? [] : factors
+    .map(f => ({ label:f.label, loss: Math.round((100-f.score)*(weights[f.key]||0)) }))
+    .filter(l=>l.loss>0).sort((a,b)=>b.loss-a.loss);
+  return { overall, factors, comps, issues, status, confidence, lowConfidence, explanation };
+}
+/* Rep-to-rep consistency across the whole set — flags fatigue rather than just averaging it away. */
+function detectFatigue(log){
+  const scored = log.filter(r=>r.overall!=null);
+  if (scored.length < 4) return null;
+  const half = Math.floor(scored.length/2);
+  const avg = arr => arr.reduce((a,r)=>a+r.overall,0)/arr.length;
+  const drop = Math.round(avg(scored.slice(0,half)) - avg(scored.slice(half)));
+  if (drop >= 8) return { drop, laterReps: scored.length-half, message:`Your form quality decreased during the final ${scored.length-half} reps.` };
+  return null;
+}
 
 const ANGLE_JUMP_REJECT_DEG = 45; // reject implausible single-frame angle spikes (likely a pose-detection glitch) rather than letting them corrupt the smoothed reading
 function smooth(h,v,w){
@@ -1867,8 +2071,8 @@ function updateRomGauge(cfg, angle){
   romReadoutEl.textContent = `Yours: ${angle.toFixed(0)}°  ·  Target: ≤${cfg.bottomAngle}°`;
 }
 
-function scoreColor(status){ return status==='good' ? 'var(--green)' : status==='warn' ? 'var(--orange)' : 'var(--red)'; }
-function scoreIcon(status){ return status==='good' ? '✅' : status==='warn' ? '⚠️' : '❌'; }
+function scoreColor(status){ return status==='good' ? 'var(--green)' : status==='warn' ? 'var(--orange)' : status==='unknown' ? 'var(--muted)' : 'var(--red)'; }
+function scoreIcon(status){ return status==='good' ? '✅' : status==='warn' ? '⚠️' : status==='unknown' ? '❔' : '❌'; }
 
 function renderFormScoreCard(){
   const cfg = EXERCISES[currentExercise];
@@ -1876,14 +2080,27 @@ function renderFormScoreCard(){
   if (!source){ formScoreCard.style.display='none'; return; }
   formScoreCard.style.display='';
   formScoreExerciseEl.textContent = cfg.name;
-  formScoreBigEl.innerHTML = `${source.overall} <span>/ 100</span>`;
-  formScoreBigEl.className = 'form-score-big ' + source.status;
-  formScoreComponentsEl.innerHTML = Object.entries(source.comps).map(([label,val]) => `
+  if (source.lowConfidence){
+    formScoreBigEl.innerHTML = `— <span>/ 100</span>`;
+    formScoreBigEl.className = 'form-score-big unknown';
+  } else {
+    formScoreBigEl.innerHTML = `${source.overall} <span>/ 100</span>`;
+    formScoreBigEl.className = 'form-score-big ' + source.status;
+  }
+  const confBadge = `<div class="fs-confidence">Analysis Confidence: <b style="color:${source.confidence>=75?'var(--green)':source.confidence>=45?'var(--orange)':'var(--red)'}">${source.confidence}%</b></div>`;
+  if (source.lowConfidence){
+    formScoreComponentsEl.innerHTML = confBadge + `<div class="empty-state" style="padding:16px 4px;">⚠️ Unable to confidently analyze this rep. Please adjust your position or camera.</div>`;
+    return;
+  }
+  const compsHtml = Object.entries(source.comps).map(([label,val]) => `
     <div class="fs-comp-row">
       <div class="fs-comp-label">${label}</div>
       <div class="fs-comp-bar"><div style="width:${val}%; background:${val>=85?'var(--green)':val>=60?'var(--orange)':'var(--red)'}"></div></div>
       <div class="fs-comp-val">${val}</div>
     </div>`).join('');
+  const explainHtml = (source.explanation && source.explanation.length)
+    ? `<div class="fs-explain"><b>Why this score:</b> ${source.explanation.slice(0,3).map(l=>`${l.label} −${l.loss}`).join(' · ')}</div>` : '';
+  formScoreComponentsEl.innerHTML = confBadge + compsHtml + explainHtml;
 }
 
 function renderRepLog(){
@@ -1893,8 +2110,8 @@ function renderRepLog(){
     <div class="rep-log-row ${r.status}">
       <span class="rep-log-icon">${scoreIcon(r.status)}</span>
       <span class="rep-log-num">Rep ${r.index}</span>
-      <span class="rep-log-issue">${r.issues.length ? r.issues.join(', ') : 'Good form'}${r.tempo ? ` · ${(r.tempo.down/1000).toFixed(1)}s down` : ''}</span>
-      <span class="rep-log-score" style="color:${scoreColor(r.status)}">${r.overall}</span>
+      <span class="rep-log-issue">${r.lowConfidence ? 'Low camera confidence' : (r.issues.length ? r.issues.join(', ') : 'Good form')}${(!r.lowConfidence && r.tempo) ? ` · ${(r.tempo.down/1000).toFixed(1)}s down` : ''}</span>
+      <span class="rep-log-score" style="color:${scoreColor(r.status)}">${r.overall!=null ? r.overall : '—'}</span>
     </div>`).join('');
 }
 
@@ -1939,6 +2156,7 @@ function resetState(){
   renderExerciseUI(); setFeedback('Ready', null);
   formScoreCard.style.display='none'; repLogCard.style.display='none';
   ratingCard.style.display='none'; reportCard.style.display='none'; coachMainCard.style.display='';
+  readinessBadge.style.display='none'; lastReadinessLevel=null; debugPanel.textContent='';
 }
 resetBtn.onclick = () => { resetState(); if (autoDetectOn){ autoDetectLocked=false; resetAutoDetectHistory(); } };
 
@@ -1967,41 +2185,57 @@ function suggestionFor(label){ return IMPROVEMENT_TIPS[label] || 'Focus on slow,
 function buildReport(cfg){
   const source = cfg.type==='hold' ? holdScoreSamples : repLog;
   const total = source.length;
-  const correct = source.filter(r=>r.status==='good').length;
-  const incorrect = total - correct;
-  const avgScore = total ? Math.round(source.reduce((a,r)=>a+r.overall,0)/total) : 0;
+  const scored = source.filter(r => !r.lowConfidence && r.overall!=null);
+  const unclear = total - scored.length;
+  const correct = scored.filter(r=>r.status==='good').length;
+  const incorrect = scored.length - correct;
+  const avgScore = scored.length ? Math.round(scored.reduce((a,r)=>a+r.overall,0)/scored.length) : 0;
+  const bestScore = scored.length ? Math.max(...scored.map(r=>r.overall)) : null;
+  const lowestScore = scored.length ? Math.min(...scored.map(r=>r.overall)) : null;
+  const avgConfidence = source.length ? Math.round(source.reduce((a,r)=>a+(r.confidence||0),0)/source.length) : null;
   const tally = {};
-  source.forEach(r => r.issues.forEach(i => { tally[i] = (tally[i]||0)+1; }));
+  scored.forEach(r => r.issues.forEach(i => { tally[i] = (tally[i]||0)+1; }));
   const entries = Object.entries(tally).sort((a,b)=>b[1]-a[1]);
   const mostCommon = entries.length ? entries[0][0] : null;
 
   const categorySums = {}, categoryCounts = {};
-  source.forEach(r => Object.entries(r.comps).forEach(([cat,val]) => {
+  scored.forEach(r => Object.entries(r.comps).forEach(([cat,val]) => {
     categorySums[cat] = (categorySums[cat]||0)+val; categoryCounts[cat] = (categoryCounts[cat]||0)+1;
   }));
   const categoryScores = {};
   Object.keys(categorySums).forEach(cat => { categoryScores[cat] = Math.round(categorySums[cat]/categoryCounts[cat]); });
 
-  const depthReps = repLog.filter(r=>r.depthAngle!=null);
+  const depthReps = repLog.filter(r=>r.depthAngle!=null && !r.lowConfidence);
   const avgDepthAngle = depthReps.length ? Math.round(depthReps.reduce((a,r)=>a+r.depthAngle,0)/depthReps.length) : null;
   const targetAngle = depthReps.length ? depthReps[0].targetAngle : null;
 
-  const tempoReps = repLog.filter(r=>r.tempo);
+  const tempoReps = repLog.filter(r=>r.tempo && !r.lowConfidence);
   const avgTempo = tempoReps.length ? {
     down: Math.round(tempoReps.reduce((a,r)=>a+r.tempo.down,0)/tempoReps.length),
     bottom: Math.round(tempoReps.reduce((a,r)=>a+r.tempo.bottom,0)/tempoReps.length),
     up: Math.round(tempoReps.reduce((a,r)=>a+r.tempo.up,0)/tempoReps.length),
   } : null;
 
-  return { total, correct, incorrect, avgScore, mostCommon, categoryScores, avgDepthAngle, targetAngle, avgTempo };
+  const fatigue = cfg.type==='reps' ? detectFatigue(repLog) : null;
+
+  return { total, unclear, correct, incorrect, avgScore, bestScore, lowestScore, avgConfidence, mostCommon, categoryScores, avgDepthAngle, targetAngle, avgTempo, fatigue };
 }
 
 function renderReportCard(report){
   reportCard.style.display='';
   document.getElementById('reportTotal').textContent = report.total;
   document.getElementById('reportAvgScore').textContent = report.avgScore;
+  document.getElementById('reportBest').textContent = report.bestScore!=null ? report.bestScore : '—';
+  document.getElementById('reportLowest').textContent = report.lowestScore!=null ? report.lowestScore : '—';
   document.getElementById('reportCorrect').textContent = report.correct;
   document.getElementById('reportIncorrect').textContent = report.incorrect;
+  document.getElementById('reportConfidence').textContent = report.avgConfidence!=null ? report.avgConfidence+'%' : '—';
+  const unclearTile = document.getElementById('reportUnclearTile');
+  if (report.unclear > 0){ unclearTile.style.display=''; document.getElementById('reportUnclear').textContent = report.unclear; }
+  else unclearTile.style.display='none';
+  const fatigueBanner = document.getElementById('reportFatigueBanner');
+  if (report.fatigue){ fatigueBanner.style.display=''; document.getElementById('reportFatigueMsg').textContent = report.fatigue.message; }
+  else fatigueBanner.style.display='none';
   const mistakeEl = document.getElementById('reportMistake');
   if (report.mostCommon){ mistakeEl.textContent = report.mostCommon; mistakeEl.classList.remove('none'); }
   else { mistakeEl.textContent = 'None — clean form throughout!'; mistakeEl.classList.add('none'); }
@@ -2121,7 +2355,11 @@ function renderCorrections(activeMessages){
 }
 function evaluateCorrections(lm, angles, track){
   const cfg = EXERCISES[currentExercise];
-  if (track){ track.frames++; if (angles.formAngle!=null) track.formSamples.push(angles.formAngle); }
+  if (track){
+    track.frames++;
+    if (angles.formAngle!=null) track.formSamples.push(angles.formAngle);
+    if (angles.confidence!=null) track.confidenceSamples.push(angles.confidence);
+  }
   if (!cfg.corrections || !cfg.corrections.length){ prevActiveCategories = new Set(); return []; }
   const active = [];
   const activeCats = new Set();
@@ -2150,17 +2388,29 @@ function evaluateCorrections(lm, angles, track){
 function evaluateExercise(lm){
   const cfg = EXERCISES[currentExercise];
   if (cfg.type==='hold'){ evaluateHold(lm,cfg); return; }
+  const readiness = computeReadiness(lm, cfg);
+  updateReadinessBadge(readiness);
   const [pa,pb,pc]=cfg.primary, [fa,fb,fc]=cfg.form;
   const pts=[lm[pa],lm[pb],lm[pc],lm[fa],lm[fb],lm[fc]];
   if (pts.some(p=>!p)) return;
-  if (Math.min(...pts.map(p=>p.visibility??1)) < 0.5){ setFeedback('Move fully into frame','warn'); return; }
+  const minVis = Math.min(...pts.map(p=>p.visibility??1));
+  if (minVis < 0.5){ setFeedback('Move fully into frame','warn'); return; }
   const primaryAngle = smooth(primaryHistory, angleBetween(lm[pa],lm[pb],lm[pc]), SMOOTH_WINDOW);
   const formAngle = smooth(formHistory, angleBetween(lm[fa],lm[fb],lm[fc]), SMOOTH_WINDOW);
   primaryAngleEl.textContent = primaryAngle.toFixed(0)+'°'; formAngleEl.textContent = formAngle.toFixed(0)+'°';
   const formOK = formAngle >= cfg.formGoodMin; markTips(formOK);
   if (phase==='top' && primaryAngle < cfg.topAngle-20){ phase='descending'; reachedDepth=false; bottomStreak=0; repTrack=freshRepTrack(); }
-  const activeCorrections = evaluateCorrections(lm, { primaryAngle, formAngle }, repTrack);
+  const activeCorrections = evaluateCorrections(lm, { primaryAngle, formAngle, confidence:minVis }, repTrack);
   repTrack.minPrimary = Math.min(repTrack.minPrimary, primaryAngle);
+  if (!SYMMETRY_EXCLUDED.has(currentExercise)){
+    const [ma,mb,mc] = mirrorTriple(cfg.primary);
+    const mpts = [lm[ma],lm[mb],lm[mc]];
+    if (mpts.every(Boolean) && Math.min(...mpts.map(p=>p.visibility??1))>=0.5){
+      repTrack.rightSamples.push(primaryAngle);
+      repTrack.leftSamples.push(angleBetween(mpts[0],mpts[1],mpts[2]));
+    }
+  }
+  updateDebugPanel(cfg, { primaryAngle, formAngle, confidence:minVis, phase });
   const now = performance.now();
   if (phase==='descending'){ if (primaryAngle<=cfg.bottomAngle){ bottomStreak++; if(bottomStreak>=CONFIRM_FRAMES){phase='bottom'; reachedDepth=true; topStreak=0; repTrack.bottomEnterAt=now;} } else bottomStreak=0; }
   if (phase==='bottom' && repTrack.bottomEnterAt!=null && repTrack.bottomExitAt==null && primaryAngle>cfg.bottomAngle){ repTrack.bottomExitAt=now; }
@@ -2172,11 +2422,11 @@ function evaluateExercise(lm){
       if (canCount){
         repCount++; repCountEl.textContent=repCount; pulseRepCount(); lastRepTime=now; updateGoalProgress();
         const repGood = formOK && !activeCorrections.length;
-        const scoreResult = finalizeScore(cfg, repTrack);
+        const scoreResult = computeRepScore(cfg, repTrack, repLog, currentExercise);
         const bottomEnterAt = repTrack.bottomEnterAt ?? now, bottomExitAt = repTrack.bottomExitAt ?? bottomEnterAt;
         const tempo = { down: Math.round(bottomEnterAt-repTrack.startTime), bottom: Math.round(bottomExitAt-bottomEnterAt), up: Math.round(now-bottomExitAt) };
         const rushed = tempo.down > 0 && tempo.down < IDEAL_MIN_DOWN_MS;
-        if (rushed){
+        if (rushed && !scoreResult.lowConfidence){
           scoreResult.issues.push('Rushed tempo');
           if (scoreResult.status==='good') scoreResult.status='warn';
         }
@@ -2185,12 +2435,17 @@ function evaluateExercise(lm){
         scoreResult.targetAngle = cfg.bottomAngle;
         repLog.push(scoreResult);
         renderRepLog(); renderFormScoreCard();
-        beep(repGood?880:440);
-        setFeedback(repGood?'Nice rep!':'Rep counted — watch your form', repGood?'good':'warn');
-        if (repCount % 5 === 0 && repCount !== lastSpokenMilestone){ lastSpokenMilestone = repCount; coachSpeak(`${repCount} reps`); }
-        else if (repCount === settings.repGoal){ coachSpeak('Goal reached! Great work.'); }
-        else if (rushed){ coachSpeak('Slow down.'); }
-        else if (scoreResult.status==='good'){ coachSpeak(scoreResult.overall>=95 ? 'Great depth!' : 'Nice rep!'); }
+        if (scoreResult.lowConfidence){
+          setFeedback('⚠️ Unable to confidently analyze this rep', 'warn');
+          coachSpeak('I lost track of you — try adjusting your position.');
+        } else {
+          beep(repGood?880:440);
+          setFeedback(repGood?'Nice rep!':'Rep counted — watch your form', repGood?'good':'warn');
+          if (repCount % 5 === 0 && repCount !== lastSpokenMilestone){ lastSpokenMilestone = repCount; coachSpeak(`${repCount} reps`); }
+          else if (repCount === settings.repGoal){ coachSpeak('Goal reached! Great work.'); }
+          else if (rushed){ coachSpeak('Slow down.'); }
+          else if (scoreResult.status==='good'){ coachSpeak(scoreResult.overall>=95 ? 'Great depth!' : 'Nice rep!'); }
+        }
       } else if (!reachedDepth) setFeedback('Go lower — depth not reached','warn');
       phase='top'; reachedDepth=false; bottomStreak=0; topStreak=0;
     }
@@ -2206,20 +2461,24 @@ function evaluateExercise(lm){
   phaseLabelEl.textContent = phase[0].toUpperCase()+phase.slice(1);
 }
 function evaluateHold(lm,cfg){
+  const readiness = computeReadiness(lm, cfg);
+  updateReadinessBadge(readiness);
   const [fa,fb,fc]=cfg.form; const pts=[lm[fa],lm[fb],lm[fc]];
   if (pts.some(p=>!p)) return;
-  if (Math.min(...pts.map(p=>p.visibility??1)) < 0.5){ setFeedback('Move fully into frame','warn'); holdStartTime=null; return; }
+  const minVis = Math.min(...pts.map(p=>p.visibility??1));
+  if (minVis < 0.5){ setFeedback('Move fully into frame','warn'); holdStartTime=null; return; }
   const formAngle = smooth(formHistory, angleBetween(lm[fa],lm[fb],lm[fc]), SMOOTH_WINDOW);
   formAngleEl.textContent = formAngle.toFixed(0)+'°';
   const formOK = formAngle >= cfg.formGoodMin; markTips(formOK);
-  const activeCorrections = evaluateCorrections(lm, { formAngle }, holdTrack);
+  const activeCorrections = evaluateCorrections(lm, { formAngle, confidence:minVis }, holdTrack);
+  updateDebugPanel(cfg, { primaryAngle:null, formAngle, confidence:minVis, phase:'hold' });
   const now = performance.now();
   if (holdTrack.frames % 30 === 0){
-    const snap = finalizeScore(cfg, holdTrack);
+    const snap = computeRepScore(cfg, holdTrack, holdScoreSamples, currentExercise);
     holdScoreSamples.push(snap);
     if (holdScoreSamples.length > 200) holdScoreSamples.shift();
     renderFormScoreCard();
-    if (snap.status==='good' && snap.overall>=95) coachSpeak('Great form — hold it.');
+    if (!snap.lowConfidence && snap.status==='good' && snap.overall>=95) coachSpeak('Great form — hold it.');
   }
   if (formOK && !activeCorrections.length){
     if (holdStartTime===null) holdStartTime=now;
