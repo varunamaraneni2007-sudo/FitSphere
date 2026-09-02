@@ -341,6 +341,81 @@
 
   .toast{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(10px); background:var(--text); color:var(--bg); padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:all .25s ease; z-index:50; max-width:88%; text-align:center; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* Exercise Guide */
+  .guide-search-card{ position:relative; }
+  .search-box{ display:flex; align-items:center; gap:10px; background:var(--panel-2); border-radius:14px; padding:12px 16px; }
+  .search-box .search-icon{ font-size:15px; opacity:.6; }
+  .search-box input{ flex:1; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--text); outline:none; }
+  .search-dropdown{ position:absolute; left:20px; right:20px; top:calc(100% - 8px); background:var(--panel); border-radius:14px; box-shadow:0 10px 32px rgba(0,0,0,.18); border:1px solid var(--line); z-index:20; max-height:320px; overflow-y:auto; padding:6px; }
+  .search-result-row{ display:flex; align-items:center; gap:12px; padding:10px 10px; border-radius:10px; cursor:pointer; }
+  .search-result-row:hover, .search-result-row.active{ background:var(--panel-2); }
+  .search-result-icon{ width:34px; height:34px; border-radius:10px; background:var(--panel-2); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .search-result-name{ font-size:13.5px; font-weight:700; }
+  .search-result-meta{ font-size:11px; color:var(--muted); }
+  .search-empty{ padding:16px; text-align:center; font-size:12.5px; color:var(--muted); }
+  .search-empty-chips{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
+
+  .guide-browse-group{ margin-bottom:18px; }
+  .guide-browse-label{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:9px; }
+  .guide-browse-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  @media (max-width:640px){ .guide-browse-grid{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:420px){ .guide-browse-grid{ grid-template-columns:repeat(2,1fr); } }
+  .guide-browse-card{ display:flex; flex-direction:column; align-items:center; gap:7px; padding:16px 8px; border-radius:16px; background:var(--panel); box-shadow:var(--shadow); cursor:pointer; text-align:center; }
+  .guide-browse-card .gb-icon{ font-size:24px; }
+  .guide-browse-card .gb-name{ font-size:11.5px; font-weight:700; }
+
+  .guide-back-btn{ display:inline-flex; align-items:center; gap:6px; background:none; border:none; color:var(--blue); font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; padding:0 0 14px; }
+
+  .guide-hero{ border-radius:20px; padding:28px 24px; color:#fff; margin-bottom:16px; position:relative; overflow:hidden; }
+  .guide-hero .gh-icon{ font-size:44px; }
+  .guide-hero .gh-name{ font-size:24px; font-weight:800; letter-spacing:-0.02em; margin-top:6px; }
+  .guide-hero .gh-desc{ font-size:13px; opacity:.92; margin-top:6px; max-width:520px; line-height:1.5; }
+  .guide-hero .gh-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+  .guide-hero .gh-tag{ font-size:11px; font-weight:700; padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.2); }
+
+  .guide-media{ border-radius:18px; background:var(--panel-2); padding:30px 20px; text-align:center; margin-bottom:18px; border:1.5px dashed var(--line); }
+  .guide-media .gm-icon{ font-size:56px; }
+  .guide-media .gm-caption{ font-size:12px; color:var(--muted); margin-top:10px; max-width:420px; margin-left:auto; margin-right:auto; line-height:1.5; }
+  .guide-media .gm-flow{ display:flex; align-items:center; justify-content:center; gap:10px; margin-top:16px; flex-wrap:wrap; font-size:11.5px; font-weight:700; color:var(--text); }
+  .guide-media .gm-flow span.arrow{ color:var(--muted); font-weight:400; }
+  .guide-media .gm-flow b{ background:var(--panel); padding:6px 12px; border-radius:999px; box-shadow:var(--shadow); }
+
+  .guide-steps{ list-style:none; padding:0; margin:0; counter-reset:step; }
+  .guide-steps li{ display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; line-height:1.5; }
+  .guide-steps li:last-child{ border-bottom:none; }
+  .guide-steps li::before{ counter-increment:step; content:counter(step); flex-shrink:0; width:24px; height:24px; border-radius:50%; background:var(--blue); color:#fff; font-size:11.5px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+
+  .guide-checklist{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px; }
+  .guide-checklist li{ display:flex; align-items:flex-start; gap:9px; font-size:13.5px; font-weight:600; }
+  .guide-checklist li::before{ content:'✓'; color:var(--green); font-weight:800; flex-shrink:0; }
+
+  .guide-mistake{ padding:12px 14px; border-radius:12px; background:rgba(255,59,48,.08); margin-bottom:9px; }
+  .guide-mistake:last-child{ margin-bottom:0; }
+  .guide-mistake .gm-title{ display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; color:var(--red); }
+  .guide-mistake .gm-fix{ font-size:12.5px; color:var(--muted); margin:4px 0 0 24px; line-height:1.4; }
+
+  .muscle-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:520px){ .muscle-grid{ grid-template-columns:1fr; } }
+  .muscle-col-label{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:9px; }
+  .muscle-chip{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:7px 12px; border-radius:999px; background:var(--panel-2); margin:0 6px 6px 0; }
+  .muscle-chip.primary{ background:rgba(0,113,227,.12); color:var(--blue); }
+
+  .details-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  @media (max-width:640px){ .details-grid{ grid-template-columns:1fr 1fr; } }
+  .detail-tile{ background:var(--panel-2); border-radius:14px; padding:14px 10px; text-align:center; }
+  .detail-tile .dt-val{ font-size:13px; font-weight:800; }
+  .detail-tile .dt-label{ font-size:10px; color:var(--muted); margin-top:3px; font-weight:600; }
+
+  .guide-history-row{ display:flex; align-items:center; justify-content:space-around; text-align:center; margin-bottom:14px; }
+  .guide-history-row .ghr-item .ghr-val{ font-size:22px; font-weight:800; }
+  .guide-history-row .ghr-item.up .ghr-val{ color:var(--green); }
+  .guide-history-row .ghr-item.down .ghr-val{ color:var(--red); }
+  .guide-history-row .ghr-item .ghr-label{ font-size:11px; color:var(--muted); margin-top:2px; }
+
+  .guide-cta-btn{ width:100%; font-size:15px; font-weight:800; padding:16px; border-radius:16px; border:none; background:linear-gradient(135deg,#0071E3,#00C7BE); color:#fff; cursor:pointer; box-shadow:0 6px 20px rgba(0,113,227,.35); transition:transform .15s ease; }
+  .guide-cta-btn:active{ transform:scale(.98); }
+  .guide-cta-btn:disabled{ background:var(--panel-2); color:var(--muted); box-shadow:none; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -361,6 +436,7 @@
 
   <nav class="tabs" id="tabs">
     <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="guide">Exercise Guide</button>
     <button data-view="coach">AI Coach</button>
     <button data-view="checkin">Check-in</button>
     <button data-view="progress">Progress</button>
@@ -376,6 +452,15 @@
         <div class="streak"><span id="streakNum">0</span><span>day streak 🔥</span></div>
         <div class="week-strip" id="weekStrip"></div>
         <div class="tip" id="tipText">Consistency beats intensity — a short session today keeps your streak alive.</div>
+      </div>
+
+      <div class="card guide-search-card">
+        <h2 class="section-title" style="margin-top:0;">What exercise are you doing today?</h2>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="dashSearchInput" placeholder="Search exercise… (e.g. squat, chest, deadlift)" autocomplete="off">
+        </div>
+        <div class="search-dropdown" id="dashSearchDropdown" style="display:none;"></div>
       </div>
 
       <div class="card" id="snapshotCard" style="display:none;">
@@ -456,6 +541,25 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- ================= EXERCISE GUIDE ================= -->
+    <section class="view" id="view-guide">
+      <div class="card guide-search-card">
+        <h2 class="section-title" style="margin-top:0;">What exercise are you doing today?</h2>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="guideSearchInput" placeholder="Search exercise… (e.g. squat, chest, deadlift)" autocomplete="off">
+        </div>
+        <div class="search-dropdown" id="guideSearchDropdown" style="display:none;"></div>
+      </div>
+
+      <div id="guideBrowseSection">
+        <h2 class="section-title">Browse by Category</h2>
+        <div id="guideBrowseGroups"></div>
+      </div>
+
+      <div id="guideDetailSection" style="display:none;"></div>
     </section>
 
     <!-- ================= COACH ================= -->
@@ -1711,7 +1815,12 @@ function freshRepTrack(){ return { frames:0, minPrimary:Infinity, formSamples:[]
 const IDEAL_MIN_DOWN_MS = 1000;
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
-function smooth(h,v,w){ h.push(v); if(h.length>w) h.shift(); return h.reduce((a,b)=>a+b,0)/h.length; }
+const ANGLE_JUMP_REJECT_DEG = 45; // reject implausible single-frame angle spikes (likely a pose-detection glitch) rather than letting them corrupt the smoothed reading
+function smooth(h,v,w){
+  if (h.length && Math.abs(v-h[h.length-1]) > ANGLE_JUMP_REJECT_DEG) v = h[h.length-1];
+  h.push(v); if(h.length>w) h.shift();
+  return h.reduce((a,b)=>a+b,0)/h.length;
+}
 function angleBetween(a,b,c){ const ab={x:a.x-b.x,y:a.y-b.y}, cb={x:c.x-b.x,y:c.y-b.y}; const dot=ab.x*cb.x+ab.y*cb.y; const mA=Math.hypot(ab.x,ab.y), mC=Math.hypot(cb.x,cb.y); return Math.acos(Math.min(1,Math.max(-1,dot/(mA*mC))))*180/Math.PI; }
 function setFeedback(t,k){ feedbackPill.textContent=t; feedbackPill.className='feedback-pill'+(k?' '+k:''); }
 function formatTime(ms){ const s=Math.floor(ms/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
@@ -2124,6 +2233,320 @@ function evaluateHold(lm,cfg){
 }
 startBtn.onclick = startCamera;
 
+/* ================= EXERCISE FORM GUIDE ================= */
+/* Extends EXERCISES (the live pose-tracking config) with the richer content a guide page needs.
+   Reuses cfg.tips as the Form Checklist and cfg.corrections as part of Common Mistakes wherever
+   an exercise is camera-trackable, instead of re-authoring that content. A handful of well-known
+   exercises that aren't camera-trackable (deadlift, bench press, lat pulldown, leg press — no
+   pose config exists for these) are included as guide-only entries so search/browse feels
+   complete; their "Check My Form" CTA is disabled rather than pretending to analyze them. */
+const GENERIC_MISTAKES = [
+  { mistake:'Moving too fast', fix:'Slow down to maintain control and maximize muscle engagement.' },
+  { mistake:'Partial range of motion', fix:'Complete the full movement path for the best results.' },
+];
+const EXTRA_GUIDE_DATA = {
+  squat: { difficulty:'Beginner', equipmentLabel:'Bodyweight (barbell optional)', muscles:{primary:['Quadriceps','Glutes'],secondary:['Hamstrings','Core']}, setsReps:'3-4 sets × 8-12 reps', restSec:90, tags:['legs','quads','glutes','lower body'],
+    description:'A foundational lower-body movement that builds strength in your legs and glutes while teaching hip and knee control.',
+    instructions:['Stand with feet approximately shoulder-width apart, toes slightly turned out.','Keep your chest up and spine neutral.','Brace your core.','Push your hips back and bend your knees to lower down.','Descend under control until your thighs are roughly parallel to the floor.','Drive through your feet to return to the starting position.'],
+    extraMistakes:[{mistake:'Rounding your lower back', fix:'Keep your chest up and brace your core to maintain a neutral spine.'},{mistake:'Heels lifting off the ground', fix:'Keep your weight balanced through your whole foot, especially your heels.'},{mistake:'Moving too fast', fix:'Slow your descent to 2-3 seconds for better control and muscle engagement.'}] },
+  jumpSquat: { difficulty:'Intermediate', equipmentLabel:'Bodyweight', muscles:{primary:['Quadriceps','Glutes'],secondary:['Calves','Core']}, setsReps:'3 sets × 10-15 reps', restSec:60, tags:['legs','cardio','explosive','power'],
+    description:'An explosive variation of the squat that builds power and cardiovascular conditioning.',
+    extraMistakes:[{mistake:'Landing with stiff knees', fix:'Land softly with bent knees to absorb impact and protect your joints.'}] },
+  pushup: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Chest','Triceps'],secondary:['Shoulders','Core']}, setsReps:'3 sets × 8-15 reps', restSec:60, tags:['chest','arms','triceps','upper body'],
+    description:'A classic bodyweight press that builds upper-body pushing strength and core stability.',
+    instructions:['Start in a plank with hands slightly wider than shoulder-width.','Keep your body in one straight line from shoulders to heels.','Brace your core and lower your chest toward the floor, elbows at about 45°.','Lower until your chest nearly touches the ground.','Push through your palms to return to the starting position.'],
+    extraMistakes:[{mistake:'Flaring elbows out to 90°', fix:'Keep elbows closer to your torso, around a 45° angle, to protect your shoulders.'}] },
+  tricepDip: { difficulty:'Intermediate', equipmentLabel:'Bench or sturdy chair', muscles:{primary:['Triceps'],secondary:['Chest','Shoulders']}, setsReps:'3 sets × 8-12 reps', restSec:60, tags:['arms','triceps','chest'],
+    description:'A bodyweight press that isolates the triceps using a bench, chair, or dip bars.' },
+  lunge: { difficulty:'Beginner', equipmentLabel:'Bodyweight (dumbbells optional)', muscles:{primary:['Quadriceps','Glutes'],secondary:['Hamstrings','Core']}, setsReps:'3 sets × 8-10 reps per leg', restSec:60, tags:['legs','glutes','lower body'],
+    description:'A single-leg movement that builds strength, balance, and hip stability.',
+    instructions:['Stand tall with feet hip-width apart.','Step forward with one leg, lowering your hips until both knees are bent near 90°.','Keep your front knee tracking over your toes and your torso upright.','Push through your front heel to return to standing.','Repeat, alternating legs.'],
+    extraMistakes:[{mistake:'Taking too short a step', fix:'Step far enough forward that your front shin stays roughly vertical at the bottom.'}] },
+  sideLunge: { difficulty:'Intermediate', equipmentLabel:'Bodyweight', muscles:{primary:['Glutes','Adductors'],secondary:['Quadriceps','Hamstrings']}, setsReps:'3 sets × 8-10 reps per leg', restSec:60, tags:['legs','glutes','inner thigh'],
+    description:'A lateral movement that builds hip and inner-thigh strength while improving mobility.' },
+  gluteBridge: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Glutes'],secondary:['Hamstrings','Core']}, setsReps:'3 sets × 12-15 reps', restSec:45, tags:['glutes','core','lower body'],
+    description:'A floor-based hip extension movement that isolates and activates the glutes.' },
+  situp: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Abdominals'],secondary:['Hip Flexors']}, setsReps:'3 sets × 12-20 reps', restSec:45, tags:['core','abs'],
+    description:'A classic core exercise that builds abdominal strength and endurance.' },
+  bicepCurl: { difficulty:'Beginner', equipmentLabel:'Dumbbells', muscles:{primary:['Biceps'],secondary:['Forearms']}, setsReps:'3 sets × 10-12 reps', restSec:60, tags:['arms','biceps'],
+    description:'An isolation movement that builds bicep strength and size.',
+    instructions:['Stand tall holding a dumbbell in each hand, arms extended, palms forward.','Keep your elbows pinned to your sides.','Curl the weights up toward your shoulders with control.','Squeeze your biceps briefly at the top.','Lower the weights back down slowly to the starting position.'],
+    extraMistakes:[{mistake:'Swinging your body for momentum', fix:'Keep your torso still — let your biceps do the work, not momentum.'}] },
+  overheadPress: { difficulty:'Intermediate', equipmentLabel:'Dumbbells', muscles:{primary:['Shoulders'],secondary:['Triceps','Core']}, setsReps:'3 sets × 8-10 reps', restSec:90, tags:['shoulders','arms'],
+    description:'A vertical press that builds shoulder strength and overhead stability.',
+    instructions:['Stand tall holding dumbbells at shoulder height, palms facing forward.','Brace your core to keep your ribs stacked over your hips.','Press the weights straight overhead until your arms are fully extended.','Avoid arching your lower back as you press.','Lower the weights back to shoulder height with control.'] },
+  plank: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Abdominals'],secondary:['Shoulders','Glutes']}, setsReps:'3 sets × 20-45s hold', restSec:45, tags:['core','abs'],
+    description:'An isometric hold that builds core stability and total-body tension control.',
+    instructions:['Get into a forearm plank with elbows under your shoulders.','Extend your legs behind you, resting on your toes.','Form one straight line from your shoulders to your heels.','Brace your core and squeeze your glutes.','Hold the position while breathing normally.'] },
+  wallSit: { difficulty:'Beginner', equipmentLabel:'Wall', muscles:{primary:['Quadriceps'],secondary:['Glutes']}, setsReps:'3 sets × 20-40s hold', restSec:60, tags:['legs','quads'],
+    description:'An isometric hold that builds quad endurance and mental toughness.' },
+  superman: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Lower Back'],secondary:['Glutes','Shoulders']}, setsReps:'3 sets × 10-15s hold', restSec:45, tags:['back','core'],
+    description:'A floor-based extension that strengthens the posterior chain and lower back.' },
+  highKnees: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Hip Flexors'],secondary:['Core','Calves']}, setsReps:'3 sets × 30-40s', restSec:45, tags:['cardio','legs'],
+    description:'A high-intensity cardio drill that raises heart rate and builds hip drive.' },
+  mountainClimber: { difficulty:'Intermediate', equipmentLabel:'Bodyweight', muscles:{primary:['Core'],secondary:['Shoulders','Legs']}, setsReps:'3 sets × 20-30s', restSec:45, tags:['cardio','core'],
+    description:'A dynamic plank variation that combines core stability with cardio conditioning.' },
+  calfRaise: { difficulty:'Beginner', equipmentLabel:'Bodyweight', muscles:{primary:['Calves'],secondary:[]}, setsReps:'3 sets × 15-20 reps', restSec:45, tags:['legs','calves'],
+    description:'An isolation movement that builds calf strength and ankle stability.' },
+  deadlift: { name:'Deadlift', icon:'🏋️', group:'Legs', difficulty:'Intermediate', equipmentLabel:'Barbell', muscles:{primary:['Hamstrings','Glutes'],secondary:['Lower Back','Core','Forearms']}, setsReps:'3-4 sets × 5-8 reps', restSec:120, tags:['legs','back','hamstrings','glutes','posterior chain'],
+    description:'A foundational hip-hinge movement that builds total-body pulling strength.',
+    instructions:['Stand with feet hip-width apart, bar over your midfoot.','Hinge at the hips and bend your knees to grip the bar just outside your knees.','Flatten your back and lift your chest before initiating the pull.','Drive through your heels, keeping the bar close to your shins.','Extend your hips and knees together to stand tall, then lock out.','Reverse the motion with control to lower the bar back down.'],
+    formChecklist:['Neutral spine throughout','Bar stays close to your shins','Hips and knees extend together','Full lockout at the top','Controlled, unhurried descent'],
+    extraMistakes:[{mistake:'Rounding your lower back', fix:'Brace your core hard and keep your spine neutral throughout.'},{mistake:'Bar drifting away from your shins', fix:'Keep it close — think of dragging it up your legs.'},{mistake:'Hips shooting up first', fix:'Push the floor away with your legs and hips together.'}] },
+  benchPress: { name:'Bench Press', icon:'🏋️‍♂️', group:'Arms', difficulty:'Intermediate', equipmentLabel:'Barbell + Bench', muscles:{primary:['Chest'],secondary:['Triceps','Shoulders']}, setsReps:'3-4 sets × 6-10 reps', restSec:120, tags:['chest','arms','triceps'],
+    description:'A horizontal press that builds chest, shoulder, and triceps strength.',
+    instructions:['Lie on the bench with eyes under the bar, feet flat on the floor.','Grip the bar slightly wider than shoulder-width.','Unrack the bar and lower it with control to your mid-chest.','Keep your elbows at roughly a 45° angle from your torso.','Press the bar back up to full arm extension over your chest.'],
+    formChecklist:['Feet flat on the floor','Shoulder blades retracted','Elbows at roughly 45° from your torso','Bar path stays over your mid-chest','Full lockout at the top'],
+    extraMistakes:[{mistake:'Bouncing the bar off your chest', fix:'Lower with control and pause briefly rather than bouncing for momentum.'},{mistake:'Flaring elbows to 90°', fix:'Keep elbows closer to 45° from your torso to protect your shoulders.'}] },
+  latPulldown: { name:'Lat Pulldown', icon:'🧗', group:'Arms', difficulty:'Beginner', equipmentLabel:'Cable Machine', muscles:{primary:['Lats (Back)'],secondary:['Biceps']}, setsReps:'3 sets × 10-12 reps', restSec:75, tags:['back','arms','lats'],
+    description:'A vertical pulling movement that builds width and strength in your back.',
+    instructions:['Sit at the machine and grip the bar wider than shoulder-width.','Brace your core and lean back slightly.','Pull the bar down to your upper chest, driving your elbows down and back.','Squeeze your shoulder blades together at the bottom.','Slowly extend your arms back up to the starting position.'],
+    formChecklist:['Slight backward lean, not a big swing','Elbows drive down and back','Bar meets your upper chest','Shoulder blades squeeze together','Controlled return to the top'],
+    extraMistakes:[{mistake:'Using momentum to yank the bar down', fix:'Slow down and let your back muscles do the work, not body swing.'}] },
+  legPress: { name:'Leg Press', icon:'🦿', group:'Legs', difficulty:'Beginner', equipmentLabel:'Leg Press Machine', muscles:{primary:['Quadriceps','Glutes'],secondary:['Hamstrings']}, setsReps:'3-4 sets × 10-12 reps', restSec:90, tags:['legs','quads','glutes'],
+    description:'A machine-based squat pattern that lets you load your legs safely with back support.',
+    instructions:['Sit in the machine with feet shoulder-width apart on the platform.','Release the safety and let your knees bend toward your chest under control.','Lower until your knees reach about 90°, keeping your lower back on the pad.','Drive through your feet to extend your legs back to the start.','Avoid locking your knees out fully at the top.'],
+    formChecklist:['Lower back stays on the pad','Knees track over your toes','Controlled descent to about 90°',"Don't lock your knees out fully",'Full foot contact with the platform'],
+    extraMistakes:[{mistake:'Locking knees out fully at the top', fix:'Stop just short of lockout to keep tension on your muscles and protect your joints.'}] },
+};
+
+function dedupeMistakes(list){
+  const seen = new Set(), out = [];
+  list.forEach(m => { if (m && !seen.has(m.mistake)){ seen.add(m.mistake); out.push(m); } });
+  return out.length ? out : GENERIC_MISTAKES;
+}
+function getGuideEntry(key){
+  const extra = EXTRA_GUIDE_DATA[key];
+  if (!extra) return null;
+  const cfg = EXERCISES[key];
+  const correctionMistakes = (cfg && cfg.corrections) ? cfg.corrections.map(c => ({ mistake:c.label, fix:c.voice })) : [];
+  return {
+    key,
+    trackable: !!cfg,
+    name: cfg ? cfg.name : extra.name,
+    icon: cfg ? cfg.icon : extra.icon,
+    color: cfg ? cfg.color : '#0071E3',
+    group: cfg ? cfg.group : extra.group,
+    difficulty: extra.difficulty,
+    equipmentLabel: extra.equipmentLabel,
+    muscles: extra.muscles,
+    setsReps: extra.setsReps,
+    restSec: extra.restSec,
+    description: extra.description,
+    instructions: extra.instructions || (cfg ? cfg.tips.slice() : []),
+    formChecklist: cfg ? cfg.tips : (extra.formChecklist || extra.instructions || []),
+    mistakes: dedupeMistakes([...correctionMistakes, ...(extra.extraMistakes||[])]),
+  };
+}
+function allGuideKeys(){ return Object.keys(EXTRA_GUIDE_DATA); }
+
+/* ---- Smart search: name match -> synonym match -> body-part tag match -> fuzzy misspelling match ---- */
+function levenshtein(a,b){
+  const dp = [];
+  for (let i=0;i<=a.length;i++) dp.push([i]);
+  for (let j=1;j<=b.length;j++) dp[0][j]=j;
+  for (let i=1;i<=a.length;i++){
+    for (let j=1;j<=b.length;j++){
+      dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+    }
+  }
+  return dp[a.length][b.length];
+}
+function searchExercises(query){
+  const q = (query||'').trim().toLowerCase();
+  if (!q) return [];
+  const keys = allGuideKeys();
+  const nameMatches = keys.filter(k => getGuideEntry(k).name.toLowerCase().includes(q));
+  if (nameMatches.length) return nameMatches.map(getGuideEntry);
+
+  const synKey = detectExerciseKey(q);
+  if (synKey && EXTRA_GUIDE_DATA[synKey]) return [getGuideEntry(synKey)];
+
+  const tagMatches = keys.filter(k => (EXTRA_GUIDE_DATA[k].tags||[]).some(t => t.includes(q) || q.includes(t)));
+  if (tagMatches.length) return tagMatches.map(getGuideEntry);
+
+  const fuzzy = keys.filter(k => getGuideEntry(k).name.toLowerCase().split(/\s+/).some(word => {
+    const maxDist = word.length<=4 ? 1 : 2;
+    return levenshtein(word, q) <= maxDist;
+  }));
+  return fuzzy.map(getGuideEntry);
+}
+
+/* ---- Reusable autocomplete wiring — used by both the Dashboard quick-search and the full Guide search ---- */
+function wireExerciseSearchInput(inputEl, dropdownEl, onSelect){
+  let activeIndex = -1, currentResults = [];
+  function updateActive(){ dropdownEl.querySelectorAll('.search-result-row').forEach((row,i)=>row.classList.toggle('active', i===activeIndex)); }
+  function pick(key){ inputEl.value=''; dropdownEl.style.display='none'; onSelect(key); }
+  function renderDropdown(query){
+    if (!query.trim()){ dropdownEl.style.display='none'; return; }
+    const results = searchExercises(query).slice(0,10);
+    currentResults = results; activeIndex = -1;
+    if (!results.length){
+      dropdownEl.innerHTML = `<div class="search-empty">We couldn't find "${escapeHtml(query)}". Try one of these:
+        <div class="search-empty-chips">${['Squat','Push-up','Plank','Lunge'].map(n=>`<button class="chat-chip" data-fallback="${n}">${n}</button>`).join('')}</div></div>`;
+      dropdownEl.style.display = '';
+      dropdownEl.querySelectorAll('[data-fallback]').forEach(btn => { btn.onclick = () => pick(detectExerciseKey(btn.dataset.fallback) || 'squat'); });
+      return;
+    }
+    dropdownEl.innerHTML = results.map((e,i) => `
+      <div class="search-result-row" data-idx="${i}" data-key="${e.key}">
+        <div class="search-result-icon">${e.icon}</div>
+        <div><div class="search-result-name">${e.name}</div><div class="search-result-meta">${e.group}${e.trackable ? ' · Live AI tracking' : ''}</div></div>
+      </div>`).join('');
+    dropdownEl.style.display = '';
+    dropdownEl.querySelectorAll('.search-result-row').forEach(row => { row.onclick = () => pick(row.dataset.key); });
+  }
+  inputEl.addEventListener('input', () => renderDropdown(inputEl.value));
+  inputEl.addEventListener('focus', () => { if (inputEl.value.trim()) renderDropdown(inputEl.value); });
+  inputEl.addEventListener('keydown', (e) => {
+    if (dropdownEl.style.display==='none' || !currentResults.length) return;
+    if (e.key==='ArrowDown'){ e.preventDefault(); activeIndex = Math.min(activeIndex+1, currentResults.length-1); updateActive(); }
+    else if (e.key==='ArrowUp'){ e.preventDefault(); activeIndex = Math.max(activeIndex-1, 0); updateActive(); }
+    else if (e.key==='Enter'){ e.preventDefault(); const p = currentResults[activeIndex>=0?activeIndex:0]; if (p) pick(p.key); }
+  });
+  document.addEventListener('click', (e) => { if (e.target!==inputEl && !dropdownEl.contains(e.target)) dropdownEl.style.display='none'; });
+}
+
+/* ---- Personalized guidance + real-data-only history ---- */
+function personalizedGuidanceFor(){
+  const lines = [];
+  if (settings.experience==='beginner') lines.push('Start with a lighter load and prioritize technique over speed or weight.');
+  else if (settings.experience==='advanced') lines.push('Focus on progressive overload while keeping your form crisp under heavier loads.');
+  if (settings.profileGoal==='muscle') lines.push('Recommended focus: controlled reps and progressive resistance.');
+  else if (settings.profileGoal==='lose_weight') lines.push('Recommended focus: keep rest periods tight and pair this with consistent cardio for your goal.');
+  else if (settings.profileGoal==='endurance') lines.push('Recommended focus: higher reps with shorter rest to build muscular endurance.');
+  else if (settings.profileGoal==='maintain') lines.push('Recommended focus: stay consistent — steady training beats sporadic intensity.');
+  return lines.join(' ');
+}
+function exerciseHistoryFor(key){
+  const sessions = appData.sessions.filter(s=>s.exercise===key && s.formScore!=null);
+  if (!sessions.length) return null;
+  const current = sessions[sessions.length-1];
+  const previous = sessions.length>1 ? sessions[sessions.length-2] : null;
+  return {
+    current: current.formScore,
+    previous: previous ? previous.formScore : null,
+    improvement: previous ? current.formScore-previous.formScore : null,
+    previousMistake: previous ? previous.mostCommonMistake : null,
+    currentMistake: current.mostCommonMistake,
+  };
+}
+
+/* ---- Guide page rendering ---- */
+function renderGuideBrowse(){
+  const groups = {};
+  allGuideKeys().forEach(k => { const e = getGuideEntry(k); (groups[e.group]=groups[e.group]||[]).push(e); });
+  const order = ['Legs','Arms','Core','Cardio'];
+  document.getElementById('guideBrowseGroups').innerHTML = order.filter(g=>groups[g]).map(g => `
+    <div class="guide-browse-group">
+      <div class="guide-browse-label">${g}</div>
+      <div class="guide-browse-grid">
+        ${groups[g].map(e => `<div class="guide-browse-card" data-guide-key="${e.key}"><div class="gb-icon">${e.icon}</div><div class="gb-name">${e.name}</div></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function buildGuideDetailHTML(e){
+  const muscles = e.muscles || { primary:[], secondary:[] };
+  const details = [
+    ['🏆', e.difficulty, 'Difficulty'],
+    ['🏋️', e.equipmentLabel, 'Equipment'],
+    ['🔁', e.setsReps, 'Sets × Reps'],
+    ['⏱️', e.restSec+'s', 'Rest Period'],
+  ];
+  const history = exerciseHistoryFor(e.key);
+  const personalized = personalizedGuidanceFor();
+  return `
+    <button class="guide-back-btn" id="guideBackBtn">← Back to Browse</button>
+
+    <div class="guide-hero" style="background:linear-gradient(135deg, ${e.color}, #00C7BE);">
+      <div class="gh-icon">${e.icon}</div>
+      <div class="gh-name">${e.name}</div>
+      <div class="gh-desc">${escapeHtml(e.description||'')}</div>
+      <div class="gh-tags"><span class="gh-tag">${e.difficulty}</span><span class="gh-tag">${e.group}</span>${e.trackable ? '<span class="gh-tag">🎥 Live AI Tracking</span>' : ''}</div>
+    </div>
+
+    <!-- MEDIA SLOT: drop an exercise-specific video/GIF/image here later, e.g. <video src="…"> or <img src="…"> -->
+    <div class="guide-media">
+      <div class="gm-icon">${e.icon}</div>
+      <div class="gm-flow"><b>Starting Position</b><span class="arrow">→</span><b>Controlled Movement</b><span class="arrow">→</span><b>Ending Position</b></div>
+      <div class="gm-caption">${e.trackable ? 'Use "Check My Form" below to see your own movement tracked live against this pattern using your camera.' : "Live camera tracking isn't available for this exercise yet — follow the steps below for correct form."}</div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">How to Perform</h2>
+      <ol class="guide-steps">${(e.instructions||[]).map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ol>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">Form Checklist</h2>
+      <ul class="guide-checklist">${(e.formChecklist||[]).map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ul>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">Common Mistakes</h2>
+      ${e.mistakes.map(m => `<div class="guide-mistake"><div class="gm-title">❌ ${escapeHtml(m.mistake)}</div><div class="gm-fix">${escapeHtml(m.fix)}</div></div>`).join('')}
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">Muscle Targets</h2>
+      <div class="muscle-grid">
+        <div><div class="muscle-col-label">Primary</div>${muscles.primary.map(m=>`<span class="muscle-chip primary">💪 ${m}</span>`).join('')}</div>
+        <div><div class="muscle-col-label">Secondary</div>${muscles.secondary.length ? muscles.secondary.map(m=>`<span class="muscle-chip">${m}</span>`).join('') : '<span style="font-size:12px; color:var(--muted);">—</span>'}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="margin-top:0;">Exercise Details</h2>
+      <div class="details-grid">${details.map(([icon,val,label])=>`<div class="detail-tile"><div class="dt-val">${icon} ${val}</div><div class="dt-label">${label}</div></div>`).join('')}</div>
+    </div>
+
+    ${personalized ? `<div class="card"><h2 class="section-title" style="margin-top:0;">Personalized Guidance</h2><p style="font-size:13px; line-height:1.55; margin:0;">${escapeHtml(personalized)}</p></div>` : ''}
+
+    ${history ? `<div class="card"><h2 class="section-title" style="margin-top:0;">Your Progress</h2>
+      <div class="guide-history-row">
+        ${history.previous!=null ? `<div class="ghr-item"><div class="ghr-val">${history.previous}</div><div class="ghr-label">Previous Score</div></div>` : ''}
+        <div class="ghr-item"><div class="ghr-val">${history.current}</div><div class="ghr-label">Current Score</div></div>
+        ${history.improvement!=null ? `<div class="ghr-item ${history.improvement>=0?'up':'down'}"><div class="ghr-val">${history.improvement>=0?'+':''}${history.improvement}</div><div class="ghr-label">Improvement</div></div>` : ''}
+      </div>
+      ${(history.previousMistake || history.currentMistake) ? `<div style="font-size:12.5px; color:var(--muted); line-height:1.6;">
+        ${history.previousMistake ? `<div><b>Previous issue:</b> ${escapeHtml(history.previousMistake)}</div>` : ''}
+        ${history.currentMistake ? `<div><b>Current issue:</b> ${escapeHtml(history.currentMistake)}</div>` : (history.previousMistake ? '<div><b>Current:</b> No recurring issues flagged — nice clean form!</div>' : '')}
+      </div>` : ''}
+    </div>` : ''}
+
+    <div class="card">
+      ${e.trackable
+        ? `<button class="guide-cta-btn" id="guideCheckFormBtn">🎥 Check My Form</button>`
+        : `<button class="guide-cta-btn" disabled>🎥 Live tracking not available for this exercise yet</button><p style="font-size:11.5px; color:var(--muted); text-align:center; margin:10px 0 0;">Try Squat, Push-up, Lunge, Plank, Bicep Curl, or Overhead Press for live AI camera coaching.</p>`}
+    </div>
+  `;
+}
+function openExerciseGuide(key){
+  const entry = getGuideEntry(key);
+  if (!entry) return;
+  document.getElementById('guideBrowseSection').style.display = 'none';
+  const detailSection = document.getElementById('guideDetailSection');
+  detailSection.style.display = '';
+  detailSection.innerHTML = buildGuideDetailHTML(entry);
+  detailSection.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('guideBackBtn').onclick = closeExerciseGuide;
+  const cta = document.getElementById('guideCheckFormBtn');
+  if (cta) cta.onclick = () => { selectExercise(key); showView('coach'); };
+}
+function closeExerciseGuide(){
+  const detailSection = document.getElementById('guideDetailSection');
+  detailSection.style.display = 'none';
+  detailSection.innerHTML = '';
+  document.getElementById('guideBrowseSection').style.display = '';
+}
+function goToExerciseGuide(key){ showView('guide'); openExerciseGuide(key); }
+document.getElementById('guideBrowseGroups').addEventListener('click', (e) => {
+  const card = e.target.closest('.guide-browse-card'); if (!card) return;
+  openExerciseGuide(card.dataset.guideKey);
+});
+wireExerciseSearchInput(document.getElementById('guideSearchInput'), document.getElementById('guideSearchDropdown'), openExerciseGuide);
+wireExerciseSearchInput(document.getElementById('dashSearchInput'), document.getElementById('dashSearchDropdown'), goToExerciseGuide);
+
 /* ================= AI FITNESS COACH CHATBOT ================= */
 
 /* ---- API layer -------------------------------------------------------
@@ -2531,6 +2954,7 @@ chatSuggestionsEl.addEventListener('click', e => { const btn = e.target.closest(
 /* ================= INIT ================= */
 renderExercisePicker();
 renderExerciseUI();
+renderGuideBrowse();
 loadChatHistory();
 renderChatSuggestions();
 loadAll();
