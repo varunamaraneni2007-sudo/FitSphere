@@ -241,6 +241,61 @@
   .heatmap-val{ font-size:12.5px; font-weight:700; font-variant-numeric:tabular-nums; }
   .chart .bar-label.pct{ font-weight:700; }
 
+  /* AI Fitness Coach Chatbot */
+  .chat-fab{
+    position:fixed; right:20px; bottom:20px; width:58px; height:58px; border-radius:50%;
+    background:linear-gradient(135deg,#0071E3,#00C7BE); border:none; box-shadow:0 4px 18px rgba(0,113,227,.45), var(--shadow);
+    cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:25px; z-index:60;
+    transition: transform .2s cubic-bezier(.34,1.56,.64,1), opacity .2s ease;
+  }
+  .chat-fab:hover{ transform:scale(1.06); }
+  .chat-fab:active{ transform:scale(.94); }
+  .chat-fab.hidden{ transform:scale(0); opacity:0; pointer-events:none; }
+
+  .chat-window{
+    position:fixed; right:20px; bottom:20px; width:384px; max-width:calc(100vw - 32px); height:min(640px, calc(100vh - 40px));
+    background:var(--panel); border-radius:22px; box-shadow:0 12px 48px rgba(0,0,0,.28), var(--shadow);
+    display:flex; flex-direction:column; overflow:hidden; z-index:61;
+    transform-origin:bottom right; transform:scale(.85) translateY(18px); opacity:0; pointer-events:none;
+    transition: transform .25s cubic-bezier(.34,1.15,.4,1), opacity .2s ease;
+  }
+  .chat-window.open{ transform:scale(1) translateY(0); opacity:1; pointer-events:auto; }
+
+  .chat-header{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:linear-gradient(135deg,#0071E3,#00C7BE); color:#fff; flex-shrink:0; }
+  .chat-header-info{ display:flex; align-items:center; gap:10px; }
+  .chat-avatar{ width:36px; height:36px; border-radius:11px; background:rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .chat-title{ font-size:14px; font-weight:800; letter-spacing:-0.01em; }
+  .chat-subtitle{ font-size:11px; opacity:.85; }
+  .chat-header-actions{ display:flex; gap:6px; flex-shrink:0; }
+  .chat-header-actions .icon-btn{ width:30px; height:30px; background:rgba(255,255,255,.2); color:#fff; font-size:13px; }
+
+  .chat-insight{ margin:10px 12px 0; padding:11px 13px; border-radius:14px; background:linear-gradient(135deg, rgba(0,113,227,.1), rgba(0,199,190,.1)); border:1px solid rgba(0,113,227,.18); font-size:12px; line-height:1.5; color:var(--text); flex-shrink:0; }
+  .chat-insight b{ display:block; margin-bottom:3px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--blue); }
+
+  .chat-messages{ flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:10px; }
+  .chat-msg{ max-width:84%; padding:10px 13px; border-radius:16px; font-size:13px; line-height:1.5; white-space:pre-wrap; word-wrap:break-word; }
+  .chat-msg.user{ align-self:flex-end; background:var(--blue); color:#fff; border-bottom-right-radius:4px; }
+  .chat-msg.ai{ align-self:flex-start; background:var(--panel-2); color:var(--text); border-bottom-left-radius:4px; }
+
+  .chat-typing{ align-self:flex-start; background:var(--panel-2); padding:12px 16px; border-radius:16px; border-bottom-left-radius:4px; display:flex; gap:4px; }
+  .chat-typing span{ width:6px; height:6px; border-radius:50%; background:var(--muted); animation:chatTypingBounce 1.2s infinite ease-in-out; }
+  .chat-typing span:nth-child(2){ animation-delay:.15s; } .chat-typing span:nth-child(3){ animation-delay:.3s; }
+  @keyframes chatTypingBounce{ 0%,60%,100%{ transform:translateY(0); opacity:.5; } 30%{ transform:translateY(-4px); opacity:1; } }
+
+  .chat-suggestions{ display:flex; gap:6px; flex-wrap:wrap; padding:0 12px 10px; flex-shrink:0; }
+  .chat-chip{ font-size:11.5px; font-weight:700; padding:7px 11px; border-radius:999px; background:var(--panel-2); color:var(--blue); border:none; cursor:pointer; white-space:nowrap; font-family:inherit; }
+  .chat-chip:active{ transform:scale(.96); }
+
+  .chat-input-row{ display:flex; align-items:center; gap:8px; padding:10px 12px; border-top:1px solid var(--line); flex-shrink:0; }
+  .chat-input-row input{ flex:1; padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:var(--panel-2); color:var(--text); font-family:inherit; font-size:13px; }
+  .chat-send-btn{ width:38px; height:38px; border-radius:50%; border:none; background:var(--blue); color:#fff; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:inherit; }
+  .chat-send-btn:disabled{ opacity:.4; }
+
+  @media (max-width:640px){
+    .chat-window{ right:0; bottom:0; left:0; top:0; width:100%; max-width:100%; height:100%; border-radius:0; }
+    .chat-fab{ right:16px; bottom:16px; }
+  }
+
   .toast{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(10px); background:var(--text); color:var(--bg); padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:all .25s ease; z-index:50; max-width:88%; text-align:center; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
@@ -609,6 +664,28 @@
     </section>
 
   </main>
+</div>
+
+<button class="chat-fab" id="chatFab" aria-label="Open AI Fitness Coach chat" title="AI Fitness Coach">💬</button>
+
+<div class="chat-window" id="chatWindow" aria-hidden="true">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar">🤖</div>
+      <div><div class="chat-title">AI Fitness Coach</div><div class="chat-subtitle">Form tips, workouts &amp; feedback</div></div>
+    </div>
+    <div class="chat-header-actions">
+      <button class="icon-btn" id="chatClearBtn" title="Clear chat">🗑️</button>
+      <button class="icon-btn" id="chatCloseBtn" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="chat-insight" id="chatInsight" style="display:none;"></div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-suggestions" id="chatSuggestions"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask about form, workouts, or your scores…" maxlength="300" autocomplete="off">
+    <button class="chat-send-btn" id="chatSendBtn" aria-label="Send message">➤</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1669,9 +1746,366 @@ function evaluateHold(lm,cfg){
 }
 startBtn.onclick = startCamera;
 
+/* ================= AI FITNESS COACH CHATBOT ================= */
+
+/* ---- API layer -------------------------------------------------------
+   Everything below answers entirely on-device using the local knowledge
+   base + rule engine (getLocalChatResponse) — no network call, no API
+   key, nothing to configure. This keeps the chatbot fully working with
+   zero backend.
+
+   TO UPGRADE TO A REAL LLM (e.g. Claude):
+   1. Stand up a minimal backend/serverless endpoint (Cloudflare Worker,
+      Vercel/Netlify function, AWS Lambda, etc.) that holds your API key
+      as a SERVER-SIDE secret and proxies chat requests to your provider.
+      Never put an API key in this file — it ships to every visitor's browser.
+   2. Set CHAT_API_ENDPOINT below to that endpoint's URL.
+   3. Set CHAT_USE_REMOTE to true.
+   fetchRemoteAIResponse() already POSTs { message, context } — context
+   includes the user's recent sessions/settings/AI insight so your backend
+   (and whatever LLM it calls) has the same form-analysis data the local
+   engine uses. No other app code needs to change.
+------------------------------------------------------------------------- */
+const CHAT_USE_REMOTE = false;
+const CHAT_API_ENDPOINT = ''; // e.g. 'https://your-backend.example.com/api/chat'
+
+async function fetchRemoteAIResponse(userText, context){
+  const res = await fetch(CHAT_API_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: userText, context }),
+  });
+  if (!res.ok) throw new Error('AI backend request failed: ' + res.status);
+  const data = await res.json();
+  return data.reply;
+}
+
+function buildChatContext(){
+  return {
+    settings: { experience: settings.experience, goal: settings.goal, equipment: settings.equipment, weeklyGoal: settings.weeklyGoal },
+    recentSessions: appData.sessions.slice(-10),
+    insight: computeAIInsight(),
+  };
+}
+
+async function getChatResponse(userText){
+  const context = buildChatContext();
+  if (CHAT_USE_REMOTE && CHAT_API_ENDPOINT){
+    try { return await fetchRemoteAIResponse(userText, context); }
+    catch (e) { console.warn('Remote AI backend unavailable, falling back to local engine.', e); }
+  }
+  return getLocalChatResponse(userText);
+}
+
+/* ---- AI Insights (reads the same session data AI Coach writes) ------- */
+function computeAIInsight(){
+  const sessions = appData.sessions;
+  if (!sessions.length) return null;
+  const latest = sessions[sessions.length-1];
+  const withScore = sessions.filter(s=>s.formScore!=null);
+  const best = withScore.length ? withScore.reduce((a,b)=> b.formScore>a.formScore?b:a) : null;
+  const tally = {};
+  sessions.slice(-10).forEach(s => { if (s.mostCommonMistake) tally[s.mostCommonMistake] = (tally[s.mostCommonMistake]||0)+1; });
+  const topEntry = Object.entries(tally).sort((a,b)=>b[1]-a[1])[0];
+  let improvement = null;
+  if (latest.formScore!=null){
+    const sameExercise = sessions.filter(s=>s.exercise===latest.exercise && s.formScore!=null);
+    const idx = sameExercise.indexOf(latest);
+    if (idx>0) improvement = latest.formScore - sameExercise[idx-1].formScore;
+  }
+  return { latest, best, topMistake: topEntry ? topEntry[0] : null, improvement };
+}
+function renderInsightText(insight){
+  if (!insight || !insight.latest) return "Complete a workout in AI Coach and I'll start giving you personalized insights here.";
+  const { latest, best, topMistake, improvement } = insight;
+  const parts = [];
+  if (latest.formScore!=null) parts.push(`Today's ${exerciseName(latest.exercise)} form score: ${latest.formScore}/100.`);
+  if (improvement!=null){
+    parts.push(improvement>=0
+      ? `That's up ${improvement} point${improvement===1?'':'s'} from your last ${exerciseName(latest.exercise)} session.`
+      : `That's down ${Math.abs(improvement)} point${Math.abs(improvement)===1?'':'s'} from last time.`);
+  }
+  if (topMistake) parts.push(`Most common issue lately: ${topMistake}.`);
+  if (best && best.exercise!==latest.exercise) parts.push(`Best performing exercise: ${exerciseName(best.exercise)} (${best.formScore}/100).`);
+  parts.push(`Next session focus: ${topMistake || 'consistent tempo and full range of motion'}.`);
+  return parts.join(' ');
+}
+
+/* ---- Exercise knowledge base (reuses EXERCISES tips/corrections) ----- */
+const DEADLIFT_GUIDE = {
+  name:'Deadlift',
+  tips:['Feet hip-width apart, bar over your midfoot','Hinge at the hips with a flat back, chest up','Grip just outside your knees, drive through your heels','Keep the bar close to your shins the whole way up','Lock out hips and knees together at the top'],
+  mistakes:[['Rounding your lower back','brace your core hard and keep your spine neutral throughout.'],
+            ['Bar drifting away from your shins','keep it close — think of dragging it up your legs.'],
+            ['Hips shooting up first','push the floor away with your legs and hips together.']],
+};
+const IMPROVE_GUIDES = {
+  squat:"Your biggest focus should be knee alignment, depth, and controlled movement. Keep your knees tracking over your toes, keep your chest stable, and descend slowly. Try 3 sets of 8–10 controlled reps.",
+  pushup:"Focus on a straight body line from shoulders to heels and full range of motion. Keep your core braced so your hips don't sag or pike, and lower until your chest nears the floor. Try 3 sets of 8–12 reps.",
+  lunge:"Prioritize a stable front knee and an upright torso. Step far enough forward for a 90° front knee, keep it tracking over your toes, and control the descent. Try 3 sets of 8–10 reps per leg.",
+  deadlift:"Focus on a flat back and a strong hip hinge. Keep the bar close to your shins, chest up, and drive through your heels — think \"push the floor away\" rather than pulling with your back. Try 3 sets of 5–8 reps.",
+  plank:"Focus on one straight line from shoulders to heels. Brace your core, squeeze your glutes, and keep your neck neutral. Build up hold time in 15–20 second increments.",
+  bicepCurl:"Keep your elbows pinned to your sides and move with control — no swinging. Squeeze at the top and lower fully each rep. Try 3 sets of 10–12 reps.",
+  overheadPress:"Brace your core to avoid arching your lower back, and press straight overhead rather than forward. Try 3 sets of 8–10 reps.",
+};
+const EXERCISE_SYNONYMS = {
+  'jump squat':'jumpSquat', squats:'squat', squat:'squat',
+  'push-up':'pushup', 'push up':'pushup', pushups:'pushup', pushup:'pushup',
+  'side lunge':'sideLunge', lunges:'lunge', lunge:'lunge',
+  deadlifts:'deadlift', deadlift:'deadlift',
+  planks:'plank', plank:'plank',
+  'bicep curls':'bicepCurl', 'bicep curl':'bicepCurl', curls:'bicepCurl', curl:'bicepCurl',
+  'shoulder press':'overheadPress', 'overhead press':'overheadPress',
+  'tricep dip':'tricepDip', dips:'tricepDip', dip:'tricepDip',
+  'glute bridge':'gluteBridge', bridge:'gluteBridge',
+  'sit-up':'situp', 'sit up':'situp', situps:'situp', situp:'situp',
+  'wall sit':'wallSit', superman:'superman',
+  'high knees':'highKnees',
+  'mountain climbers':'mountainClimber', 'mountain climber':'mountainClimber',
+  'calf raises':'calfRaise', 'calf raise':'calfRaise',
+};
+function detectExerciseKey(text){
+  const t = (text||'').toLowerCase();
+  const keys = Object.keys(EXERCISE_SYNONYMS).sort((a,b)=>b.length-a.length);
+  for (const k of keys) if (t.includes(k)) return EXERCISE_SYNONYMS[k];
+  return null;
+}
+function formGuideDetailed(key){
+  if (key==='deadlift'){
+    const g = DEADLIFT_GUIDE;
+    return `${g.name} — Step by Step\n${g.tips.map(t=>'• '+t).join('\n')}\n\nCommon mistakes:\n${g.mistakes.map(([m,fix])=>`• ${m} — ${fix}`).join('\n')}`;
+  }
+  const cfg = EXERCISES[key];
+  if (!cfg) return null;
+  const mistakes = (cfg.corrections||[]).map(c=>`• ${c.label} — ${c.voice}`).join('\n');
+  return `${cfg.name} — Step by Step\n${cfg.tips.map(t=>'• '+t).join('\n')}${mistakes?`\n\nCommon mistakes:\n${mistakes}`:''}`;
+}
+function formGuideConcise(key){
+  if (IMPROVE_GUIDES[key]) return IMPROVE_GUIDES[key];
+  const cfg = EXERCISES[key];
+  if (!cfg) return null;
+  const tips = cfg.tips.slice(0,2).join(' and ').toLowerCase();
+  const fix = cfg.corrections && cfg.corrections[0] ? ' ' + cfg.corrections[0].voice : '';
+  return `Focus on ${tips}.${fix} Try 3 sets of 10–12 controlled reps.`;
+}
+function formGuideFor(key, detailed){
+  return detailed ? (formGuideDetailed(key) || formGuideConcise(key)) : formGuideConcise(key);
+}
+
+/* ---- Safety guardrails (checked before anything else) ---------------- */
+const PAIN_KEYWORDS = /\b(hurt|hurts|hurting|pain|painful|injur\w*|sprain\w*|strain\w*|numb\w*|dislocat\w*|torn?\b)\b/i;
+function safetyResponse(text){
+  const exKey = detectExerciseKey(text);
+  let tip = '';
+  if (exKey){
+    const cfg = EXERCISES[exKey];
+    const firstCorrection = cfg && cfg.corrections && cfg.corrections[0];
+    if (firstCorrection) tip = ` One general thing worth double-checking: ${firstCorrection.voice.toLowerCase()}`;
+  }
+  return `I can't diagnose pain or injuries — I'm a form coach, not a medical professional. If something hurts, stop the movement right away and rest.${tip} If the pain is sharp, doesn't ease up, or keeps happening, please see a doctor or physiotherapist before continuing to train that movement.`;
+}
+
+/* ---- General fitness Q&A --------------------------------------------- */
+const GENERAL_QA = [
+  { test:/warm.?up/i, reply:"Spend 5–8 minutes on light cardio plus dynamic stretches (leg swings, arm circles, bodyweight squats) to raise your heart rate and prep your joints before training." },
+  { test:/cool.?down/i, reply:"Finish with a few minutes of light walking and static stretching for the muscles you trained — hold each stretch 20–30 seconds." },
+  { test:/how many sets|sets and reps|sets should i/i, reply:"For most goals: 3–4 sets of 8–12 reps builds strength and size, 2–3 sets of 12–20 reps favors endurance. Beginners can start with 2–3 sets and add volume over time." },
+  { test:/rest (period|time|between)/i, reply:"Rest 60–90 seconds between sets for hypertrophy, and 2–3 minutes for heavier strength work. You should feel recovered, not gassed, before the next set." },
+  { test:/how often|workout frequency|days? a week/i, reply:"3–4 sessions a week, with at least one rest day between working the same muscle group, is a solid and sustainable starting point." },
+];
+
+/* ---- Personalization: fold chat statements into existing settings ---- */
+function tryUpdateProfileFromMessage(text){
+  const t = text.toLowerCase();
+  const updated = [];
+  if (/\bbeginner\b/.test(t)){ settings.experience='beginner'; updated.push('experience level (beginner)'); }
+  else if (/\bintermediate\b/.test(t)){ settings.experience='intermediate'; updated.push('experience level (intermediate)'); }
+  else if (/\badvanced\b/.test(t)){ settings.experience='advanced'; updated.push('experience level (advanced)'); }
+  if (/strength|get stronger|build muscle/.test(t)){ settings.goal='strength'; updated.push('goal (strength)'); }
+  else if (/\bcardio\b|endurance/.test(t)){ settings.goal='cardio'; updated.push('goal (cardio)'); }
+  else if (/\bcore\b|\babs\b/.test(t)){ settings.goal='core'; updated.push('goal (core)'); }
+  else if (/mobility|flexib/.test(t)){ settings.goal='mobility'; updated.push('goal (mobility)'); }
+  if (updated.length) saveSettings();
+  return updated;
+}
+
+/* ---- Workout generation (reuses the exact same buildPlan() as Check-in) */
+function formatWorkout(plan, title){
+  return `${title}\n${plan.items.map(i=>`• ${i.name} — ${i.detail}`).join('\n')}`;
+}
+function todaysWorkoutResponse(){
+  const today = new Date().toISOString().slice(0,10);
+  const todaysCheckins = appData.checkins.filter(c=>c.date===today);
+  let cls=1, goal=settings.goal, duration=parseInt(settings.duration)||30, focus=settings.focus, equipment=settings.equipment;
+  if (todaysCheckins.length){
+    const c = todaysCheckins[todaysCheckins.length-1];
+    cls=c.cls; goal=c.goal; duration=parseInt(c.duration)||30; focus=c.focus; equipment=c.equipment;
+  }
+  const plan = buildPlan(cls, goal, equipment, duration, focus, settings.experience);
+  return formatWorkout(plan, "Today's Workout");
+}
+function generateWorkoutFromText(text){
+  const t = text.toLowerCase();
+  let focus = 'fullbody';
+  if (/\bleg(s)?\b|lower body|leg day/.test(t)) focus='lower';
+  else if (/upper body|\bpush\b|\bpull\b|\barm(s)?\b|\bchest\b|\bback\b|push day|pull day/.test(t)) focus='upper';
+  let goal = settings.goal;
+  if (/cardio|hiit|endurance/.test(t)) goal='cardio';
+  else if (/\bcore\b|\babs\b/.test(t)) goal='core';
+  else if (/mobility|stretch|recovery/.test(t)) goal='mobility';
+  else if (/strength|muscle|push day|pull day|leg day/.test(t)) goal='strength';
+  let experience = settings.experience;
+  if (/beginner/.test(t)) experience='beginner';
+  else if (/intermediate/.test(t)) experience='intermediate';
+  else if (/advanced/.test(t)) experience='advanced';
+  const durMatch = t.match(/(\d+)\s*(?:min|minute)/);
+  const duration = durMatch ? parseInt(durMatch[1]) : (parseInt(settings.duration)||30);
+  const plan = buildPlan(1, goal, settings.equipment, duration, focus, experience);
+  const title = `${duration}-Minute ${focus==='lower'?'Leg':focus==='upper'?'Upper-Body':'Full-Body'} Workout`;
+  return formatWorkout(plan, title);
+}
+
+/* ---- Analysis intents (connects to the live form-correction system) -- */
+function analyzeExercise(key){
+  const sessions = appData.sessions.filter(s=>s.exercise===key && s.formScore!=null);
+  if (!sessions.length) return `You haven't logged a scored ${exerciseName(key)} session yet — head to AI Coach to get your first form score!`;
+  const latest = sessions[sessions.length-1];
+  let msg = `Your last ${exerciseName(key)} score was ${latest.formScore}/100.`;
+  if (latest.mostCommonMistake) msg += ` Your biggest issue was ${latest.mostCommonMistake.toLowerCase()}. ${suggestionFor(latest.mostCommonMistake)}`;
+  else msg += ` No recurring issues flagged — nice clean form!`;
+  return msg;
+}
+function whyLowScoreResponse(){
+  const latest = [...appData.sessions].reverse().find(s=>s.formScore!=null);
+  if (!latest) return "You don't have a scored session yet — finish a set in AI Coach and I'll break down what's affecting your score.";
+  if (latest.formScore>=85) return `Good news — your last score (${exerciseName(latest.exercise)}: ${latest.formScore}/100) was actually strong! Keep doing what you're doing.`;
+  return `Your last ${exerciseName(latest.exercise)} score was ${latest.formScore}/100, mainly due to ${latest.mostCommonMistake ? latest.mostCommonMistake.toLowerCase() : 'inconsistent form'}. ${latest.mostCommonMistake ? suggestionFor(latest.mostCommonMistake) : 'Try slowing your tempo and focusing on full range of motion.'}`;
+}
+function improveFormGeneral(){
+  const latest = [...appData.sessions].reverse().find(s=>s.formScore!=null);
+  if (latest) return `Your last session (${exerciseName(latest.exercise)}) scored ${latest.formScore}/100.${latest.mostCommonMistake ? ` Your main issue was ${latest.mostCommonMistake.toLowerCase()} — ${suggestionFor(latest.mostCommonMistake)}` : ' Keep it up — nice clean form!'} In general: move slower, keep full range of motion, and watch the live corrections in AI Coach.`;
+  return "Great question! In general: slow your tempo down, keep full range of motion, and keep your core braced throughout. Head to AI Coach and I'll start giving you exercise-specific feedback based on your live form score.";
+}
+
+const CHAT_FALLBACK = 'I\'m your AI fitness coach — I can help with exercise form, workout plans, and your form-analysis results. Try asking things like "How do I improve my squat?", "Give me a beginner leg workout", or "Why is my form score low?"';
+
+function getLocalChatResponse(rawText){
+  const text = (rawText||'').trim();
+  if (!text) return "Ask me anything about your workouts or form!";
+  if (PAIN_KEYWORDS.test(text)) return safetyResponse(text);
+  if (/^(hi|hello|hey|yo|sup|good (morning|afternoon|evening))\b/i.test(text)) return "Hey! 💪 I'm your AI Fitness Coach. Ask me about exercise form, workouts, or your latest form scores — I'm here to help you train smarter.";
+
+  const profileUpdates = tryUpdateProfileFromMessage(text);
+
+  if (/form score low|why (is|was) my (form )?score/i.test(text)) return whyLowScoreResponse();
+
+  const analyzeMatch = text.match(/analy[sz]e my ([\w\s]+)/i);
+  if (analyzeMatch || /how did (i|my (workout|session)) (do|go)/i.test(text)){
+    const key = (analyzeMatch && detectExerciseKey(analyzeMatch[1])) || detectExerciseKey(text)
+      || (appData.sessions.length ? appData.sessions[appData.sessions.length-1].exercise : null);
+    if (key) return analyzeExercise(key);
+  }
+
+  if (/how (do|can) i improve my form\b/i.test(text) && !detectExerciseKey(text)) return improveFormGeneral();
+
+  if (/(today|what should i train)/i.test(text) && /(workout|train)/i.test(text)) return todaysWorkoutResponse();
+  if (/workout|routine|leg day|push day|pull day|full.?body/i.test(text)) return generateWorkoutFromText(text);
+
+  const exKey = detectExerciseKey(text);
+  if (exKey){
+    const detailed = /step.?by.?step|in detail|breakdown|explain/i.test(text);
+    const guide = formGuideFor(exKey, detailed);
+    if (guide) return guide;
+  }
+
+  for (const qa of GENERAL_QA) if (qa.test.test(text)) return qa.reply;
+
+  if (profileUpdates.length) return `Got it — noted your ${profileUpdates.join(' and ')}. I'll tailor workouts and tips accordingly. Ask me for a workout anytime!`;
+
+  return CHAT_FALLBACK;
+}
+
+/* ---- Chat UI ----------------------------------------------------------*/
+const chatFab = document.getElementById('chatFab'), chatWindow = document.getElementById('chatWindow');
+const chatMessagesEl = document.getElementById('chatMessages'), chatInput = document.getElementById('chatInput');
+const chatSendBtn = document.getElementById('chatSendBtn'), chatSuggestionsEl = document.getElementById('chatSuggestions');
+const chatInsightEl = document.getElementById('chatInsight'), chatClearBtn = document.getElementById('chatClearBtn'), chatCloseBtn = document.getElementById('chatCloseBtn');
+
+const CHAT_SUGGESTIONS = ['Analyze my squat', 'Create a workout', 'How do I improve my form?', "Give me today's workout", 'Why is my form score low?'];
+let chatHistory = [];
+
+function chatGreetingMessage(){ return "Hey! 💪 I'm your AI Fitness Coach. Ask me about exercise form, workouts, or your latest form scores."; }
+function loadChatHistory(){ try{ const raw = localStorage.getItem('fitsphere.chat'); if (raw) chatHistory = JSON.parse(raw); }catch(e){} }
+function saveChatHistory(){ try{ localStorage.setItem('fitsphere.chat', JSON.stringify(chatHistory.slice(-40))); }catch(e){} }
+
+function formatChatText(text){
+  return escapeHtml(text).replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+}
+function renderChatMessages(){
+  chatMessagesEl.innerHTML = chatHistory.map(m => `<div class="chat-msg ${m.role}">${formatChatText(m.text)}</div>`).join('');
+  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+}
+function renderChatSuggestions(){
+  chatSuggestionsEl.innerHTML = CHAT_SUGGESTIONS.map(s => `<button class="chat-chip" data-prompt="${escapeHtml(s)}">${s}</button>`).join('');
+}
+function renderChatInsight(){
+  const insight = computeAIInsight();
+  if (!insight || !insight.latest){ chatInsightEl.style.display='none'; return; }
+  chatInsightEl.style.display='';
+  chatInsightEl.innerHTML = `<b>AI Insight 💡</b>${escapeHtml(renderInsightText(insight))}`;
+}
+function showChatTyping(){
+  const el = document.createElement('div');
+  el.className = 'chat-typing'; el.id = 'chatTypingIndicator';
+  el.innerHTML = '<span></span><span></span><span></span>';
+  chatMessagesEl.appendChild(el);
+  chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+}
+function hideChatTyping(){ const el = document.getElementById('chatTypingIndicator'); if (el) el.remove(); }
+
+async function sendChatMessage(rawText){
+  const text = (rawText||'').trim();
+  if (!text) return;
+  chatHistory.push({ role:'user', text });
+  renderChatMessages(); saveChatHistory();
+  chatInput.value = '';
+  chatSendBtn.disabled = true;
+  showChatTyping();
+  await new Promise(r => setTimeout(r, 380 + Math.random()*420));
+  hideChatTyping();
+  let reply;
+  try{ reply = await getChatResponse(text); }
+  catch(e){ reply = "Sorry, I hit a snag processing that — mind rephrasing?"; }
+  chatHistory.push({ role:'ai', text: reply });
+  renderChatMessages(); saveChatHistory();
+  chatSendBtn.disabled = false;
+  renderChatInsight();
+  chatInput.focus();
+}
+
+function openChat(){
+  chatWindow.classList.add('open'); chatWindow.setAttribute('aria-hidden','false');
+  chatFab.classList.add('hidden');
+  if (!chatHistory.length){ chatHistory.push({ role:'ai', text: chatGreetingMessage() }); saveChatHistory(); }
+  renderChatMessages(); renderChatInsight();
+  setTimeout(()=>chatInput.focus(), 200);
+}
+function closeChat(){
+  chatWindow.classList.remove('open'); chatWindow.setAttribute('aria-hidden','true');
+  chatFab.classList.remove('hidden');
+}
+chatFab.onclick = openChat;
+chatCloseBtn.onclick = closeChat;
+chatClearBtn.onclick = () => { chatHistory = [{ role:'ai', text: chatGreetingMessage() }]; saveChatHistory(); renderChatMessages(); };
+chatSendBtn.onclick = () => sendChatMessage(chatInput.value);
+chatInput.addEventListener('keydown', e => { if (e.key==='Enter'){ e.preventDefault(); sendChatMessage(chatInput.value); } });
+chatSuggestionsEl.addEventListener('click', e => { const btn = e.target.closest('.chat-chip'); if (btn) sendChatMessage(btn.dataset.prompt); });
+
 /* ================= INIT ================= */
 renderExercisePicker();
 renderExerciseUI();
+loadChatHistory();
+renderChatSuggestions();
 loadAll();
 </script>
 </body>
