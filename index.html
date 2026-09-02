@@ -194,6 +194,36 @@
   .rpe-btn.selected{ border-color:var(--blue); background:rgba(0,113,227,.12); }
   .rpe-caption{ font-size:11.5px; color:var(--muted); margin-top:6px; }
 
+  /* Form Score */
+  .form-score-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .form-score-head .ex-name{ font-size:14px; font-weight:700; color:var(--muted); }
+  .form-score-big{ font-size:30px; font-weight:800; letter-spacing:-0.02em; }
+  .form-score-big span{ font-size:15px; font-weight:600; color:var(--muted); }
+  .form-score-big.good{ color:var(--green); } .form-score-big.warn{ color:var(--orange); } .form-score-big.bad{ color:var(--red); }
+  .fs-comp-row{ display:flex; align-items:center; gap:10px; padding:7px 0; }
+  .fs-comp-row .fs-comp-label{ font-size:12.5px; font-weight:600; width:118px; flex-shrink:0; }
+  .fs-comp-bar{ flex:1; height:7px; border-radius:999px; background:var(--panel-2); overflow:hidden; }
+  .fs-comp-bar > div{ height:100%; border-radius:999px; transition: width .3s ease; }
+  .fs-comp-val{ font-size:12px; font-weight:700; width:34px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; }
+
+  /* Rep-by-rep */
+  .rep-log-list{ display:flex; flex-direction:column-reverse; gap:6px; max-height:220px; overflow-y:auto; }
+  .rep-log-row{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:var(--panel-2); font-size:12.5px; }
+  .rep-log-row .rep-log-icon{ font-size:14px; flex-shrink:0; }
+  .rep-log-row .rep-log-num{ font-weight:700; flex-shrink:0; width:46px; }
+  .rep-log-row .rep-log-issue{ color:var(--muted); flex:1; }
+  .rep-log-row.warn{ background:rgba(255,149,0,.1); } .rep-log-row.bad{ background:rgba(255,59,48,.1); }
+  .rep-log-row .rep-log-score{ font-weight:700; font-variant-numeric:tabular-nums; flex-shrink:0; }
+
+  /* Post-workout report */
+  .report-stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px; }
+  .report-stat{ background:var(--panel-2); border-radius:14px; padding:14px; text-align:center; }
+  .report-stat .rs-val{ font-size:22px; font-weight:800; }
+  .report-stat .rs-label{ font-size:11px; color:var(--muted); margin-top:2px; }
+  .report-mistake{ display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:12px; background:rgba(255,59,48,.1); color:var(--red); font-weight:700; font-size:13px; margin-bottom:10px; }
+  .report-mistake.none{ background:rgba(52,199,89,.12); color:var(--green); }
+  .report-suggestion{ font-size:12.5px; color:var(--muted); line-height:1.5; }
+
   .toast{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(10px); background:var(--text); color:var(--bg); padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:all .25s ease; z-index:50; max-width:88%; text-align:center; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
@@ -328,6 +358,20 @@
         </div>
       </div>
 
+      <div class="card" id="reportCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Post-Workout Form Report</h2>
+        <div class="report-stats">
+          <div class="report-stat"><div class="rs-val" id="reportTotal">0</div><div class="rs-label">Total Reps</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportAvgScore">0</div><div class="rs-label">Average Form Score</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportCorrect" style="color:var(--green);">0</div><div class="rs-label">Correct Reps</div></div>
+          <div class="report-stat"><div class="rs-val" id="reportIncorrect" style="color:var(--red);">0</div><div class="rs-label">Incorrect Reps</div></div>
+        </div>
+        <h2 class="section-title" style="margin-top:0;">Most Common Mistake</h2>
+        <div class="report-mistake" id="reportMistake">—</div>
+        <h2 class="section-title">Improvement Suggestion</h2>
+        <p class="report-suggestion" id="reportSuggestion">—</p>
+      </div>
+
       <div class="card" id="ratingCard" style="display:none;">
         <div class="rating-card">
           <h2 class="section-title" style="margin-top:0;">How did that feel?</h2>
@@ -345,6 +389,19 @@
           </div>
           <button class="btn primary block" id="saveRatingBtn">Save Rating</button>
         </div>
+      </div>
+
+      <div class="card" id="formScoreCard" style="display:none;">
+        <div class="form-score-head">
+          <span class="ex-name" id="formScoreExercise">—</span>
+          <div class="form-score-big" id="formScoreBig">— <span>/ 100</span></div>
+        </div>
+        <div id="formScoreComponents"></div>
+      </div>
+
+      <div class="card" id="repLogCard" style="display:none;">
+        <h2 class="section-title" style="margin-top:0;">Rep-by-Rep Analysis</h2>
+        <div class="rep-log-list" id="repLogList"></div>
       </div>
 
       <div class="card">
@@ -702,7 +759,7 @@ function renderSessionsListHTML(sessions, limit){
   if (!recent.length) return '<div class="empty-state">No sessions logged yet — finish a workout in AI Coach to see it here.</div>';
   return recent.map(s => `
       <div class="session-row">
-        <div><b>${exerciseName(s.exercise)}</b><div class="meta">${s.date}${s.note ? ' · '+escapeHtml(s.note) : ''}</div></div>
+        <div><b>${exerciseName(s.exercise)}</b><div class="meta">${s.date}${s.note ? ' · '+escapeHtml(s.note) : ''}${s.formScore!=null ? ' · Form '+s.formScore+'/100' : ''}</div></div>
         <div style="text-align:right;">${s.reps ? s.reps + ' reps' : (s.holdSeconds ? s.holdSeconds + 's hold' : '')}${s.rpe ? '<div class="meta">'+RPE_EMOJI[s.rpe]+'</div>' : ''}</div>
       </div>`).join('');
 }
@@ -800,16 +857,17 @@ function renderPersonalRecords(){
   const byExercise = {};
   appData.sessions.forEach(s => {
     const key = s.exercise;
-    if (!byExercise[key]) byExercise[key] = { reps:0, hold:0 };
+    if (!byExercise[key]) byExercise[key] = { reps:0, hold:0, bestForm:0 };
     if (s.reps > byExercise[key].reps) byExercise[key].reps = s.reps;
     if (s.holdSeconds > byExercise[key].hold) byExercise[key].hold = s.holdSeconds;
+    if (s.formScore > byExercise[key].bestForm) byExercise[key].bestForm = s.formScore;
   });
   const keys = Object.keys(byExercise);
   if (!keys.length){ grid.innerHTML = '<div class="empty-state">No records yet.</div>'; return; }
   grid.innerHTML = keys.map(k => {
     const r = byExercise[k];
     const val = r.hold ? `${r.hold}s hold` : `${r.reps} reps`;
-    return `<div class="pr-item"><div class="pr-name">${exerciseName(k)}</div><div class="pr-val">${val}</div></div>`;
+    return `<div class="pr-item"><div class="pr-name">${exerciseName(k)}</div><div class="pr-val">${val}</div>${r.bestForm ? `<div class="meta" style="margin-top:2px; font-size:11px; color:var(--muted);">Best form ${r.bestForm}/100</div>` : ''}</div>`;
   }).join('');
 }
 function renderProgress(){
@@ -832,41 +890,41 @@ const EXERCISES = {
     primary:[24,26,28], form:[12,24,26], topAngle:160, bottomAngle:110, formGoodMin:150, primaryLabel:'Knee angle',
     tips:['Feet shoulder-width apart','Knees track over your toes, not caving in','Chest up, weight in your heels','Hips dip below knee height at the bottom'],
     corrections:[
-      { msg:'Knees caving in — push them outward over your toes', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
-      { msg:'Leaning too far forward — keep your chest up', test: (lm,a) => a.formAngle < 130 },
+      { msg:'Knees caving in — push them outward over your toes', category:'Knee Alignment', label:'Knee valgus', voice:'Push your knees outward.', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
+      { msg:'Leaning too far forward — keep your chest up', category:'Back Posture', label:'Excessive forward lean', voice:'Keep your chest up.', test: (lm,a) => a.formAngle < 130 },
     ] },
   jumpSquat: { name:'Jump Squat', type:'reps', color:'#0071E3', icon:'🤾', category:'cardio', equipment:'none',
     primary:[24,26,28], form:[12,24,26], topAngle:165, bottomAngle:105, formGoodMin:145, primaryLabel:'Knee angle',
     tips:['Explode upward from the bottom of the squat','Land softly with bent knees','Keep chest up throughout','Reset fully between reps'],
     corrections:[
-      { msg:'Knees caving in on landing — push them outward', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
-      { msg:'Leaning too far forward — keep your chest tall', test: (lm,a) => a.formAngle < 125 },
+      { msg:'Knees caving in on landing — push them outward', category:'Knee Alignment', label:'Knee valgus on landing', voice:'Push your knees outward.', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
+      { msg:'Leaning too far forward — keep your chest tall', category:'Back Posture', label:'Excessive forward lean', voice:'Keep your chest tall.', test: (lm,a) => a.formAngle < 125 },
     ] },
   pushup:{ name:'Push-up', type:'reps', color:'#FF9500', icon:'💪', category:'strength', equipment:'none',
     primary:[12,14,16], form:[12,24,28], topAngle:155, bottomAngle:100, formGoodMin:155, primaryLabel:'Elbow angle',
     tips:['Hands slightly wider than shoulders','Body forms one straight line','Elbows ~45° from your torso','Chest lowers close to the floor'],
     corrections:[
-      { msg:'Hips sagging — brace your core to flatten your back', test: (lm,a) => a.formAngle < 145 && (lm[24].y - ((lm[12].y+lm[28].y)/2)) > 0.04 },
-      { msg:'Hips piking up — lower them into a straight line', test: (lm,a) => a.formAngle < 145 && (((lm[12].y+lm[28].y)/2) - lm[24].y) > 0.04 },
+      { msg:'Hips sagging — brace your core to flatten your back', category:'Hip Position', label:'Hips sagging', voice:'Brace your core, keep your hips level.', test: (lm,a) => a.formAngle < 145 && (lm[24].y - ((lm[12].y+lm[28].y)/2)) > 0.04 },
+      { msg:'Hips piking up — lower them into a straight line', category:'Hip Position', label:'Hips piking up', voice:'Lower your hips into a straight line.', test: (lm,a) => a.formAngle < 145 && (((lm[12].y+lm[28].y)/2) - lm[24].y) > 0.04 },
     ] },
   tricepDip:{ name:'Tricep Dip', type:'reps', color:'#FF9500', icon:'🪑', category:'strength', equipment:'none',
     primary:[12,14,16], form:[12,24,28], topAngle:160, bottomAngle:90, formGoodMin:150, primaryLabel:'Elbow angle',
     tips:['Hands close to your hips on a stable surface','Lower until elbows hit ~90°','Keep elbows pointing backward, not flared','Torso stays upright'],
     corrections:[
-      { msg:'Torso leaning too far forward — stay upright', test: (lm,a) => a.formAngle < 120 },
+      { msg:'Torso leaning too far forward — stay upright', category:'Torso Posture', label:'Excessive forward lean', voice:'Keep your torso upright.', test: (lm,a) => a.formAngle < 120 },
     ] },
   lunge: { name:'Lunge', type:'reps', color:'#AF52DE', icon:'🦵', category:'strength', equipment:'none',
     primary:[24,26,28], form:[12,24,26], topAngle:165, bottomAngle:100, formGoodMin:155, primaryLabel:'Front knee angle',
     tips:['Step forward far enough for a 90° front knee','Back knee hovers just above the floor','Torso stays upright','Front knee stays behind your toes'],
     corrections:[
-      { msg:'Front knee caving inward — track it over your toes', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
-      { msg:'Leaning forward — keep your torso tall', test: (lm,a) => a.formAngle < 135 },
+      { msg:'Front knee caving inward — track it over your toes', category:'Knee Alignment', label:'Knee valgus', voice:'Track your knee over your toes.', test: lm => Math.abs(lm[25].x-lm[26].x) < Math.abs(lm[27].x-lm[28].x)*0.65 },
+      { msg:'Leaning forward — keep your torso tall', category:'Torso Posture', label:'Excessive forward lean', voice:'Keep your torso tall.', test: (lm,a) => a.formAngle < 135 },
     ] },
   sideLunge: { name:'Side Lunge', type:'reps', color:'#AF52DE', icon:'🤸', category:'mobility', equipment:'none',
     primary:[24,26,28], form:[12,24,26], topAngle:165, bottomAngle:110, formGoodMin:150, primaryLabel:'Bent knee angle',
     tips:['Step wide to the side, toes forward','Push hips back as you bend one knee','Keep the straight leg extended','Push back to center through your heel'],
     corrections:[
-      { msg:'Leaning too far forward — keep your chest up', test: (lm,a) => a.formAngle < 130 },
+      { msg:'Leaning too far forward — keep your chest up', category:'Torso Posture', label:'Excessive forward lean', voice:'Keep your chest up.', test: (lm,a) => a.formAngle < 130 },
     ] },
   gluteBridge:{ name:'Glute Bridge', type:'reps', color:'#34C759', icon:'🌉', category:'core', equipment:'none',
     primary:[12,24,26], form:[24,26,28], topAngle:165, bottomAngle:120, formGoodMin:150, primaryLabel:'Hip extension angle',
@@ -880,26 +938,26 @@ const EXERCISES = {
     primary:[12,14,16], form:[14,12,24], topAngle:150, bottomAngle:50, formGoodMin:0, primaryLabel:'Elbow angle',
     tips:['Elbows pinned to your sides','Curl with control, no swinging','Squeeze at the top','Lower fully to start'],
     corrections:[
-      { msg:'Elbow drifting forward — keep it pinned to your side', test: (lm) => (lm[14].x - lm[12].x) > 0.12 },
+      { msg:'Elbow drifting forward — keep it pinned to your side', category:'Elbow Position', label:'Elbow drift', voice:'Pin your elbow to your side.', test: (lm) => (lm[14].x - lm[12].x) > 0.12 },
     ] },
   overheadPress:{ name:'Overhead Press', type:'reps', color:'#FF3B30', icon:'🙆', category:'strength', equipment:'dumbbells',
     primary:[12,14,16], form:[12,24,28], topAngle:160, bottomAngle:90, formGoodMin:150, primaryLabel:'Elbow angle',
     tips:['Start with elbows bent near shoulders','Press straight overhead','Avoid arching your lower back','Lower with control'],
     corrections:[
-      { msg:'Leaning back excessively — brace your core', test: (lm,a) => a.formAngle < 140 },
+      { msg:'Leaning back excessively — brace your core', category:'Core Stability', label:'Excessive back lean', voice:'Brace your core.', test: (lm,a) => a.formAngle < 140 },
     ] },
   plank: { name:'Plank', type:'hold', color:'#00C7BE', icon:'🧘', category:'core', equipment:'none',
     form:[12,24,28], formGoodMin:160, primaryLabel:'—',
     tips:['Hips level with shoulders — no sagging','Core braced, glutes squeezed','Elbows stacked under shoulders','Neck neutral, eyes toward the floor'],
     corrections:[
-      { msg:'Hips sagging — engage your core to flatten your back', test: (lm) => (lm[24].y - ((lm[12].y+lm[28].y)/2)) > 0.045 },
-      { msg:'Hips too high — lower into one straight line', test: (lm) => (((lm[12].y+lm[28].y)/2) - lm[24].y) > 0.045 },
+      { msg:'Hips sagging — engage your core to flatten your back', category:'Hip Alignment', label:'Hips sagging', voice:'Engage your core, keep your hips level.', test: (lm) => (lm[24].y - ((lm[12].y+lm[28].y)/2)) > 0.045 },
+      { msg:'Hips too high — lower into one straight line', category:'Hip Alignment', label:'Hips too high', voice:'Lower your hips into one straight line.', test: (lm) => (((lm[12].y+lm[28].y)/2) - lm[24].y) > 0.045 },
     ] },
   wallSit:{ name:'Wall Sit', type:'hold', color:'#00C7BE', icon:'🪑', category:'strength', equipment:'none',
     form:[24,26,28], formGoodMin:80, primaryLabel:'—',
     tips:['Back flat against a wall','Thighs roughly parallel to the floor','Knees above ankles, not past toes','Hold steady, breathe normally'],
     corrections:[
-      { msg:'Not deep enough — lower until thighs are parallel to the floor', test: (lm,a) => a.formAngle > 130 },
+      { msg:'Not deep enough — lower until thighs are parallel to the floor', category:'Squat Depth', label:'Not deep enough', voice:'Lower down until your thighs are parallel.', test: (lm,a) => a.formAngle > 130 },
     ] },
   superman:{ name:'Superman', type:'hold', color:'#00C7BE', icon:'🦸', category:'core', equipment:'none',
     form:[12,24,28], formGoodMin:150, primaryLabel:'—',
@@ -913,7 +971,7 @@ const EXERCISES = {
     primary:[24,26,28], form:[12,24,28], topAngle:160, bottomAngle:95, formGoodMin:140, primaryLabel:'Drive-knee angle',
     tips:['Start in a strong plank','Drive knees toward your chest, alternating','Keep hips low and level','Maintain a quick, controlled pace'],
     corrections:[
-      { msg:'Hips rising too high — keep a flat plank line', test: (lm,a) => a.formAngle < 140 },
+      { msg:'Hips rising too high — keep a flat plank line', category:'Hip Alignment', label:'Hips rising', voice:'Keep a flat plank line.', test: (lm,a) => a.formAngle < 140 },
     ] },
   calfRaise:{ name:'Calf Raise', type:'reps', color:'#34C759', icon:'🦶', category:'strength', equipment:'none',
     primary:[26,28,32], form:[24,26,28], topAngle:165, bottomAngle:150, formGoodMin:0, primaryLabel:'Ankle angle',
@@ -1033,6 +1091,10 @@ const tipsTitleEl = document.getElementById('tipsTitle'), tipsListEl = document.
 const goalProgress = document.getElementById('goalProgress');
 const correctionsBox = document.getElementById('correctionsBox'), correctionsListEl = document.getElementById('correctionsList');
 const coachMainCard = document.getElementById('coachMainCard'), ratingCard = document.getElementById('ratingCard');
+const formScoreCard = document.getElementById('formScoreCard'), formScoreExerciseEl = document.getElementById('formScoreExercise');
+const formScoreBigEl = document.getElementById('formScoreBig'), formScoreComponentsEl = document.getElementById('formScoreComponents');
+const repLogCard = document.getElementById('repLogCard'), repLogListEl = document.getElementById('repLogList');
+const reportCard = document.getElementById('reportCard');
 
 exercisePicker.innerHTML = Object.entries(EXERCISES).map(([key,ex],i) => `
   <button class="ex-card${i===0?' active':''}" data-ex="${key}" style="--ex-color:${ex.color}"><span class="ex-icon">${ex.icon}</span><span>${ex.name}</span></button>
@@ -1046,10 +1108,86 @@ let missedFrames=0; const MISSED_FRAMES_BEFORE_WARNING=8;
 let lastSpokenMilestone=0;
 let pendingRating = { rpe:0 };
 
+/* ===== Form Score / Rep-by-Rep / Voice Coach state ===== */
+let repLog = [];              // finished reps: {index, overall, comps, issues, status}
+let repTrack = freshRepTrack();
+let holdTrack = freshRepTrack();
+let holdScoreSamples = [];    // rolling {overall, comps, issues} snapshots while holding, for hold-type report
+const MIN_GOOD_REP_MS = 900;  // reps faster than this get flagged as rushed
+let prevActiveCategories = new Set();
+let lastVoiceAt = 0;
+const VOICE_COOLDOWN_MS = 2200;
+
+function freshRepTrack(){ return { frames:0, minPrimary:Infinity, formSamples:[], categoryHits:{}, categoryLabels:{}, startTime: performance.now() }; }
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
 function smooth(h,v,w){ h.push(v); if(h.length>w) h.shift(); return h.reduce((a,b)=>a+b,0)/h.length; }
 function angleBetween(a,b,c){ const ab={x:a.x-b.x,y:a.y-b.y}, cb={x:c.x-b.x,y:c.y-b.y}; const dot=ab.x*cb.x+ab.y*cb.y; const mA=Math.hypot(ab.x,ab.y), mC=Math.hypot(cb.x,cb.y); return Math.acos(Math.min(1,Math.max(-1,dot/(mA*mC))))*180/Math.PI; }
 function setFeedback(t,k){ feedbackPill.textContent=t; feedbackPill.className='feedback-pill'+(k?' '+k:''); }
 function formatTime(ms){ const s=Math.floor(ms/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+
+function coachSpeak(text){
+  const now = performance.now();
+  if (now - lastVoiceAt < VOICE_COOLDOWN_MS) return;
+  lastVoiceAt = now;
+  speak(text);
+}
+
+/* Compute a 0-100 score + component breakdown for the tracking window just finished. */
+function finalizeScore(cfg, track){
+  const comps = {};
+  if (cfg.primary && track.minPrimary !== Infinity){
+    const margin = cfg.bottomAngle - track.minPrimary; // positive = went deeper than required
+    comps['Depth'] = clamp(Math.round(70 + margin*2.5), 60, 100);
+  }
+  if (cfg.corrections && cfg.corrections.length){
+    const cats = [...new Set(cfg.corrections.map(c=>c.category))];
+    cats.forEach(cat => {
+      const hits = track.categoryHits[cat] || 0;
+      const ratio = track.frames ? hits/track.frames : 0;
+      comps[cat] = clamp(Math.round(100 - ratio*100), 0, 100);
+    });
+  } else {
+    const avgForm = track.formSamples.length ? track.formSamples.reduce((a,b)=>a+b,0)/track.formSamples.length : cfg.formGoodMin;
+    comps['Form'] = clamp(Math.round(100 - Math.max(0, cfg.formGoodMin-avgForm)*2), 0, 100);
+  }
+  const vals = Object.values(comps);
+  const overall = vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 100;
+  const issues = Object.entries(comps).filter(([k,v]) => k!=='Depth' && k!=='Form' && v<75).map(([k]) => track.categoryLabels[k] || k);
+  const status = overall>=85 ? 'good' : overall>=60 ? 'warn' : 'bad';
+  return { overall, comps, issues, status };
+}
+
+function scoreColor(status){ return status==='good' ? 'var(--green)' : status==='warn' ? 'var(--orange)' : 'var(--red)'; }
+function scoreIcon(status){ return status==='good' ? '✅' : status==='warn' ? '⚠️' : '❌'; }
+
+function renderFormScoreCard(){
+  const cfg = EXERCISES[currentExercise];
+  const source = cfg.type==='hold' ? holdScoreSamples[holdScoreSamples.length-1] : repLog[repLog.length-1];
+  if (!source){ formScoreCard.style.display='none'; return; }
+  formScoreCard.style.display='';
+  formScoreExerciseEl.textContent = cfg.name;
+  formScoreBigEl.innerHTML = `${source.overall} <span>/ 100</span>`;
+  formScoreBigEl.className = 'form-score-big ' + source.status;
+  formScoreComponentsEl.innerHTML = Object.entries(source.comps).map(([label,val]) => `
+    <div class="fs-comp-row">
+      <div class="fs-comp-label">${label}</div>
+      <div class="fs-comp-bar"><div style="width:${val}%; background:${val>=85?'var(--green)':val>=60?'var(--orange)':'var(--red)'}"></div></div>
+      <div class="fs-comp-val">${val}</div>
+    </div>`).join('');
+}
+
+function renderRepLog(){
+  if (!repLog.length){ repLogCard.style.display='none'; return; }
+  repLogCard.style.display='';
+  repLogListEl.innerHTML = repLog.map(r => `
+    <div class="rep-log-row ${r.status}">
+      <span class="rep-log-icon">${scoreIcon(r.status)}</span>
+      <span class="rep-log-num">Rep ${r.index}</span>
+      <span class="rep-log-issue">${r.issues.length ? r.issues.join(', ') : 'Good form'}</span>
+      <span class="rep-log-score" style="color:${scoreColor(r.status)}">${r.overall}</span>
+    </div>`).join('');
+}
 
 function selectExercise(key){
   if (!EXERCISES[key]) return;
@@ -1087,24 +1225,74 @@ exercisePicker.addEventListener('click', (e) => {
 function resetState(){
   repCount=0; phase='top'; reachedDepth=false; bottomStreak=0; topStreak=0;
   primaryHistory=[]; formHistory=[]; lastRepTime=0; holdStartTime=null; bestHoldMs=0; lastSpokenMilestone=0;
+  repLog=[]; repTrack=freshRepTrack(); holdTrack=freshRepTrack(); holdScoreSamples=[]; prevActiveCategories=new Set(); lastVoiceAt=0;
   renderExerciseUI(); setFeedback('Ready', null);
-  ratingCard.style.display='none'; coachMainCard.style.display='';
+  formScoreCard.style.display='none'; repLogCard.style.display='none';
+  ratingCard.style.display='none'; reportCard.style.display='none'; coachMainCard.style.display='';
 }
 resetBtn.onclick = resetState;
+
+const IMPROVEMENT_TIPS = {
+  'Knee valgus':'Focus on pushing your knees outward, in line with your toes, throughout the movement.',
+  'Knee valgus on landing':'Land with your knees tracking over your toes — try slowing down your landing.',
+  'Excessive forward lean':'Keep your chest lifted and your core braced to stay more upright.',
+  'Hips sagging':'Brace your core hard to keep a flat line from shoulders to heels.',
+  'Hips piking up':'Squeeze your glutes and lower your hips back into a straight line.',
+  'Hips too high':'Lower your hips into one straight line with your shoulders and heels.',
+  'Hips rising':'Keep your hips low and level — imagine a flat tabletop.',
+  'Elbow drift':'Pin your elbow to your side for the entire rep.',
+  'Excessive back lean':'Brace your core and press straight overhead instead of leaning back.',
+  'Not deep enough':'Sink lower until your thighs are roughly parallel to the floor.',
+  'Rushed tempo':'Slow down — a controlled 2-3 second tempo builds more strength and control.',
+};
+function suggestionFor(label){ return IMPROVEMENT_TIPS[label] || 'Focus on slow, controlled reps and keep an eye on the live corrections for real-time cues.'; }
+
+function buildReport(cfg){
+  const source = cfg.type==='hold' ? holdScoreSamples : repLog;
+  const total = source.length;
+  const correct = source.filter(r=>r.status==='good').length;
+  const incorrect = total - correct;
+  const avgScore = total ? Math.round(source.reduce((a,r)=>a+r.overall,0)/total) : 0;
+  const tally = {};
+  source.forEach(r => r.issues.forEach(i => { tally[i] = (tally[i]||0)+1; }));
+  const entries = Object.entries(tally).sort((a,b)=>b[1]-a[1]);
+  const mostCommon = entries.length ? entries[0][0] : null;
+  return { total, correct, incorrect, avgScore, mostCommon };
+}
+
+function renderReportCard(report){
+  reportCard.style.display='';
+  document.getElementById('reportTotal').textContent = report.total;
+  document.getElementById('reportAvgScore').textContent = report.avgScore;
+  document.getElementById('reportCorrect').textContent = report.correct;
+  document.getElementById('reportIncorrect').textContent = report.incorrect;
+  const mistakeEl = document.getElementById('reportMistake');
+  if (report.mostCommon){ mistakeEl.textContent = report.mostCommon; mistakeEl.classList.remove('none'); }
+  else { mistakeEl.textContent = 'None — clean form throughout!'; mistakeEl.classList.add('none'); }
+  document.getElementById('reportSuggestion').textContent = report.mostCommon
+    ? suggestionFor(report.mostCommon)
+    : 'Great work — keep training at this level and consider increasing reps or difficulty next session.';
+}
 
 finishBtn.onclick = async () => {
   const cfg = EXERCISES[currentExercise];
   if (cfg.type === 'reps' && repCount === 0){ alert('Log at least one rep before saving.'); return; }
   if (cfg.type === 'hold' && bestHoldMs === 0){ alert('Hold at least briefly before saving.'); return; }
   pendingRating = { rpe:0, note:'' };
+  const report = buildReport(cfg);
   appData.sessions.push({
     date: new Date().toISOString().slice(0,10),
     exercise: currentExercise,
     reps: cfg.type==='reps' ? repCount : 0,
     holdSeconds: cfg.type==='hold' ? Math.round(bestHoldMs/1000) : 0,
+    formScore: report.avgScore,
+    correctReps: report.correct,
+    incorrectReps: report.incorrect,
+    mostCommonMistake: report.mostCommon,
   });
   await saveData();
   coachMainCard.style.display='none';
+  renderReportCard(report);
   ratingCard.style.display='';
   document.getElementById('rpeRow').querySelectorAll('.rpe-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('sessionNote').value='';
@@ -1186,11 +1374,30 @@ function renderCorrections(activeMessages){
     correctionsListEl.innerHTML = activeMessages.map(m => `<div class="correction-chip">${m}</div>`).join('');
   }
 }
-function evaluateCorrections(lm, angles){
+function evaluateCorrections(lm, angles, track){
   const cfg = EXERCISES[currentExercise];
-  if (!cfg.corrections || !cfg.corrections.length) return [];
+  if (track){ track.frames++; if (angles.formAngle!=null) track.formSamples.push(angles.formAngle); }
+  if (!cfg.corrections || !cfg.corrections.length){ prevActiveCategories = new Set(); return []; }
   const active = [];
-  cfg.corrections.forEach(c => { try{ if (c.test(lm, angles)) active.push(c.msg); }catch(e){} });
+  const activeCats = new Set();
+  cfg.corrections.forEach(c => {
+    try{
+      if (c.test(lm, angles)){
+        active.push(c.msg);
+        activeCats.add(c.category);
+        if (track) track.categoryLabels[c.category] = c.label;
+      }
+    }catch(e){}
+  });
+  if (track){ activeCats.forEach(cat => { track.categoryHits[cat] = (track.categoryHits[cat]||0)+1; }); }
+  // Real-time voice cue on newly-triggered issues (hands-free coaching mid-rep)
+  activeCats.forEach(cat => {
+    if (!prevActiveCategories.has(cat)){
+      const corr = cfg.corrections.find(c => c.category===cat);
+      if (corr && corr.voice) coachSpeak(corr.voice);
+    }
+  });
+  prevActiveCategories = activeCats;
   renderCorrections(active);
   return active;
 }
@@ -1206,9 +1413,10 @@ function evaluateExercise(lm){
   const formAngle = smooth(formHistory, angleBetween(lm[fa],lm[fb],lm[fc]), SMOOTH_WINDOW);
   primaryAngleEl.textContent = primaryAngle.toFixed(0)+'°'; formAngleEl.textContent = formAngle.toFixed(0)+'°';
   const formOK = formAngle >= cfg.formGoodMin; markTips(formOK);
-  const activeCorrections = evaluateCorrections(lm, { primaryAngle, formAngle });
+  if (phase==='top' && primaryAngle < cfg.topAngle-20){ phase='descending'; reachedDepth=false; bottomStreak=0; repTrack=freshRepTrack(); }
+  const activeCorrections = evaluateCorrections(lm, { primaryAngle, formAngle }, repTrack);
+  repTrack.minPrimary = Math.min(repTrack.minPrimary, primaryAngle);
   const now = performance.now();
-  if (phase==='top' && primaryAngle < cfg.topAngle-20){ phase='descending'; reachedDepth=false; bottomStreak=0; }
   if (phase==='descending'){ if (primaryAngle<=cfg.bottomAngle){ bottomStreak++; if(bottomStreak>=CONFIRM_FRAMES){phase='bottom'; reachedDepth=true; topStreak=0;} } else bottomStreak=0; }
   if (phase==='bottom'||phase==='descending'){
     if (primaryAngle>=cfg.topAngle) topStreak++; else topStreak=0;
@@ -1217,11 +1425,21 @@ function evaluateExercise(lm){
       if (canCount){
         repCount++; repCountEl.textContent=repCount; pulseRepCount(); lastRepTime=now; updateGoalProgress();
         const repGood = formOK && !activeCorrections.length;
+        const scoreResult = finalizeScore(cfg, repTrack);
+        const repDurationMs = now - repTrack.startTime;
+        if (repDurationMs < MIN_GOOD_REP_MS){
+          scoreResult.issues.push('Rushed tempo');
+          if (scoreResult.status==='good') scoreResult.status='warn';
+        }
+        scoreResult.index = repCount;
+        repLog.push(scoreResult);
+        renderRepLog(); renderFormScoreCard();
         beep(repGood?880:440);
         setFeedback(repGood?'Nice rep!':'Rep counted — watch your form', repGood?'good':'warn');
-        if (repCount % 5 === 0 && repCount !== lastSpokenMilestone){ lastSpokenMilestone = repCount; speak(`${repCount} reps`); }
-        else if (repCount === settings.repGoal){ speak('Goal reached! Great work.'); }
-        else if (activeCorrections.length){ speak(activeCorrections[0]); }
+        if (repCount % 5 === 0 && repCount !== lastSpokenMilestone){ lastSpokenMilestone = repCount; coachSpeak(`${repCount} reps`); }
+        else if (repCount === settings.repGoal){ coachSpeak('Goal reached! Great work.'); }
+        else if (repDurationMs < MIN_GOOD_REP_MS){ coachSpeak('Slow down.'); }
+        else if (scoreResult.status==='good'){ coachSpeak(scoreResult.overall>=95 ? 'Great depth!' : 'Nice rep!'); }
       } else if (!reachedDepth) setFeedback('Go lower — depth not reached','warn');
       phase='top'; reachedDepth=false; bottomStreak=0; topStreak=0;
     }
@@ -1243,8 +1461,15 @@ function evaluateHold(lm,cfg){
   const formAngle = smooth(formHistory, angleBetween(lm[fa],lm[fb],lm[fc]), SMOOTH_WINDOW);
   formAngleEl.textContent = formAngle.toFixed(0)+'°';
   const formOK = formAngle >= cfg.formGoodMin; markTips(formOK);
-  const activeCorrections = evaluateCorrections(lm, { formAngle });
+  const activeCorrections = evaluateCorrections(lm, { formAngle }, holdTrack);
   const now = performance.now();
+  if (holdTrack.frames % 30 === 0){
+    const snap = finalizeScore(cfg, holdTrack);
+    holdScoreSamples.push(snap);
+    if (holdScoreSamples.length > 200) holdScoreSamples.shift();
+    renderFormScoreCard();
+    if (snap.status==='good' && snap.overall>=95) coachSpeak('Great form — hold it.');
+  }
   if (formOK && !activeCorrections.length){
     if (holdStartTime===null) holdStartTime=now;
     const elapsed = now-holdStartTime; repCountEl.textContent = formatTime(elapsed);
