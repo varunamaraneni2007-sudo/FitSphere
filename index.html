@@ -1530,7 +1530,7 @@ function renderFormHistoryChart(){
   card.style.display='';
   document.getElementById('formHistoryChart').innerHTML = data.map(w => {
     const h = Math.max(4, Math.round((w.avg/100)*90));
-    const color = w.avg>=85?'var(--green)':w.avg>=60?'var(--orange)':'var(--red)';
+    const color = scoreColor(scoreStatus(w.avg));
     return `<div class="bar-col"><div class="bar-label pct">${w.avg}%</div><div class="bar" style="height:${h}px; background:${color}"></div><div class="bar-label">${w.label}</div></div>`;
   }).join('');
 }
@@ -1546,9 +1546,10 @@ function renderMistakeHeatmap(){
   }));
   const rows = Object.keys(sums).map(cat => ({ cat, avg: Math.round(sums[cat]/counts[cat]) })).sort((a,b)=>a.avg-b.avg);
   document.getElementById('heatmapList').innerHTML = rows.map(r => {
-    const dot = r.avg>=85 ? '🟢' : r.avg>=60 ? '🟡' : '🔴';
-    const status = r.avg>=85 ? 'Good' : r.avg>=60 ? 'Needs attention' : 'Problem area';
-    return `<div class="heatmap-row"><span class="heatmap-dot">${dot}</span><span class="heatmap-label">${r.cat}</span><span class="heatmap-val" style="color:${scoreColor(r.avg>=85?'good':r.avg>=60?'warn':'bad')}">${status} · ${r.avg}</span></div>`;
+    const st = scoreStatus(r.avg);
+    const dot = st==='good' ? '🟢' : st==='warn' ? '🟡' : '🔴';
+    const status = st==='good' ? 'Good' : st==='warn' ? 'Needs attention' : 'Problem area';
+    return `<div class="heatmap-row"><span class="heatmap-dot">${dot}</span><span class="heatmap-label">${r.cat}</span><span class="heatmap-val" style="color:${scoreColor(st)}">${status} · ${r.avg}</span></div>`;
   }).join('');
 }
 
@@ -1914,6 +1915,13 @@ function computeConfidencePct(track){
   return Math.round(clamp(track.confidenceSamples.reduce((a,b)=>a+b,0)/track.confidenceSamples.length, 0, 1) * 100);
 }
 const LOW_CONFIDENCE_THRESHOLD = 45; // below this, don't confidently score the rep at all
+const SYMMETRY_TOLERANCE_DEG = 12;   // natural camera-angle L/R skew to forgive before penalizing
+const CONSISTENCY_TOLERANCE_PTS = 8; // normal rep-to-rep score wobble to forgive before penalizing
+const ALIGNMENT_MAX_PENALTY = 65;    // a correction firing on every frame costs at most this many points, not a full 100
+const ISSUE_FLAG_THRESHOLD = 65;     // a factor only gets called out as an "issue" below this, not merely imperfect
+/* Configurable score bands — tune here, nowhere else, and every card/report/badge follows automatically. */
+const SCORE_THRESHOLDS = { good: 80, warn: 60 }; // >=good -> "good" (✅), >=warn -> "warn" (⚠️), below -> "bad" (❌)
+function scoreStatus(overall){ return overall>=SCORE_THRESHOLDS.good ? 'good' : overall>=SCORE_THRESHOLDS.warn ? 'warn' : 'bad'; }
 
 /* Camera-readiness indicator — checked continuously, independent of rep state. */
 function computeReadiness(lm, cfg){
@@ -1930,22 +1938,29 @@ function computeReadiness(lm, cfg){
 /* Reusable scoring primitives — the exercise-specific "form rules" are just these primitives
    parameterized by each exercise's config, so adding a new exercise doesn't mean writing new
    scoring math. */
+/* Tolerance-band scoring: a single 2D camera reading left vs. right landmarks always shows some
+   apparent asymmetry from perspective alone (the user is rarely perfectly square to the lens),
+   and rep-to-rep angle variance of a few degrees is normal, not a fault. These primitives forgive
+   a "dead zone" of natural noise before penalizing, so the score doesn't over-react to it. */
 function scoreSymmetryFactor(rightSamples, leftSamples){
   if (!rightSamples.length || !leftSamples.length) return null;
   const n = Math.min(rightSamples.length, leftSamples.length);
   let diffSum = 0;
   for (let i=0;i<n;i++) diffSum += Math.abs(rightSamples[i]-leftSamples[i]);
-  return clamp(Math.round(100 - (diffSum/n)*2.5), 0, 100);
+  const avgDiff = diffSum/n;
+  const penalized = Math.max(0, avgDiff - SYMMETRY_TOLERANCE_DEG);
+  return clamp(Math.round(100 - penalized*1.4), 45, 100);
 }
 function scoreTempoFactor(downMs){
   if (downMs==null || downMs<=0) return null;
-  if (downMs < IDEAL_MIN_DOWN_MS) return clamp(Math.round(55 + (downMs/IDEAL_MIN_DOWN_MS)*45), 40, 100);
-  if (downMs > 4000) return clamp(Math.round(100 - (downMs-4000)/80), 55, 100);
+  if (downMs < IDEAL_MIN_DOWN_MS) return clamp(Math.round(65 + (downMs/IDEAL_MIN_DOWN_MS)*35), 50, 100);
+  if (downMs > 4000) return clamp(Math.round(100 - (downMs-4000)/120), 65, 100);
   return 100;
 }
 function scoreDeviationFromRunningAverage(value, runningAvg){
   if (runningAvg==null) return 100;
-  return clamp(Math.round(100 - Math.abs(value-runningAvg)*2), 0, 100);
+  const penalized = Math.max(0, Math.abs(value-runningAvg) - CONSISTENCY_TOLERANCE_PTS);
+  return clamp(Math.round(100 - penalized*1.1), 55, 100);
 }
 
 /* Exercise-configurable scoring weights. Base weight is by FACTOR TYPE (not hardcoded per exercise
@@ -1967,7 +1982,7 @@ function buildFactorList(cfg, track, key){
   if (cfg.corrections && cfg.corrections.length){
     [...new Set(cfg.corrections.map(c=>c.category))].forEach(cat => {
       const ratio = track.frames ? (track.categoryHits[cat]||0)/track.frames : 0;
-      factors.push({ key:'alignment_'+cat, label:cat, type:'alignment', score: clamp(Math.round(100-ratio*100), 0, 100) });
+      factors.push({ key:'alignment_'+cat, label:cat, type:'alignment', score: clamp(Math.round(100-ratio*ALIGNMENT_MAX_PENALTY), 100-ALIGNMENT_MAX_PENALTY, 100) });
     });
   } else if (track.formSamples.length){
     const avgForm = track.formSamples.reduce((a,b)=>a+b,0)/track.formSamples.length;
@@ -2001,8 +2016,8 @@ function computeRepScore(cfg, track, repHistory, key){
   const lowConfidence = confidence>0 && confidence < LOW_CONFIDENCE_THRESHOLD;
   const overall = lowConfidence ? null : Math.round(factors.reduce((a,f)=>a+f.score*(weights[f.key]||0), 0));
   const comps = {}; factors.forEach(f => { comps[f.label] = f.score; });
-  const issues = factors.filter(f => f.type!=='depth' && f.type!=='form' && f.score<75).map(f => track.categoryLabels[f.label] || f.label);
-  const status = lowConfidence ? 'unknown' : (overall>=85 ? 'good' : overall>=60 ? 'warn' : 'bad');
+  const issues = factors.filter(f => f.type!=='depth' && f.type!=='form' && f.score<ISSUE_FLAG_THRESHOLD).map(f => track.categoryLabels[f.label] || f.label);
+  const status = lowConfidence ? 'unknown' : scoreStatus(overall);
   const explanation = overall==null ? [] : factors
     .map(f => ({ label:f.label, loss: Math.round((100-f.score)*(weights[f.key]||0)) }))
     .filter(l=>l.loss>0).sort((a,b)=>b.loss-a.loss);
@@ -2034,31 +2049,6 @@ function coachSpeak(text){
   if (now - lastVoiceAt < VOICE_COOLDOWN_MS) return;
   lastVoiceAt = now;
   speak(text);
-}
-
-/* Compute a 0-100 score + component breakdown for the tracking window just finished. */
-function finalizeScore(cfg, track){
-  const comps = {};
-  if (cfg.primary && track.minPrimary !== Infinity){
-    const margin = cfg.bottomAngle - track.minPrimary; // positive = went deeper than required
-    comps['Depth'] = clamp(Math.round(70 + margin*2.5), 60, 100);
-  }
-  if (cfg.corrections && cfg.corrections.length){
-    const cats = [...new Set(cfg.corrections.map(c=>c.category))];
-    cats.forEach(cat => {
-      const hits = track.categoryHits[cat] || 0;
-      const ratio = track.frames ? hits/track.frames : 0;
-      comps[cat] = clamp(Math.round(100 - ratio*100), 0, 100);
-    });
-  } else {
-    const avgForm = track.formSamples.length ? track.formSamples.reduce((a,b)=>a+b,0)/track.formSamples.length : cfg.formGoodMin;
-    comps['Form'] = clamp(Math.round(100 - Math.max(0, cfg.formGoodMin-avgForm)*2), 0, 100);
-  }
-  const vals = Object.values(comps);
-  const overall = vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 100;
-  const issues = Object.entries(comps).filter(([k,v]) => k!=='Depth' && k!=='Form' && v<75).map(([k]) => track.categoryLabels[k] || k);
-  const status = overall>=85 ? 'good' : overall>=60 ? 'warn' : 'bad';
-  return { overall, comps, issues, status };
 }
 
 function updateRomGauge(cfg, angle){
@@ -2095,7 +2085,7 @@ function renderFormScoreCard(){
   const compsHtml = Object.entries(source.comps).map(([label,val]) => `
     <div class="fs-comp-row">
       <div class="fs-comp-label">${label}</div>
-      <div class="fs-comp-bar"><div style="width:${val}%; background:${val>=85?'var(--green)':val>=60?'var(--orange)':'var(--red)'}"></div></div>
+      <div class="fs-comp-bar"><div style="width:${val}%; background:${scoreColor(scoreStatus(val))}"></div></div>
       <div class="fs-comp-val">${val}</div>
     </div>`).join('');
   const explainHtml = (source.explanation && source.explanation.length)
@@ -3041,7 +3031,7 @@ function analyzeExercise(key){
 function whyLowScoreResponse(){
   const latest = [...appData.sessions].reverse().find(s=>s.formScore!=null);
   if (!latest) return "You don't have a scored session yet — finish a set in AI Coach and I'll break down what's affecting your score.";
-  if (latest.formScore>=85) return `Good news — your last score (${exerciseName(latest.exercise)}: ${latest.formScore}/100) was actually strong! Keep doing what you're doing.`;
+  if (latest.formScore>=SCORE_THRESHOLDS.good) return `Good news — your last score (${exerciseName(latest.exercise)}: ${latest.formScore}/100) was actually strong! Keep doing what you're doing.`;
   return `Your last ${exerciseName(latest.exercise)} score was ${latest.formScore}/100, mainly due to ${latest.mostCommonMistake ? latest.mostCommonMistake.toLowerCase() : 'inconsistent form'}. ${latest.mostCommonMistake ? suggestionFor(latest.mostCommonMistake) : 'Try slowing your tempo and focusing on full range of motion.'}`;
 }
 function improveFormGeneral(){
